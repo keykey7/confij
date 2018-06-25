@@ -1,0 +1,22 @@
+buildscript {
+	repositories {
+		jcenter()
+		mavenLocal()
+	}
+}
+
+allprojects {
+	group 'ch.kk7'
+	version '0.0.0-SNAPSHOT'
+
+	apply plugin: 'idea'
+	repositories {
+		jcenter()
+	}
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '4.7'
+	distributionType = Wrapper.DistributionType.ALL
+}
+

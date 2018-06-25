@@ -1,0 +1,13 @@
+apply plugin: 'java'
+
+dependencies {
+	compile 'org.yaml:snakeyaml:1.21'
+	compile 'com.fasterxml:classmate:1.4.0'
+
+	def junitVersion = '5.2.0'
+	testCompile "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
+	testRuntime "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+	testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
+
+}
+
