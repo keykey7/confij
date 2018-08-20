@@ -7,6 +7,8 @@ import java.nio.file.Paths;
 import static ch.kk7.config4j.source.file.resource.ResourceFetchingException.unableToFetch;
 
 public class FileResource extends URLResource {
+	public static final String SCHEME = "file";
+
 	@Override
 	public String read(String pathStr) {
 		final File file;

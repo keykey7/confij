@@ -40,7 +40,7 @@ public class CollectionBindingFactory implements ConfigBindingFactory<Collection
 			}
 			ResolvedType componentType = typeParameters.get(0);
 			if (Util.rawObjectType.equals(componentType)) {
-				throw new Config4jException("cannot resolveInternal raw argument of Collection<?> for " + type);
+				throw new Config4jException("cannot resolveString raw argument of Collection<?> for " + type);
 			}
 			UnmodifiableCollectionBuilder<?, ?> builder = builders.stream()
 					.filter(b -> type.getErasedType()

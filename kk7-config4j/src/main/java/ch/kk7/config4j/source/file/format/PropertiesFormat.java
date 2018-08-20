@@ -14,21 +14,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class PropertiesFormat implements ResourceFormat {
 	private String separator = ".";
-	private String globalPrefix = "config";
+	private String globalPrefix = "";
 	private static final String VALUE_ITSELF = "";
 
 	public void setSeparator(String separator) {
-		this.separator = separator;
+		this.separator = Objects.requireNonNull(separator);
 	}
 
 	public void setPrefix(String globalPrefix) {
-		this.globalPrefix = globalPrefix;
+		this.globalPrefix = Objects.requireNonNull(globalPrefix);
 	}
 
 	@Override
@@ -48,7 +50,7 @@ public class PropertiesFormat implements ResourceFormat {
 	}
 
 	protected void overrideWithFlatMap(SimpleConfig simpleConfig, Map<String, String> map) {
-		Object deepMap = flatToDeepMap(simpleConfig.getConfig(), map);
+		Object deepMap = flatToDeepWithPrefix(simpleConfig.getConfig(), map);
 		overrideWithDeepMap(simpleConfig, deepMap);
 	}
 
@@ -57,11 +59,11 @@ public class PropertiesFormat implements ResourceFormat {
 		simpleConfig.overrideWith(newConfig);
 	}
 
-	protected Object flatToDeepMap(ConfigFormat format, Map<String, String> globalMap) {
-		return flatToWhatever(format, submapOf(globalMap, globalPrefix));
+	protected Object flatToDeepWithPrefix(ConfigFormat format, Map<String, String> globalMap) {
+		return flatToDeep(format, submapOf(globalMap, globalPrefix));
 	}
 
-	protected Object flatToWhatever(ConfigFormat format, Map<String, String> map) {
+	protected Object flatToDeep(ConfigFormat format, Map<String, String> map) {
 		if (format instanceof ConfigFormatLeaf) {
 			return map.get(VALUE_ITSELF);
 		} else if (format instanceof ConfigFormatList) {
@@ -77,7 +79,7 @@ public class PropertiesFormat implements ResourceFormat {
 		List<Object> result = new LinkedList<>();
 		map.keySet()
 				.stream()
-				.map(key -> key.split(separator, 2)[0])
+				.map(key -> key.split(Pattern.quote(separator), 2)[0])
 				.map(numpart -> {
 					try {
 						return Integer.parseInt(numpart);
@@ -86,17 +88,17 @@ public class PropertiesFormat implements ResourceFormat {
 					}
 				})
 				.distinct()
-				.forEach(i -> result.add(i, flatToWhatever(format.anyChild(), submapOf(map, "" + i))));
+				.forEach(i -> result.add(i, flatToDeep(format.anyChild(), submapOf(map, "" + i))));
 		return result;
 	}
 
 	protected Map<String, Object> flatToMap(ConfigFormatMap format, Map<String, String> map) {
 		return map.keySet()
 				.stream()
-				.map(key -> key.split(separator, 2)[0])
+				.map(key -> key.split(Pattern.quote(separator), 2)[0])
 				.distinct()
-				.collect(Collectors.toMap(k -> k, k -> flatToWhatever(format.get(k)
-						.orElseThrow(() -> new Config4jSourceException("invalid config key {} is not allowed", k)), submapOf(map, k))));
+				.collect(Collectors.toMap(k -> k, k -> flatToDeep(format.get(k)
+						.orElseThrow(() -> new Config4jSourceException("invalid config key '{}' is not allowed", k)), submapOf(map, k))));
 	}
 
 	protected Map<String, String> submapOf(Map<String, String> map, String prefix) {
@@ -113,6 +115,6 @@ public class PropertiesFormat implements ResourceFormat {
 		// Note: a (stupid) key "<prefix>." is overridden here by key "<prefix>"
 		Optional.ofNullable(map.get(prefix))
 				.ifPresent(v -> result.put(VALUE_ITSELF, v));
-		return map;
+		return result;
 	}
 }

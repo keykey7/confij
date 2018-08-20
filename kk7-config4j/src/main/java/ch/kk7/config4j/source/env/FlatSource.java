@@ -26,7 +26,7 @@ class FlatSource extends PropertiesFormat implements ConfigSource {
 	@Override
 	public void override(SimpleConfig simpleConfig) {
 		if (deepMap == null) {
-			deepMap = flatToDeepMap(simpleConfig.getConfig(), flatMap);
+			deepMap = flatToDeepWithPrefix(simpleConfig.getConfig(), flatMap);
 		}
 		overrideWithDeepMap(simpleConfig, deepMap);
 	}

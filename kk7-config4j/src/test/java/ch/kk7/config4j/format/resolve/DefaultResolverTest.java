@@ -29,7 +29,7 @@ class DefaultResolverTest {
 	}
 
 	@Test
-	public void resolveNone() {
+	public void resolveStatic() {
 		assertThat(resolve("hello"), is("hello"));
 	}
 
@@ -45,7 +45,7 @@ class DefaultResolverTest {
 
 	@Test
 	public void resolveTwo() {
-		assertThat(resolve("hello ${x1} ${x2}", "one", "two"), is("hello one two"));
+		assertThat(resolve("hello ${x1} ${x2}!", "one", "two"), is("hello one two!"));
 	}
 
 	@Test
@@ -76,5 +76,45 @@ class DefaultResolverTest {
 	@Test
 	public void resolveNestedCircular() {
 		assertThrows(Config4jException.class, () -> resolve("hello ${x1}", "1${x2}", "2${x3}", "3${x1}"));
+	}
+
+	@Test
+	public void looksLikeAVariable() {
+		assertThat(resolve("${x1${${x1"), is("${x1${${x1"));
+	}
+
+	@Test
+	public void emptyVariable() {
+		assertThrows(Config4jException.class, () -> resolve("hello ${}", "1"));
+	}
+
+	@Test
+	public void nonexistentVariable() {
+		assertThrows(Config4jException.class, () -> resolve("hello ${x1}"));
+	}
+
+	@Test
+	public void escapedVariable() {
+		assertThat(resolve("hello \\${x1}", "one"), is("hello ${x1}"));
+	}
+
+	@Test
+	public void escapedNothing() {
+		assertThat(resolve("hello \\${xxx", "one"), is("hello ${xxx"));
+	}
+
+	@Test
+	public void doubleEscaped() {
+		assertThat(resolve("hello \\\\${x1}", "one"), is("hello \\one"));
+	}
+
+	@Test
+	public void unnessessaryEscape() {
+		assertThat(resolve("hello \\!${x1}", "one"), is("hello !one"));
+	}
+
+	@Test
+	public void escapedNested() {
+		assertThat(resolve("hello ${x1}", "~\\${x2}~", "two"), is("hello ~${x2}~"));
 	}
 }

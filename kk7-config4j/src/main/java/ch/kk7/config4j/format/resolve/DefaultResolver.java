@@ -4,9 +4,11 @@ import ch.kk7.config4j.common.Config4jException;
 import ch.kk7.config4j.source.simple.SimpleConfig;
 import ch.kk7.config4j.source.simple.SimpleConfigLeaf;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class DefaultResolver implements IVariableResolver {
@@ -17,19 +19,19 @@ public class DefaultResolver implements IVariableResolver {
 	@Override
 	public String resolve(SimpleConfigLeaf leaf) {
 		clearCache();
-		return resolveInternal(leaf);
+		return resolveString(leaf);
 	}
 
-	protected String resolveInternal(SimpleConfigLeaf leaf) {
+	protected String resolveString(SimpleConfigLeaf leaf) {
 		String value = leaf.get();
 		if (resolvedLeaves.containsKey(leaf)) {
 			return resolvedLeaves.get(leaf);
 		}
 		if (inProgressLeaves.contains(leaf)) {
-			throw new Config4jException("circular dependency: cannot resolveInternal leaf value");
+			throw new Config4jException("circular dependency: cannot resolveString leaf value");
 		}
 		inProgressLeaves.add(leaf);
-		String resolvedValue = resolveInternal(leaf, value);
+		String resolvedValue = resolveString(leaf, value);
 		inProgressLeaves.remove(leaf);
 		resolvedLeaves.put(leaf, resolvedValue);
 		return resolvedValue;
@@ -38,13 +40,35 @@ public class DefaultResolver implements IVariableResolver {
 	@Override
 	public String resolve(SimpleConfig baseLeaf, String value) {
 		clearCache();
-		return resolveInternal(baseLeaf, value);
+		return resolveString(baseLeaf, value);
 	}
 
-	protected String resolveVariable(SimpleConfig baseLeaf, String value) {
-		String variable = resolveInternal(baseLeaf, value);
-		SimpleConfigLeaf leaf = baseLeaf.resolveLeaf(variable);
-		return resolveInternal(leaf);
+	protected String resolveVariable(SimpleConfig baseLeaf, String variableName) {
+		// allows for recursive variable names like ${x${y}}
+		String pathToLeaf = resolveString(baseLeaf, variableName);
+		return resolveStaticForAbsolutePaths(pathToLeaf).orElseGet(() -> {
+			// variable must represent a path to a leaf now (usually relative)
+			SimpleConfigLeaf leaf = baseLeaf.resolveLeaf(pathToLeaf);
+			// further resolve the content of this leaf
+			return resolveString(leaf);
+		});
+	}
+
+	protected Optional<String> resolveStaticForAbsolutePaths(String uriStr) {
+		URI targetUri = URI.create(uriStr);
+		String scheme = targetUri.getScheme();
+		if (scheme == null) {
+			return Optional.empty();
+		}
+		String path = targetUri.getSchemeSpecificPart();
+		switch (scheme) {
+			case "env":
+				return Optional.ofNullable(System.getenv(path));
+			case "sys":
+				return Optional.ofNullable(System.getProperty(path));
+			default:
+				return Optional.empty();
+		}
 	}
 
 	protected void clearCache() {
@@ -52,7 +76,7 @@ public class DefaultResolver implements IVariableResolver {
 		inProgressLeaves.clear();
 	}
 
-	protected String resolveInternal(SimpleConfig baseLeaf, String value) {
+	protected String resolveString(SimpleConfig baseLeaf, String value) {
 		boolean isEscape = false;
 		boolean wasDollar = false;
 		int bracketCount = 0;
