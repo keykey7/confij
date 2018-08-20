@@ -9,6 +9,7 @@ import ch.kk7.config4j.format.FormatSettings;
 import ch.kk7.config4j.format.validation.IValidator;
 import ch.kk7.config4j.format.validation.NotNullValidator;
 import ch.kk7.config4j.source.ConfigSource;
+import ch.kk7.config4j.source.SourceBuilder;
 import ch.kk7.config4j.source.defaults.DefaultSource;
 
 import java.util.ArrayList;
@@ -16,9 +17,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 public class Config4jBuilder<T> {
-
 	// Someinterface config = Config4jBuilder.as(Someinterface.class)
 	// .withSource(
 	// 	  from("classpath://asd.yml").as(yaml())
@@ -42,6 +43,13 @@ public class Config4jBuilder<T> {
 
 	public static <X> Config4jBuilder<X> of(Class<X> forClass) {
 		return new Config4jBuilder<>(forClass);
+	}
+
+	public Config4jBuilder<T> withSource(String... sourceStr) {
+		Stream.of(sourceStr)
+				.map(SourceBuilder::of)
+				.forEachOrdered(s -> sources.add(s));
+		return this;
 	}
 
 	public Config4jBuilder<T> withSource(ConfigSource... source) {

@@ -44,7 +44,7 @@ public class MapBindingFactory implements ConfigBindingFactory<MapBinding> {
 				throw new Config4jException("can only handle Map<String, ?> and not " + type);
 			}
 			if (rawObjectType.equals(componentType)) {
-				throw new Config4jException("cannot resolveInternal raw argument of Map<String, ?> for " + type);
+				throw new Config4jException("cannot resolveString raw argument of Map<String, ?> for " + type);
 			}
 			UnmodifiableMapBuilder<?, ?> builder = builders.stream()
 					.filter(b -> type.getErasedType()

@@ -1,7 +1,5 @@
 package ch.kk7.config4j.source.file.format;
 
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -11,7 +9,7 @@ import java.util.Map.Entry;
 
 public class StaticFormat {
 	public static <K, V> Entry<K, V> e(K k, V v) {
-		return new Entry<K, V>() {
+		return new Entry<>() {
 			@Override
 			public K getKey() {
 				return k;
@@ -24,7 +22,7 @@ public class StaticFormat {
 
 			@Override
 			public V setValue(V v) {
-				throw new NotImplementedException();
+				throw new RuntimeException();
 			}
 		};
 	}

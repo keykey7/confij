@@ -10,7 +10,7 @@ public class SimpleConfigException extends Config4jException {
 	}
 
 	public static SimpleConfigException newResolvePathException(URI base, Object conflict, Object expected) {
-		return new SimpleConfigException("unable to resolveInternal config path on '{}', cannot resolveInternal '{}', allowed are: {}", base, conflict,
+		return new SimpleConfigException("unable to resolveString config path on '{}', cannot resolveString '{}', allowed are: {}", base, conflict,
 				expected);
 	}
 

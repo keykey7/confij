@@ -79,7 +79,7 @@ public abstract class SimpleConfig {
 		if (config instanceof SimpleConfigLeaf) {
 			return (SimpleConfigLeaf) config;
 		}
-		throw new Config4jException("unable to resolveInternal leaf value: path does not denote a leaf");
+		throw new Config4jException("unable to resolveString leaf value: path does not denote a leaf");
 	}
 
 	public SimpleConfig resolve(String s) {
