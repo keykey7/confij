@@ -9,6 +9,7 @@ import ch.kk7.config4j.source.simple.SimpleConfig;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -116,5 +117,11 @@ public class PropertiesFormat implements ResourceFormat {
 		Optional.ofNullable(map.get(prefix))
 				.ifPresent(v -> result.put(VALUE_ITSELF, v));
 		return result;
+	}
+
+	@Override
+	public boolean canHandle(URI path) {
+		return path.getSchemeSpecificPart()
+				.matches("(?s).+\\.prop(ertie)?s?$");
 	}
 }

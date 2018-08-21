@@ -8,6 +8,7 @@ import java.lang.reflect.AnnotatedElement;
 import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static ch.kk7.config4j.source.simple.SimpleConfigException.classOf;
 
@@ -45,5 +46,12 @@ public class Util {
 		}
 		//noinspection unchecked
 		return (T) instance;
+	}
+
+	public static <T> Optional<T> firstOf(Optional<T>... optionals) {
+		return Stream.of(optionals)
+				.filter(Optional::isPresent)
+				.map(Optional::get)
+				.findFirst();
 	}
 }
