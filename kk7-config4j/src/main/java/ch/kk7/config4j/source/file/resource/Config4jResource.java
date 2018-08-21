@@ -1,7 +1,10 @@
 package ch.kk7.config4j.source.file.resource;
 
-@FunctionalInterface
+import java.net.URI;
+
 public interface Config4jResource {
 
-	String read(String path);
+	String read(URI path);
+
+	boolean canHandle(URI path);
 }

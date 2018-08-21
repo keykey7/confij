@@ -9,7 +9,7 @@ import ch.kk7.config4j.format.FormatSettings;
 import ch.kk7.config4j.format.validation.IValidator;
 import ch.kk7.config4j.format.validation.NotNullValidator;
 import ch.kk7.config4j.source.ConfigSource;
-import ch.kk7.config4j.source.SourceBuilder;
+import ch.kk7.config4j.source.AnySource;
 import ch.kk7.config4j.source.defaults.DefaultSource;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class Config4jBuilder<T> {
 
 	public Config4jBuilder<T> withSource(String... sourceStr) {
 		Stream.of(sourceStr)
-				.map(SourceBuilder::of)
+				.map(AnySource::new)
 				.forEachOrdered(s -> sources.add(s));
 		return this;
 	}

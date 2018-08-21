@@ -4,6 +4,7 @@ import ch.kk7.config4j.source.simple.SimpleConfig;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -51,5 +52,11 @@ public class YamlFormat implements ResourceFormat {
 			yaml = Objects.toString(yaml);
 		}
 		return yaml;
+	}
+
+	@Override
+	public boolean canHandle(URI path) {
+		return path.getSchemeSpecificPart()
+				.matches("(?s).+\\.ya?ml$");
 	}
 }
