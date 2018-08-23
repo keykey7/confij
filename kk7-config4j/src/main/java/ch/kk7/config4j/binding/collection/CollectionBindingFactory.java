@@ -1,9 +1,9 @@
 package ch.kk7.config4j.binding.collection;
 
-import ch.kk7.config4j.common.Config4jException;
-import ch.kk7.config4j.common.Util;
-import ch.kk7.config4j.binding.ConfigBindingFactory;
+import ch.kk7.config4j.binding.BindingException;
 import ch.kk7.config4j.binding.ConfigBinder;
+import ch.kk7.config4j.binding.ConfigBindingFactory;
+import ch.kk7.config4j.common.Util;
 import com.fasterxml.classmate.ResolvedType;
 
 import java.util.Arrays;
@@ -27,8 +27,8 @@ public class CollectionBindingFactory implements ConfigBindingFactory<Collection
 	private String supportedCollectionClasses() {
 		return builders.stream()
 				.map(UnmodifiableCollectionBuilder::getInstanceClass)
-				.map(Class::toGenericString)
-				.collect(Collectors.joining(","));
+				.map(Class::getName)
+				.collect(Collectors.joining(", "));
 	}
 
 	@Override
@@ -36,18 +36,22 @@ public class CollectionBindingFactory implements ConfigBindingFactory<Collection
 		if (type.isInstanceOf(Collection.class)) {
 			List<ResolvedType> typeParameters = type.typeParametersFor(Collection.class);
 			if (typeParameters.size() != 1) {
-				throw new IllegalStateException("Collection with file params " + typeParameters);
+				throw new IllegalStateException("Collection should always have 1 generic type, but found: " + typeParameters);
 			}
 			ResolvedType componentType = typeParameters.get(0);
 			if (Util.rawObjectType.equals(componentType)) {
-				throw new Config4jException("cannot resolveString raw argument of Collection<?> for " + type);
+				throw new BindingException("cannot resolve the generic type within Collection<?> for " + type);
 			}
+			// otherwise: we have at least an upper bound for the generic (like <? extends Integer> becomes Integer.class)
 			UnmodifiableCollectionBuilder<?, ?> builder = builders.stream()
 					.filter(b -> type.getErasedType()
 							.isAssignableFrom(b.getInstanceClass()))
 					.findFirst()
-					.orElseThrow(() -> new Config4jException(
-							"cannot handle collection of " + type + ", supported are " + supportedCollectionClasses()));
+					// TODO: add an easy way to register (or extend) a collectionbuilder
+					.orElseThrow(() -> new BindingException("Your type '{}' is a Collection, however this type is not supported. " +
+							"Expected are types that are assignable from any of the implementing classes: {}. " +
+							"If you need another Collection implementation, consider adding an additional builder to {}", type,
+							supportedCollectionClasses(), CollectionBindingFactory.class.getName()));
 			//noinspection unchecked
 			return Optional.of(new CollectionBinding(builder, componentType, configBinder));
 		}

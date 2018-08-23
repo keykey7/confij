@@ -1,14 +1,16 @@
-apply plugin: 'java'
+apply plugin: 'java-library'
 
 dependencies {
-	compile 'org.yaml:snakeyaml:1.21'
-	compile 'com.fasterxml:classmate:1.4.0'
+	api 'org.yaml:snakeyaml:1.21'
+	api 'com.fasterxml:classmate:1.4.0'
 
 	def junitVersion = '5.2.0'
-	testCompile "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
-	testRuntime "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-	testCompile 'org.hamcrest:hamcrest-junit:2.0.0.0'
-	//testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
-	testCompile 'org.junit-pioneer:junit-pioneer:0.1.2'
+	testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
+	testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+	testImplementation('org.hamcrest:hamcrest-junit:2.0.0.0') {
+		exclude group: 'junit', module: 'junit'
+	}
+	testImplementation 'org.junit-pioneer:junit-pioneer:0.1.2'
+	testImplementation 'com.github.npathai:hamcrest-optional:2.0.0'
 }
 

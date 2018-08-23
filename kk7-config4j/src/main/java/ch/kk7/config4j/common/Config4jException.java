@@ -18,17 +18,17 @@ public class Config4jException extends RuntimeException {
 		super(format(s, args), maybeThrowable(s, args));
 	}
 
-	private static String format(String s, Object... args) {
-		if (s == null) {
+	private static String format(String template, Object... args) {
+		if (template == null) {
 			return null;
 		}
-		Matcher m = CFG_PATTERN.matcher(s);
-		StringBuffer sb = new StringBuffer(s.length());
+		Matcher m = CFG_PATTERN.matcher(template);
+		StringBuffer sb = new StringBuffer(template.length());
 		final int argsLength = args.length;
 		int matchId = 0;
 		while (m.find()) {
 			if (matchId < argsLength) {
-				String arg = String.valueOf(args[matchId]);
+				String arg = Matcher.quoteReplacement(String.valueOf(args[matchId]));
 				m.appendReplacement(sb, arg);
 				matchId++;
 			} else {

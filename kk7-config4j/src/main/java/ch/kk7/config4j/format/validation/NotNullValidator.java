@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class NotNullValidator implements IValidator {
+	@Override
 	public void validate(SimpleConfig simpleConfig) {
 		List<String> offendingLeafUris = simpleConfig.leaves()
 				.filter(leaf -> leaf.get() == null)
@@ -20,9 +21,7 @@ public class NotNullValidator implements IValidator {
 		if (offendingLeafUris.isEmpty()) {
 			return;
 		}
-		String msg = "Found non-nullable fields with null values: " +
-				offendingLeafUris.stream()
-						.collect(Collectors.joining("\n  "));
+		String msg = "Found non-nullable fields containing null values. Offending leafs: " + String.join("\n  ", offendingLeafUris);
 		throw new ValidationException(msg);
 	}
 }

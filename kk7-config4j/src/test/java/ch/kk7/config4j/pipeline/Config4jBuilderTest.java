@@ -61,8 +61,7 @@ class Config4jBuilderTest {
 	@ExtendWith(TempDirectory.class)
 	public void fromFile(@TempDir Path tempDir) throws IOException {
 		Path configFile = tempDir.resolve("FileConfig.yml");
-		Files.write(configFile, ClassLoader.getSystemResourceAsStream("MyConfig.yaml")
-				.readAllBytes());
+		Files.copy(ClassLoader.getSystemResourceAsStream("MyConfig.yaml"), configFile);
 		assertSourceBecomes(configFile.toAbsolutePath()
 				.toString(), "iamfromyaml");
 	}
