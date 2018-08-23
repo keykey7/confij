@@ -14,7 +14,7 @@ class DefaultValueMapperFactoryTest {
 
 	private DefaultValueMapperFactory mapperFactory = new DefaultValueMapperFactory();
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "OptionalGetWithoutIsPresent"})
 	private <T> void assertMapping(Class<T> forClass, T expected, String from) {
 		T actual = (T) mapperFactory.maybeForType(typeResolver.resolve(forClass))
 				.get()
@@ -41,6 +41,7 @@ class DefaultValueMapperFactoryTest {
 		assertMapping(TestClass.class, expected, expected.getString());
 	}
 
+	@SuppressWarnings("unused")
 	enum TestEnum {
 		One,
 		Two,
