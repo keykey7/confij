@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.Period;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,8 +33,8 @@ public class DefaultValueMapperFactory implements ValueMapperFactory {
 		withMapping(char.class, DefaultValueMapperFactory::parseStrictChar);
 		withMapping(Path.class, s -> Paths.get(s));
 		withMapping(Duration.class, new DurationMapper());
+		withMapping(Period.class, new PeriodMapper());
 		// TODO: support Date formats
-		// TODO: support TimeDiffs
 		// TODO: support MemoryUnits
 		// TODO: pass in annotation information to mapper to allow for customization
 	}
