@@ -1,8 +1,8 @@
-package ch.kk7.config4j.binding;
+package ch.kk7.config4j.binding.collection;
 
-import ch.kk7.config4j.binding.collection.CollectionBindingFactory;
+import ch.kk7.config4j.binding.BindingType;
+import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.common.Config4jException;
-import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.TypeResolver;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -55,29 +55,29 @@ class CollectionBindingsTest {
 		CustomSet<String> noBuilderForAnUnmodifiableSet();
 	}
 
-	private static Stream<ResolvedType> toMethodStream(Class<?> clazz) {
+	private static Stream<BindingType> toMethodStream(Class<?> clazz) {
 		return Arrays.stream(clazz.getMethods())
 				.map(Method::getGenericReturnType)
-				.map(x -> typeResolver.resolve(x));
+				.map(BindingType::newBindingType);
 	}
 
-	private static Stream<ResolvedType> validCollectionTypes() {
+	private static Stream<BindingType> validCollectionTypes() {
 		return toMethodStream(ValidCollections.class);
 	}
 
-	private static Stream<ResolvedType> invalidCollectionTypes() {
+	private static Stream<BindingType> invalidCollectionTypes() {
 		return toMethodStream(InvalidCollections.class);
 	}
 
 	@ParameterizedTest
 	@MethodSource("validCollectionTypes")
-	public void validSetsProduceABinding(ResolvedType type) {
+	public void validSetsProduceABinding(BindingType type) {
 		assertThat(collectionFactory.maybeCreate(type, configBinder), isPresent());
 	}
 
 	@ParameterizedTest
 	@MethodSource("invalidCollectionTypes")
-	public void invalidSets(ResolvedType type) {
+	public void invalidSets(BindingType type) {
 		assertThrows(Config4jException.class, () -> collectionFactory.maybeCreate(type, configBinder));
 	}
 }

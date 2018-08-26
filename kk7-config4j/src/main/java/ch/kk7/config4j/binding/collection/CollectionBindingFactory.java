@@ -1,6 +1,7 @@
 package ch.kk7.config4j.binding.collection;
 
 import ch.kk7.config4j.binding.BindingException;
+import ch.kk7.config4j.binding.BindingType;
 import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.binding.ConfigBindingFactory;
 import ch.kk7.config4j.common.Util;
@@ -32,7 +33,8 @@ public class CollectionBindingFactory implements ConfigBindingFactory<Collection
 	}
 
 	@Override
-	public Optional<CollectionBinding> maybeCreate(ResolvedType type, ConfigBinder configBinder) {
+	public Optional<CollectionBinding> maybeCreate(BindingType bindingType, ConfigBinder configBinder) {
+		ResolvedType type = bindingType.getResolvedType();
 		if (type.isInstanceOf(Collection.class)) {
 			List<ResolvedType> typeParameters = type.typeParametersFor(Collection.class);
 			if (typeParameters.size() != 1) {
@@ -53,7 +55,7 @@ public class CollectionBindingFactory implements ConfigBindingFactory<Collection
 							"If you need another Collection implementation, consider adding an additional builder to {}", type,
 							supportedCollectionClasses(), CollectionBindingFactory.class.getName()));
 			//noinspection unchecked
-			return Optional.of(new CollectionBinding(builder, componentType, configBinder));
+			return Optional.of(new CollectionBinding(builder, bindingType.bindingFor(componentType), configBinder));
 		}
 		return Optional.empty();
 	}

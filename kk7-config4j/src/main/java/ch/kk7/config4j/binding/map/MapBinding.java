@@ -1,12 +1,12 @@
 package ch.kk7.config4j.binding.map;
 
-import ch.kk7.config4j.binding.ConfigBinding;
+import ch.kk7.config4j.binding.BindingType;
 import ch.kk7.config4j.binding.ConfigBinder;
+import ch.kk7.config4j.binding.ConfigBinding;
 import ch.kk7.config4j.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.config4j.format.FormatSettings;
 import ch.kk7.config4j.source.simple.SimpleConfig;
 import ch.kk7.config4j.source.simple.SimpleConfigMap;
-import com.fasterxml.classmate.ResolvedType;
 
 import java.util.Map;
 
@@ -15,12 +15,12 @@ public class MapBinding<T> implements ConfigBinding<Map<String, T>> {
 	private final Map<String, T> publicMap;
 	private final ConfigBinding<T> componentDescription;
 
-	public MapBinding(UnmodifiableMapBuilder<T, Map<String, T>> builder, ResolvedType componentType,
+	public MapBinding(UnmodifiableMapBuilder<T, Map<String, T>> builder, BindingType bindingType,
 			ConfigBinder configBinder) {
 		map = builder.getModifyableInstance();
 		publicMap = builder.harden(map);
 		//noinspection unchecked
-		componentDescription = (ConfigBinding<T>) configBinder.toConfigBinding(componentType);
+		componentDescription = (ConfigBinding<T>) configBinder.toConfigBinding(bindingType);
 	}
 
 	@Override

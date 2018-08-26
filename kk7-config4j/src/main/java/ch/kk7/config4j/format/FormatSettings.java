@@ -3,7 +3,9 @@ package ch.kk7.config4j.format;
 import ch.kk7.config4j.annotation.Default;
 import ch.kk7.config4j.annotation.NotNull;
 import ch.kk7.config4j.annotation.Nullable;
+import ch.kk7.config4j.annotation.ValueMapper;
 import ch.kk7.config4j.annotation.VariableResolver;
+import ch.kk7.config4j.binding.leaf.mapper.SoloConstructorMapper;
 import ch.kk7.config4j.common.Config4jException;
 import ch.kk7.config4j.format.resolve.DefaultResolver;
 import ch.kk7.config4j.format.resolve.IVariableResolver;
@@ -11,6 +13,8 @@ import ch.kk7.config4j.format.resolve.IVariableResolver;
 import java.lang.reflect.AnnotatedElement;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static ch.kk7.config4j.common.Util.getSoloAnnotationsByType;
 
@@ -18,14 +22,14 @@ public class FormatSettings {
 	private final boolean isNullAllowed;
 	private final String defaultValue;
 	private final Class<? extends IVariableResolver> variableResolverClass;
-	private final Map<Class<? extends IVariableResolver>, IVariableResolver> resolverInstances;
+	private final LazyClassToImplCache implCache;
 
 	protected FormatSettings(boolean isNullAllowed, String defaultValue, Class<? extends IVariableResolver> variableResolverClass,
-			Map<Class<? extends IVariableResolver>, IVariableResolver> resolverInstances) {
+			LazyClassToImplCache implCache) {
 		this.isNullAllowed = isNullAllowed;
 		this.defaultValue = defaultValue;
-		this.variableResolverClass = variableResolverClass;
-		this.resolverInstances = resolverInstances;
+		this.variableResolverClass = Objects.requireNonNull(variableResolverClass);
+		this.implCache = Objects.requireNonNull(implCache);
 	}
 
 	public boolean isNullAllowed() {
@@ -37,18 +41,11 @@ public class FormatSettings {
 	}
 
 	public IVariableResolver getVariableResolver() {
-		return resolverInstances.computeIfAbsent(variableResolverClass, k -> {
-			try {
-				return k.getConstructor()
-						.newInstance();
-			} catch (Exception e) {
-				throw new Config4jException("unable to instantiate: " + k, e);
-			}
-		});
+		return implCache.getInstance(variableResolverClass);
 	}
 
 	public static FormatSettings newDefaultSettings() {
-		return new FormatSettings(false, null, DefaultResolver.class, new HashMap<>());
+		return new FormatSettings(false, null, DefaultResolver.class, new LazyClassToImplCache());
 	}
 
 	public FormatSettings settingsFor(AnnotatedElement element) {
@@ -71,12 +68,29 @@ public class FormatSettings {
 				.orElse(null); // not inheriting the old default value on purpose here
 
 		// handle variable resolver
-		Class<? extends IVariableResolver> vrClass = getSoloAnnotationsByType(element, VariableResolver.class).map(VariableResolver::value)
-				.orElse(null);
-		if (vrClass == null) {
-			vrClass = variableResolverClass;
+		Optional<Class<? extends IVariableResolver>> variableResolverClassOpt = getSoloAnnotationsByType(element, VariableResolver.class).map(VariableResolver::value);
+		Class<? extends IVariableResolver> variableResolverClass = variableResolverClassOpt.orElse(this.variableResolverClass);
+		if (variableResolverClass == null) {
+			throw new FormatException("An element annotated with {} has an invalid null resolver class", VariableResolver.class);
 		}
 
-		return new FormatSettings(willNullBeAllowed, defaultValue, vrClass, resolverInstances);
+		return new FormatSettings(willNullBeAllowed, defaultValue, variableResolverClass, implCache);
+	}
+
+	@ValueMapper(SoloConstructorMapper.class)
+	public static class LazyClassToImplCache {
+		private final Map<Class<?>, Object> instances = new HashMap<>();
+
+		@SuppressWarnings("unchecked")
+		public <T> T getInstance(Class<T> clazz) {
+			return (T) instances.computeIfAbsent(clazz, k -> {
+				try {
+					return k.getConstructor()
+							.newInstance();
+				} catch (Exception e) {
+					throw new Config4jException("unable to instantiate: " + k, e);
+				}
+			});
+		}
 	}
 }

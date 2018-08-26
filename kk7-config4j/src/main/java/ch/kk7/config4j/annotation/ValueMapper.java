@@ -1,5 +1,7 @@
 package ch.kk7.config4j.annotation;
 
+import ch.kk7.config4j.binding.leaf.IValueMapper;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -11,5 +13,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface ValueMapper {
-	Class<? extends ch.kk7.config4j.binding.leaf.mapper.ValueMapper<?>> value();
+	Class<? extends IValueMapper> value();
 }

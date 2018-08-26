@@ -1,12 +1,12 @@
 package ch.kk7.config4j.binding.collection;
 
-import ch.kk7.config4j.binding.ConfigBinding;
+import ch.kk7.config4j.binding.BindingType;
 import ch.kk7.config4j.binding.ConfigBinder;
+import ch.kk7.config4j.binding.ConfigBinding;
 import ch.kk7.config4j.format.ConfigFormat.ConfigFormatList;
 import ch.kk7.config4j.format.FormatSettings;
 import ch.kk7.config4j.source.simple.SimpleConfig;
 import ch.kk7.config4j.source.simple.SimpleConfigList;
-import com.fasterxml.classmate.ResolvedType;
 
 import java.util.Collection;
 import java.util.List;
@@ -16,12 +16,12 @@ public class CollectionBinding<T> implements ConfigBinding<Collection<T>> {
 	private final Collection<T> publicSet;
 	private final ConfigBinding<T> componentDescription;
 
-	public CollectionBinding(UnmodifiableCollectionBuilder<T, Collection<T>> builder, ResolvedType componentType,
+	public CollectionBinding(UnmodifiableCollectionBuilder<T, Collection<T>> builder, BindingType bindingType,
 			ConfigBinder configBinder) {
 		set = builder.getModifyableInstance();
 		publicSet = builder.harden(set);
 		//noinspection unchecked
-		componentDescription = (ConfigBinding<T>) configBinder.toConfigBinding(componentType);
+		componentDescription = (ConfigBinding<T>) configBinder.toConfigBinding(bindingType);
 	}
 
 	@Override
