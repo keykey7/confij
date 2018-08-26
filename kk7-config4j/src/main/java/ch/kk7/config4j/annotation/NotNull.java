@@ -10,4 +10,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Inherited
 @Retention(RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
-public @interface NotNull {}
+public @interface NotNull {
+}

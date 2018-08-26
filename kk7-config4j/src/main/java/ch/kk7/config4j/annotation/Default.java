@@ -10,7 +10,4 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target({ElementType.METHOD})
 public @interface Default {
 	String value();
-
-	String key() default "";
-
 }
