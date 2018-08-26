@@ -79,7 +79,7 @@ public class DurationMapper implements IValueMapper<Duration> {
 		}
 	}
 
-	private static String getUnits(String s) {
+	public static String getUnits(String s) {
 		int i = s.length() - 1;
 		while (i >= 0) {
 			char c = s.charAt(i);
