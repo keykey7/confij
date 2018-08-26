@@ -1,12 +1,14 @@
 package ch.kk7.config4j.binding.intf;
 
 import ch.kk7.config4j.annotation.Key;
+import ch.kk7.config4j.binding.BindingType;
 import ch.kk7.config4j.binding.ConfigBinding;
 import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.config4j.format.FormatSettings;
 import ch.kk7.config4j.source.simple.SimpleConfig;
 import ch.kk7.config4j.source.simple.SimpleConfigMap;
+import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.ResolvedMethod;
 import com.fasterxml.classmate.types.ResolvedInterfaceType;
 
@@ -22,11 +24,17 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 	private final InterfaceInvocationHandler<T> interfaceHandler;
 	private final T publicInstance;
 
-	public InterfaceBinding(ResolvedInterfaceType type, ConfigBinder configBinder) {
+	public InterfaceBinding(BindingType bindingType, ConfigBinder configBinder) {
+		ResolvedType baseType = bindingType.getResolvedType();
+		if (!(baseType instanceof ResolvedInterfaceType)) {
+			throw new IllegalArgumentException("expected type " + baseType + " to be a " + ResolvedInterfaceType.class);
+		}
 		siblingsByName = new HashMap<>();
-		interfaceHandler = new InterfaceInvocationHandler<>(type);
+		interfaceHandler = new InterfaceInvocationHandler<>((ResolvedInterfaceType) baseType);
 		for (ResolvedMethod method : interfaceHandler.getSupportedMethods()) {
-			ConfigBinding<?> methodDescription = configBinder.toConfigBinding(method.getReturnType());
+			BindingType methodBindingType = bindingType.bindingFor(method.getReturnType(), bindingType.getBindingSettings()
+					.settingsFor(method.getRawMember()));
+			ConfigBinding<?> methodDescription = configBinder.toConfigBinding(methodBindingType);
 			String configKey = getSoloAnnotationsByType(method.getRawMember(), Key.class).map(Key::value)
 					.orElse(method.getName());
 			siblingsByName.put(configKey, new AttributeInformation(methodDescription, method));

@@ -1,11 +1,15 @@
 package ch.kk7.config4j.binding.leaf.mapper;
 
+import ch.kk7.config4j.binding.BindingType;
+import ch.kk7.config4j.binding.leaf.IValueMapper;
+import ch.kk7.config4j.binding.leaf.ValueMapperFactory;
 import com.fasterxml.classmate.ResolvedType;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,7 +17,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class DefaultValueMapperFactory implements ValueMapperFactory {
-	private final Map<Class<?>, ValueMapper<?>> customMappings;
+	private final Map<Class<?>, IValueMapper<?>> customMappings;
 
 	public DefaultValueMapperFactory() {
 		customMappings = new HashMap<>();
@@ -27,6 +31,7 @@ public class DefaultValueMapperFactory implements ValueMapperFactory {
 		withMapping(double.class, Double::parseDouble);
 		withMapping(char.class, DefaultValueMapperFactory::parseStrictChar);
 		withMapping(Path.class, s -> Paths.get(s));
+		withMapping(Duration.class, new DurationMapper());
 		// TODO: support Date formats
 		// TODO: support TimeDiffs
 		// TODO: support MemoryUnits
@@ -49,7 +54,7 @@ public class DefaultValueMapperFactory implements ValueMapperFactory {
 		return string.charAt(0);
 	}
 
-	private static Optional<ValueMapper<?>> maybeEnum(Class<?> forClass) {
+	private static Optional<IValueMapper<?>> maybeEnum(Class<?> forClass) {
 		if (forClass.isEnum()) {
 			//noinspection unchecked
 			return Optional.of(s -> Enum.valueOf((Class<? extends Enum>) forClass, s));
@@ -72,30 +77,31 @@ public class DefaultValueMapperFactory implements ValueMapperFactory {
 				.findFirst();
 	}
 
-	public <T> DefaultValueMapperFactory withMapping(Class<T> forClass, ValueMapper<T> mapping) {
+	public <T> DefaultValueMapperFactory withMapping(Class<T> forClass, IValueMapper<T> mapping) {
 		customMappings.put(forClass, mapping);
 		return this;
 	}
 
 	@Override
-	public Optional<ValueMapper<?>> maybeForType(ResolvedType type) {
+	public Optional<IValueMapper<?>> maybeForType(BindingType bindingType) {
+		ResolvedType type = bindingType.getResolvedType();
 		if (type.isAbstract() || type.isArray()) {
 			return Optional.empty();
 		}
 		Class forClass = type.getErasedType();
 		//noinspection unchecked
-		Optional<ValueMapper<?>> response = firstOf(maybeSpecialMapper(forClass), maybeEnum(forClass), maybeFunctionMapper(forClass),
+		Optional<IValueMapper<?>> response = firstOf(maybeSpecialMapper(forClass), maybeEnum(forClass), maybeFunctionMapper(forClass),
 				maybeConstructorMapper(forClass));
 		// cache it
 		response.ifPresent(valueMapper -> customMappings.putIfAbsent(forClass, valueMapper));
 		return response;
 	}
 
-	protected Optional<ValueMapper<?>> maybeSpecialMapper(Class forClass) {
+	protected Optional<IValueMapper<?>> maybeSpecialMapper(Class forClass) {
 		return Optional.ofNullable(customMappings.get(forClass));
 	}
 
-	protected <T> Optional<ValueMapper<T>> maybeConstructorMapper(Class<T> forClass) {
+	protected <T> Optional<IValueMapper<T>> maybeConstructorMapper(Class<T> forClass) {
 		//noinspection unchecked
 		return Arrays.stream(forClass.getConstructors())
 				.filter(constructor -> forClass.equals(constructor.getDeclaringClass()))
@@ -104,7 +110,7 @@ public class DefaultValueMapperFactory implements ValueMapperFactory {
 				.map(constructor -> new SoloConstructorMapper(constructor, forClass));
 	}
 
-	protected <T> Optional<ValueMapper<T>> maybeFunctionMapper(Class<T> forClass) {
+	protected <T> Optional<IValueMapper<T>> maybeFunctionMapper(Class<T> forClass) {
 		return firstOf(maybeMethod("valueOf", forClass), maybeMethod("fromString", forClass)).map(
 				method -> new StaticFunctionMapper<>(method, forClass));
 	}

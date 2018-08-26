@@ -1,6 +1,6 @@
 package ch.kk7.config4j.binding.leaf.mapper;
 
-import com.fasterxml.classmate.TypeResolver;
+import ch.kk7.config4j.binding.BindingType;
 import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
@@ -8,15 +8,13 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class DefaultValueMapperFactoryTest {
-
-	private TypeResolver typeResolver = new TypeResolver();
+class DefaultIValueMapperFactoryTest {
 
 	private DefaultValueMapperFactory mapperFactory = new DefaultValueMapperFactory();
 
 	@SuppressWarnings({"unchecked", "OptionalGetWithoutIsPresent"})
 	private <T> void assertMapping(Class<T> forClass, T expected, String from) {
-		T actual = (T) mapperFactory.maybeForType(typeResolver.resolve(forClass))
+		T actual = (T) mapperFactory.maybeForType(BindingType.newBindingType(forClass))
 				.get()
 				.fromString(from);
 		assertEquals(expected, actual);

@@ -1,11 +1,12 @@
 package ch.kk7.config4j.binding.leaf.mapper;
 
+import ch.kk7.config4j.binding.leaf.IValueMapper;
 import ch.kk7.config4j.common.Config4jException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class SoloConstructorMapper<T> implements ValueMapper<T> {
+public class SoloConstructorMapper<T> implements IValueMapper<T> {
 
 	private final Constructor<T> constructor;
 

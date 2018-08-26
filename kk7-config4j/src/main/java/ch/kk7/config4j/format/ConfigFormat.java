@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * The definition of how the config must look like.
+ */
 public abstract class ConfigFormat {
 	private final FormatSettings formatSettings;
 

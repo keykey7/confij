@@ -1,12 +1,13 @@
 package ch.kk7.config4j.binding.leaf.mapper;
 
+import ch.kk7.config4j.binding.leaf.IValueMapper;
 import ch.kk7.config4j.common.Config4jException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-public class StaticFunctionMapper<T> implements ValueMapper<T> {
+public class StaticFunctionMapper<T> implements IValueMapper<T> {
 	private final Method method;
 
 	public StaticFunctionMapper(Method method, Class<T> forClass) {
