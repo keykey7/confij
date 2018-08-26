@@ -36,6 +36,7 @@ public class DefaultValueMapperFactory implements ValueMapperFactory {
 		withMapping(Period.class, new PeriodMapper());
 		// TODO: support Date formats
 		// TODO: support MemoryUnits
+		// TODO: support Optional<> (might also be a full binding instead of a leaf binding)
 		// TODO: pass in annotation information to mapper to allow for customization
 	}
 
