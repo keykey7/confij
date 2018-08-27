@@ -1,12 +1,12 @@
 package ch.kk7.config4j.binding.leaf.mapper;
 
-import ch.kk7.config4j.binding.leaf.IValueMapper;
+import ch.kk7.config4j.binding.leaf.IValueMapper.NullableValueMapper;
 import ch.kk7.config4j.common.Config4jException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-public class SoloConstructorMapper<T> implements IValueMapper<T> {
+public class SoloConstructorMapper<T> implements NullableValueMapper<T> {
 
 	private final Constructor<T> constructor;
 
@@ -24,7 +24,7 @@ public class SoloConstructorMapper<T> implements IValueMapper<T> {
 	}
 
 	@Override
-	public T fromString(String string) {
+	public T fromNonNullString(String string) {
 		try {
 			return constructor.newInstance(string);
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {

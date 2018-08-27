@@ -23,14 +23,14 @@ public class DefaultValueMapperFactory implements ValueMapperFactory {
 	public DefaultValueMapperFactory() {
 		customMappings = new HashMap<>();
 		withMapping(String.class, s -> s);
-		withMapping(boolean.class, DefaultValueMapperFactory::parseStrictBoolean);
-		withMapping(byte.class, Byte::valueOf);
-		withMapping(short.class, Short::parseShort);
-		withMapping(int.class, Integer::parseInt);
-		withMapping(long.class, Long::parseLong);
-		withMapping(float.class, Float::parseFloat);
-		withMapping(double.class, Double::parseDouble);
-		withMapping(char.class, DefaultValueMapperFactory::parseStrictChar);
+		withMapping(boolean.class, PrimitiveMapper::parseBoolean);
+		withMapping(byte.class, PrimitiveMapper::parseByte);
+		withMapping(short.class, PrimitiveMapper::parseShort);
+		withMapping(int.class, PrimitiveMapper::parseInt);
+		withMapping(long.class, PrimitiveMapper::parseLong);
+		withMapping(float.class, PrimitiveMapper::parseFloat);
+		withMapping(double.class, PrimitiveMapper::parseDouble);
+		withMapping(char.class, PrimitiveMapper::parseChar);
 		withMapping(Path.class, s -> Paths.get(s));
 		withMapping(Duration.class, new DurationMapper());
 		withMapping(Period.class, new PeriodMapper());
@@ -38,22 +38,6 @@ public class DefaultValueMapperFactory implements ValueMapperFactory {
 		// TODO: support MemoryUnits
 		// TODO: support Optional<> (might also be a full binding instead of a leaf binding)
 		// TODO: pass in annotation information to mapper to allow for customization
-	}
-
-	public static boolean parseStrictBoolean(String string) {
-		if ("true".equals(string)) {
-			return true;
-		} else if ("false".equals(string)) {
-			return false;
-		}
-		throw BooleanFormatException.forInputString(string);
-	}
-
-	public static char parseStrictChar(String string) {
-		if (string == null || string.length() != 1) {
-			throw CharFormatException.forInputString(string);
-		}
-		return string.charAt(0);
 	}
 
 	private static Optional<IValueMapper<?>> maybeEnum(Class<?> forClass) {

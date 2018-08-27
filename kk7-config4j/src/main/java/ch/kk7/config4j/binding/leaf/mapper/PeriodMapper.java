@@ -1,13 +1,13 @@
 package ch.kk7.config4j.binding.leaf.mapper;
 
 import ch.kk7.config4j.binding.BindingException;
-import ch.kk7.config4j.binding.leaf.IValueMapper;
+import ch.kk7.config4j.binding.leaf.IValueMapper.NullableValueMapper;
 
 import java.time.DateTimeException;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
 
-public class PeriodMapper implements IValueMapper<Period> {
+public class PeriodMapper implements NullableValueMapper<Period> {
 	/**
 	 * Parses a period string. If no units are specified in the string, it is
 	 * assumed to be in days. The returned period is in days.
@@ -78,7 +78,7 @@ public class PeriodMapper implements IValueMapper<Period> {
 	}
 
 	@Override
-	public Period fromString(String string) {
+	public Period fromNonNullString(String string) {
 		return parsePeriod(string);
 	}
 }
