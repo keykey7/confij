@@ -1,12 +1,12 @@
 package ch.kk7.config4j.binding.leaf.mapper;
 
 import ch.kk7.config4j.binding.BindingException;
-import ch.kk7.config4j.binding.leaf.IValueMapper;
+import ch.kk7.config4j.binding.leaf.IValueMapper.NullableValueMapper;
 
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-public class DurationMapper implements IValueMapper<Duration> {
+public class DurationMapper implements NullableValueMapper<Duration> {
 	/**
 	 * Parses a duration string. If no units are specified in the string, it is
 	 * assumed to be in milliseconds. The returned duration is in nanoseconds.
@@ -92,7 +92,7 @@ public class DurationMapper implements IValueMapper<Duration> {
 	}
 
 	@Override
-	public Duration fromString(String string) {
+	public Duration fromNonNullString(String string) {
 		long nanos = parseDurationAsNanos(string);
 		return Duration.ofNanos(nanos);
 	}

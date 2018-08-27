@@ -1,9 +1,12 @@
-# Namen
-gestalten echad- (Ety/363, LotR/II:IV, PE/17:42)
-hacken drava- (Ety/354)
-helfen elia- (PE/17:146)
-leicht (zu tun) athgar (PE/17:148)
-einfach sein ath-no
-zusammenbringen covad- (PE/17:158)
-zusammenführen ertha- (S/409)
-zusammenkommen cova- (PE/17:158)
+# TODO
+- add integration tests for each mapping type
+- array support
+- implement @Base64
+- configuration reload support
+- ...with locking functionality
+- rename to: leicht (zu tun) athgar (PE/17:148)
+- logging modul
+- separate libraries into other modules
+- refactor: remove Lists, replace with maps + key validator (aka only integers, sequential)
+- support default methods
+- documentation
