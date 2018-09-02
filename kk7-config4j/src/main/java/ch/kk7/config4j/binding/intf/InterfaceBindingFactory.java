@@ -1,11 +1,10 @@
 package ch.kk7.config4j.binding.intf;
 
 import ch.kk7.config4j.binding.BindingType;
-import ch.kk7.config4j.common.Config4jException;
-import ch.kk7.config4j.binding.ConfigBindingFactory;
 import ch.kk7.config4j.binding.ConfigBinder;
+import ch.kk7.config4j.binding.ConfigBindingFactory;
+import ch.kk7.config4j.common.Config4jException;
 import com.fasterxml.classmate.ResolvedType;
-import com.fasterxml.classmate.types.ResolvedInterfaceType;
 
 import java.util.Optional;
 import java.util.Stack;
@@ -25,7 +24,7 @@ public class InterfaceBindingFactory implements ConfigBindingFactory<InterfaceBi
 		ResolvedType type = bindingType.getResolvedType();
 		if (type.isInterface()) {
 			if (callStack.contains(type)) {
-				throw new Config4jException("circular interface definition: " + stackAsString() + " cannot add another " + type);
+				throw new Config4jException("circular interface definition: {}: cannot add another {}", stackAsString(), type);
 			}
 			callStack.push(type);
 			try {

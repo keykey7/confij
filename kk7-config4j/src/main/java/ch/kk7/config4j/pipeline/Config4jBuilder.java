@@ -3,13 +3,12 @@ package ch.kk7.config4j.pipeline;
 import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.binding.ConfigBinding;
 import ch.kk7.config4j.binding.leaf.mapper.DefaultValueMapperFactory;
-import ch.kk7.config4j.binding.leaf.IValueMapper;
 import ch.kk7.config4j.format.ConfigFormat;
 import ch.kk7.config4j.format.FormatSettings;
 import ch.kk7.config4j.format.validation.IValidator;
 import ch.kk7.config4j.format.validation.NotNullValidator;
-import ch.kk7.config4j.source.ConfigSource;
 import ch.kk7.config4j.source.AnySource;
+import ch.kk7.config4j.source.ConfigSource;
 import ch.kk7.config4j.source.defaults.DefaultSource;
 
 import java.util.ArrayList;
@@ -56,11 +55,11 @@ public class Config4jBuilder<T> {
 		sources.addAll(Arrays.asList(source));
 		return this;
 	}
-
-	public <X> Config4jBuilder<T> withValueMapping(Class<X> forClass, IValueMapper<X> mapping) {
-		valueMapperFactory.withMapping(forClass, mapping);
-		return this;
-	}
+//
+//	public <X> Config4jBuilder<T> withValueMapping(Class<X> forClass, IValueMapper<X> mapping) {
+//		valueMapperFactory.withMapping(forClass, mapping);
+//		return this;
+//	}
 
 	public Config4jBuilder<T> withValidator(IValidator validator) {
 		validators.add(Objects.requireNonNull(validator, "validator"));
