@@ -1,15 +1,12 @@
 package ch.kk7.config4j.binding.leaf.mapper;
 
-import ch.kk7.config4j.binding.leaf.mapper.DefaultValueMapperFactory.BooleanFormatException;
-import ch.kk7.config4j.binding.leaf.mapper.DefaultValueMapperFactory.CharFormatException;
-
 public class PrimitiveMapper {
 	private PrimitiveMapper() {
 		// only statics
 	}
 
 	public static boolean parseBoolean(String string) {
-		if (string == null || "false".equals(string)) {
+		if ("false".equals(string)) {
 			return false;
 		}
 		if ("true".equals(string)) {
@@ -19,54 +16,29 @@ public class PrimitiveMapper {
 	}
 
 	public static char parseChar(String string) {
-		if (string == null) {
-			return '\0';
-		}
 		if (string.length() != 1) {
 			throw CharFormatException.forInputString(string);
 		}
 		return string.charAt(0);
 	}
 
-	public static byte parseByte(String string) {
-		if (string == null) {
-			return 0;
+	public static class BooleanFormatException extends IllegalArgumentException {
+		public BooleanFormatException(String str) {
+			super(str);
 		}
-		return Byte.parseByte(string);
+
+		static BooleanFormatException forInputString(String str) {
+			return new BooleanFormatException("For input string: \"" + str + "\"");
+		}
 	}
 
-	public static short parseShort(String string) {
-		if (string == null) {
-			return 0;
+	public static class CharFormatException extends IllegalArgumentException {
+		public CharFormatException(String str) {
+			super(str);
 		}
-		return Short.parseShort(string);
-	}
 
-	public static int parseInt(String string) {
-		if (string == null) {
-			return 0;
+		static CharFormatException forInputString(String str) {
+			return new CharFormatException("For input string: \"" + str + "\"");
 		}
-		return Integer.parseInt(string);
-	}
-
-	public static long parseLong(String string) {
-		if (string == null) {
-			return 0;
-		}
-		return Long.parseLong(string);
-	}
-
-	public static float parseFloat(String string) {
-		if (string == null) {
-			return 0;
-		}
-		return Float.parseFloat(string);
-	}
-
-	public static double parseDouble(String string) {
-		if (string == null) {
-			return 0;
-		}
-		return Double.parseDouble(string);
 	}
 }

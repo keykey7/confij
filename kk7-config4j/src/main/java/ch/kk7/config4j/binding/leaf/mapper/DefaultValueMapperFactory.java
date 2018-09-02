@@ -2,6 +2,7 @@ package ch.kk7.config4j.binding.leaf.mapper;
 
 import ch.kk7.config4j.binding.BindingType;
 import ch.kk7.config4j.binding.leaf.IValueMapper;
+import ch.kk7.config4j.binding.leaf.IValueMapper.NullableValueMapper;
 import ch.kk7.config4j.binding.leaf.ValueMapperFactory;
 import com.fasterxml.classmate.ResolvedType;
 
@@ -24,12 +25,12 @@ public class DefaultValueMapperFactory implements ValueMapperFactory {
 		customMappings = new HashMap<>();
 		withMapping(String.class, s -> s);
 		withMapping(boolean.class, PrimitiveMapper::parseBoolean);
-		withMapping(byte.class, PrimitiveMapper::parseByte);
-		withMapping(short.class, PrimitiveMapper::parseShort);
-		withMapping(int.class, PrimitiveMapper::parseInt);
-		withMapping(long.class, PrimitiveMapper::parseLong);
-		withMapping(float.class, PrimitiveMapper::parseFloat);
-		withMapping(double.class, PrimitiveMapper::parseDouble);
+		withMapping(byte.class, Byte::parseByte);
+		withMapping(short.class, Short::parseShort);
+		withMapping(int.class, Integer::parseInt);
+		withMapping(long.class, Long::parseLong);
+		withMapping(float.class, Float::parseFloat);
+		withMapping(double.class, Double::parseDouble);
 		withMapping(char.class, PrimitiveMapper::parseChar);
 		withMapping(Path.class, s -> Paths.get(s));
 		withMapping(Duration.class, new DurationMapper());
@@ -63,7 +64,7 @@ public class DefaultValueMapperFactory implements ValueMapperFactory {
 				.findFirst();
 	}
 
-	public <T> DefaultValueMapperFactory withMapping(Class<T> forClass, IValueMapper<T> mapping) {
+	public <T> DefaultValueMapperFactory withMapping(Class<T> forClass, NullableValueMapper<T> mapping) {
 		customMappings.put(forClass, mapping);
 		return this;
 	}
@@ -99,25 +100,5 @@ public class DefaultValueMapperFactory implements ValueMapperFactory {
 	protected <T> Optional<IValueMapper<T>> maybeFunctionMapper(Class<T> forClass) {
 		return firstOf(maybeMethod("valueOf", forClass), maybeMethod("fromString", forClass)).map(
 				method -> new StaticFunctionMapper<>(method, forClass));
-	}
-
-	public static class BooleanFormatException extends IllegalArgumentException {
-		public BooleanFormatException(String str) {
-			super(str);
-		}
-
-		static BooleanFormatException forInputString(String str) {
-			return new BooleanFormatException("For input string: \"" + str + "\"");
-		}
-	}
-
-	public static class CharFormatException extends IllegalArgumentException {
-		public CharFormatException(String str) {
-			super(str);
-		}
-
-		static CharFormatException forInputString(String str) {
-			return new CharFormatException("For input string: \"" + str + "\"");
-		}
 	}
 }

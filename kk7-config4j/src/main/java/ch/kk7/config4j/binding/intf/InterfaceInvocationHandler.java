@@ -1,26 +1,38 @@
 package ch.kk7.config4j.binding.intf;
 
+import ch.kk7.config4j.binding.BindingException;
 import ch.kk7.config4j.common.Config4jException;
 import ch.kk7.config4j.common.Util;
 import com.fasterxml.classmate.MemberResolver;
+import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.TypeResolver;
 import com.fasterxml.classmate.members.RawMethod;
 import com.fasterxml.classmate.members.ResolvedMethod;
 import com.fasterxml.classmate.types.ResolvedInterfaceType;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toMap;
 
 public class InterfaceInvocationHandler<T> implements InvocationHandler {
+	private final static Map<Class<?>, Object> PRIMITIVE_ZEROS = Stream.of(boolean.class, byte.class, char.class, double.class, float.class,
+			int.class, long.class, short.class)
+			.collect(toMap(clazz -> (Class<?>) clazz, clazz -> Array.get(Array.newInstance(clazz, 1), 0)));
 	private final ResolvedInterfaceType type;
 	private final List<ResolvedMethod> supportedMethods;
 	private final Map<Method, Object> methodToValue;
+	private final T instance;
 
 	public interface Config4jHandled {
 		// marker interface
@@ -31,6 +43,7 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 		supportedMethods = Arrays.asList(newMemberResolver().resolve(type, null, null)
 				.getMemberMethods());
 		methodToValue = new HashMap<>();
+		instance = newInstance();
 	}
 
 	public ResolvedInterfaceType getType() {
@@ -71,6 +84,20 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 		if (!supportedMethods.contains(method)) {
 			throw new IllegalArgumentException("method " + method + " isn't supported");
 		}
+		if (isEmpty(value)) {
+			Method rawMethod = method.getRawMember();
+			ResolvedType returnClass = method.getReturnType();
+			if (rawMethod.isDefault()) {
+				try {
+					value = DefaultMethodHandler.invokeDefaultMethod(instance(), rawMethod, new Object[]{});
+				} catch (InvocationTargetException | IllegalAccessException e) {
+					throw new BindingException("failed to call default method on '{}()'", method, e);
+				}
+			} else if (returnClass.isPrimitive()) {
+				// handle default values for primitive types and avoid NPE when accessing them
+				value = classToPrimitive(returnClass.getErasedType());
+			}
+		}
 		methodToValue.put(method.getRawMember(), value);
 	}
 
@@ -80,14 +107,43 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 			return method.invoke(this, args);
 		}
 		if (!methodToValue.containsKey(method)) {
+			if (Modifier.isStatic(method.getModifiers())) {
+				return method.invoke(null, args);
+			}
 			throw new IllegalStateException("unable to handle " + method + ", known are: " + methodToValue.keySet());
 		}
 		return methodToValue.get(method);
 	}
 
+	// TODO: it's wrong to check here for empty values. this information should come from the source
+	protected boolean isEmpty(Object value) {
+		if (value == null) {
+			return true;
+		}
+		if (value instanceof Collection) {
+			return ((Collection) value).isEmpty();
+		}
+		if (value instanceof Map) {
+			return ((Map) value).isEmpty();
+		}
+		if (value instanceof Object[]) {
+			return ((Object[]) value).length == 0;
+		}
+		return false;
+	}
+
 	@SuppressWarnings("unchecked")
-	public T newInstance() {
+	protected static <T> T classToPrimitive(Class<T> primitiveClass) {
+		return (T) PRIMITIVE_ZEROS.get(primitiveClass);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected T newInstance() {
 		Class<T> forInterface = (Class<T>) type.getErasedType();
 		return (T) Proxy.newProxyInstance(forInterface.getClassLoader(), new Class[]{forInterface, Config4jHandled.class}, this);
+	}
+
+	public T instance() {
+		return instance;
 	}
 }

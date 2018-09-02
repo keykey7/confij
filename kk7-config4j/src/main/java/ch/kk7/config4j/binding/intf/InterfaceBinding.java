@@ -39,7 +39,7 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 					.orElse(method.getName());
 			siblingsByName.put(configKey, new AttributeInformation(methodDescription, method));
 		}
-		publicInstance = interfaceHandler.newInstance();
+		publicInstance = interfaceHandler.instance();
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 		return publicInstance;
 	}
 
-	private static class AttributeInformation {
+	public static class AttributeInformation {
 		private final ConfigBinding<?> description;
 		private final ResolvedMethod method;
 

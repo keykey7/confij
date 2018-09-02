@@ -1,13 +1,19 @@
 package ch.kk7.config4j.pipeline;
 
+import ch.kk7.config4j.annotation.Default;
 import ch.kk7.config4j.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
+import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
+import static org.hamcrest.collection.IsMapWithSize.anEmptyMap;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -27,8 +33,11 @@ public class MitAllesUndScharfTest {
 	}
 
 	public interface Primitives {
-		int anInt();
+		default int anInt() {
+			return 42;
+		}
 
+		@Default("1337")
 		long aLong();
 
 		float aFloat();
@@ -41,6 +50,7 @@ public class MitAllesUndScharfTest {
 
 		char aChar();
 
+		@Default("100")
 		byte aByte();
 	}
 
@@ -65,7 +75,11 @@ public class MitAllesUndScharfTest {
 	}
 
 	public interface Maps {
-		Map<String, String> mapStringString();
+		default Map<String, String> mapStringString() {
+			Map<String, String> result = new HashMap<>();
+			result.put("key", "value" + this.hashCode());
+			return result;
+		}
 
 		Map<String, Generic<String>> mapStringGenericString();
 
@@ -73,7 +87,7 @@ public class MitAllesUndScharfTest {
 	}
 
 	@Test
-	public void canInstantiate() {
+	public void canInstantiateEmpty() {
 		MitAllesUndScharf allDefaults = Config4jBuilder.of(MitAllesUndScharf.class)
 				.build();
 		Primitives primitives = allDefaults.primitives();
@@ -81,5 +95,26 @@ public class MitAllesUndScharfTest {
 		assertThat(primitives.aBoolean(), is(false));
 		assertThat(primitives.aString(), nullValue());
 		assertThat(primitives.aChar(), is('\0'));
+
+		Collections collections = allDefaults.collections();
+		assertThat(collections.setSetString(), empty());
+		assertThat(collections.setPrimitives(), empty());
+
+		Maps maps = allDefaults.maps();
+		assertThat(maps.mapStringMapStringString(), anEmptyMap());
+	}
+
+	@Test
+	public void canInstantiateDefaults() {
+		MitAllesUndScharf allDefaults = Config4jBuilder.of(MitAllesUndScharf.class)
+				.build();
+		Primitives primitives = allDefaults.primitives();
+		assertThat(primitives.anInt(), is(42));
+		assertThat(primitives.aLong(), is(1337L));
+		assertThat(primitives.aByte(), is((byte) 100));
+
+		Maps maps = allDefaults.maps();
+		assertThat(maps.mapStringString(), aMapWithSize(1));
+		assertThat(maps.mapStringString(), hasEntry("key", "value" + maps.hashCode()));
 	}
 }
