@@ -1,9 +1,7 @@
 package ch.kk7.config4j.source.file;
 
 import ch.kk7.config4j.source.ConfigSourceBuilder;
-import ch.kk7.config4j.source.file.format.PropertiesFormat;
 import ch.kk7.config4j.source.file.format.ResourceFormat;
-import ch.kk7.config4j.source.file.format.YamlFormat;
 import ch.kk7.config4j.source.file.resource.ClasspathResource;
 import ch.kk7.config4j.source.file.resource.Config4jResource;
 import ch.kk7.config4j.source.file.resource.FileResource;
@@ -14,6 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.ServiceLoader;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class AnyResourceBuilder implements ConfigSourceBuilder {
 	private final List<Config4jResource> supportedResources;
@@ -21,7 +22,10 @@ public class AnyResourceBuilder implements ConfigSourceBuilder {
 
 	public AnyResourceBuilder() {
 		supportedResources = new ArrayList<>(Arrays.asList(new ClasspathResource(), new FileResource(), new URLResource()));
-		supportedFormats = new ArrayList<>(Arrays.asList(new PropertiesFormat(), new YamlFormat()));
+		//supportedFormats = new ArrayList<>(Arrays.asList(new PropertiesFormat(), new YamlFormat()));
+		ServiceLoader<ResourceFormat> resourceFormatLoader = ServiceLoader.load(ResourceFormat.class);
+		supportedFormats = StreamSupport.stream(resourceFormatLoader.spliterator(), false)
+				.collect(Collectors.toList());
 	}
 
 	@Override

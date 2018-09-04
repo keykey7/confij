@@ -1,0 +1,3 @@
+dependencies {
+	testImplementation project(':kk7-config4j-yaml')
+}
