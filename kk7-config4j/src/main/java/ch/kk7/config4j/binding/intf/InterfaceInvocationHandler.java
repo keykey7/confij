@@ -126,8 +126,9 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 		if (value instanceof Map) {
 			return ((Map) value).isEmpty();
 		}
-		if (value instanceof Object[]) {
-			return ((Object[]) value).length == 0;
+		if (value.getClass()
+				.isArray()) {
+			return Array.getLength(value) == 0;
 		}
 		return false;
 	}
