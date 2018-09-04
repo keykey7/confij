@@ -20,7 +20,6 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
 
 public class MitAllesUndScharfTest {
-
 	@Nullable
 	public interface MitAllesUndScharf {
 		Primitives primitives();
@@ -30,6 +29,8 @@ public class MitAllesUndScharfTest {
 		Collections collections();
 
 		Maps maps();
+
+		Arrays arrays();
 	}
 
 	public interface Primitives {
@@ -86,6 +87,22 @@ public class MitAllesUndScharfTest {
 		Map<String, Map<String, String>> mapStringMapStringString();
 	}
 
+	public interface Arrays {
+		int[] anIntArray();
+
+		default byte[] aByteArray() {
+			return new byte[]{1, 2, 3};
+		}
+
+		String[] aStringArray();
+
+		Set<String>[] aSetArray();
+
+		byte[][] a2DByteArray();
+
+		Primitives[] anInterfaceArray();
+	}
+
 	@Test
 	public void canInstantiateEmpty() {
 		MitAllesUndScharf allDefaults = Config4jBuilder.of(MitAllesUndScharf.class)
@@ -102,6 +119,10 @@ public class MitAllesUndScharfTest {
 
 		Maps maps = allDefaults.maps();
 		assertThat(maps.mapStringMapStringString(), anEmptyMap());
+
+		Arrays arrays = allDefaults.arrays();
+		assertThat(arrays.anIntArray().length, is(0));
+		assertThat(arrays.aByteArray().length, is(3));
 	}
 
 	@Test
