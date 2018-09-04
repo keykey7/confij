@@ -1,1 +1,3 @@
 include 'kk7-config4j-core'
+include 'kk7-config4j-yaml'
+include 'systemTest'
