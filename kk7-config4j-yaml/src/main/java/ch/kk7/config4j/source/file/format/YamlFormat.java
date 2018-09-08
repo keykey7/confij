@@ -1,6 +1,7 @@
 package ch.kk7.config4j.source.file.format;
 
 import ch.kk7.config4j.source.simple.SimpleConfig;
+import com.google.auto.service.AutoService;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
@@ -11,6 +12,7 @@ import java.util.Objects;
 
 import static ch.kk7.config4j.source.file.format.FormatParsingException.invalidFormat;
 
+@AutoService(ResourceFormat.class)
 public class YamlFormat implements ResourceFormat {
 	//	public static void main(String[] args) {
 	//		YamlFormat source = new YamlFormat();

@@ -6,6 +6,7 @@ import ch.kk7.config4j.format.ConfigFormat.ConfigFormatList;
 import ch.kk7.config4j.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.config4j.source.Config4jSourceException;
 import ch.kk7.config4j.source.simple.SimpleConfig;
+import com.google.auto.service.AutoService;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -21,6 +22,7 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@AutoService(ResourceFormat.class)
 public class PropertiesFormat implements ResourceFormat {
 	private String separator = ".";
 	private String globalPrefix = "";
