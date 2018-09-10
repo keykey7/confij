@@ -2,7 +2,6 @@ package ch.kk7.config4j.pipeline;
 
 import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.binding.ConfigBinding;
-import ch.kk7.config4j.binding.leaf.mapper.DefaultValueMapperFactory;
 import ch.kk7.config4j.format.ConfigFormat;
 import ch.kk7.config4j.format.FormatSettings;
 import ch.kk7.config4j.format.validation.IValidator;
@@ -32,7 +31,6 @@ public class Config4jBuilder<T> {
 	// .build()
 	private final Class<T> forClass;
 	private List<ConfigSource> sources = new ArrayList<>();
-	private DefaultValueMapperFactory valueMapperFactory = new DefaultValueMapperFactory();
 	private List<IValidator> validators = new ArrayList<>(Collections.singleton(new NotNullValidator()));
 	private FormatSettings formatSettings = FormatSettings.newDefaultSettings();
 
@@ -72,7 +70,7 @@ public class Config4jBuilder<T> {
 	}
 
 	public T build() {
-		ConfigBinder configBinder = new ConfigBinder(valueMapperFactory);
+		ConfigBinder configBinder = new ConfigBinder();
 		ConfigBinding<T> configBinding = configBinder.toRootConfigBinding(forClass);
 		ConfigFormat configFormat = configBinding.describe(formatSettings);
 		Config4jPipeline<T> pipeline = new Config4jPipeline<>(sources, new DefaultSource(), validators, configBinding, configFormat);
