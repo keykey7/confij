@@ -1,26 +1,23 @@
 package ch.kk7.config4j.binding.leaf.mapper;
 
+import ch.kk7.config4j.binding.BindingType;
+import ch.kk7.config4j.binding.leaf.IValueMapper;
 import ch.kk7.config4j.binding.leaf.IValueMapper.NullableValueMapper;
+import ch.kk7.config4j.binding.leaf.IValueMapperFactory;
 import ch.kk7.config4j.common.Config4jException;
+import com.fasterxml.classmate.ResolvedType;
+import com.fasterxml.classmate.members.RawConstructor;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
 
 public class SoloConstructorMapper<T> implements NullableValueMapper<T> {
 
 	private final Constructor<T> constructor;
 
-	public SoloConstructorMapper(Constructor<T> constructor, Class<T> forClass) {
-		if (!isValidConstructor(constructor, forClass)) {
-			throw new IllegalArgumentException("not a valid construtor");
-		}
+	protected SoloConstructorMapper(Constructor<T> constructor) {
 		this.constructor = constructor;
-	}
-
-	public static <T> boolean isValidConstructor(Constructor<T> constructor, Class<T> forClass) {
-		return forClass.equals(constructor.getDeclaringClass()) &&
-				constructor.getParameterCount() == 1 &&
-				String.class.equals(constructor.getParameterTypes()[0]);
 	}
 
 	@Override
@@ -29,6 +26,21 @@ public class SoloConstructorMapper<T> implements NullableValueMapper<T> {
 			return constructor.newInstance(string);
 		} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 			throw new Config4jException("unable to instanitate obj using constructor " + constructor, e);
+		}
+	}
+
+	public static class SoloConstructorMapperFactory implements IValueMapperFactory {
+		@Override
+		public Optional<IValueMapper<?>> maybeForType(BindingType bindingType) {
+			ResolvedType type = bindingType.getResolvedType();
+			return type.getConstructors()
+					.stream()
+					// .filter(constructor -> forClass.equals(constructor.getDeclaringClass()))
+					.map(RawConstructor::getRawMember)
+					.filter(constructor -> constructor.getParameterCount() == 1)
+					.filter(constructor -> String.class.equals(constructor.getParameterTypes()[0]))
+					.findAny()
+					.map(SoloConstructorMapper::new);
 		}
 	}
 }

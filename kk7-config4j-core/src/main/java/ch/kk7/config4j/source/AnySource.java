@@ -46,7 +46,10 @@ public class AnySource implements ConfigSource {
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.findFirst()
-				.orElseThrow(() -> new Config4jSourceException("cannot handle path {} (resolved from {})", path, pathTemplate))
+				.orElseThrow(() -> {
+					String addon = pathTemplate.equals(actualPath) ? "" : " (resolved from '" + pathTemplate + "')";
+					return new Config4jSourceException("failed to load source data from '{}'{}", path, addon);
+				})
 				.override(simpleConfig);
 	}
 }

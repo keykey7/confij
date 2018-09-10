@@ -3,10 +3,8 @@ package ch.kk7.config4j.binding;
 import ch.kk7.config4j.binding.array.ArrayBindingFactory;
 import ch.kk7.config4j.binding.collection.CollectionBindingFactory;
 import ch.kk7.config4j.binding.intf.InterfaceBindingFactory;
-import ch.kk7.config4j.binding.leaf.LeafBinding.AnnotatedLeafBindingFactory;
+import ch.kk7.config4j.binding.leaf.LeafBinding.ForcedLeafBindingFactory;
 import ch.kk7.config4j.binding.leaf.LeafBinding.LeafBindingFactory;
-import ch.kk7.config4j.binding.leaf.ValueMapperFactory;
-import ch.kk7.config4j.binding.leaf.mapper.DefaultValueMapperFactory;
 import ch.kk7.config4j.binding.map.MapBindingFactory;
 import ch.kk7.config4j.common.Config4jException;
 
@@ -18,20 +16,16 @@ public class ConfigBinder {
 	private List<ConfigBindingFactory<?>> descriptionFactories;
 
 	public ConfigBinder() {
-		this(new DefaultValueMapperFactory());
-	}
-
-	public ConfigBinder(ValueMapperFactory valueMapperFactory) {
 		// order is important here
 		descriptionFactories = new ArrayList<>();
 		// @ValueMapper annotations have preferences (since they can also bind all following types)
-		descriptionFactories.add(new AnnotatedLeafBindingFactory());
+		descriptionFactories.add(new ForcedLeafBindingFactory());
 		// collection and map before interface (since they are themselves interfaces)
 		descriptionFactories.add(new ArrayBindingFactory());
 		descriptionFactories.add(new CollectionBindingFactory());
 		descriptionFactories.add(new MapBindingFactory());
 		descriptionFactories.add(new InterfaceBindingFactory());
-		descriptionFactories.add(new LeafBindingFactory(valueMapperFactory));
+		descriptionFactories.add(new LeafBindingFactory());
 	}
 
 	@SuppressWarnings("unchecked")

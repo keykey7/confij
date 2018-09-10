@@ -3,9 +3,7 @@ package ch.kk7.config4j.format;
 import ch.kk7.config4j.annotation.Default;
 import ch.kk7.config4j.annotation.NotNull;
 import ch.kk7.config4j.annotation.Nullable;
-import ch.kk7.config4j.annotation.ValueMapper;
 import ch.kk7.config4j.annotation.VariableResolver;
-import ch.kk7.config4j.binding.leaf.mapper.SoloConstructorMapper;
 import ch.kk7.config4j.common.Config4jException;
 import ch.kk7.config4j.format.resolve.DefaultResolver;
 import ch.kk7.config4j.format.resolve.IVariableResolver;
@@ -77,7 +75,6 @@ public class FormatSettings {
 		return new FormatSettings(willNullBeAllowed, defaultValue, variableResolverClass, implCache);
 	}
 
-	@ValueMapper(SoloConstructorMapper.class)
 	public static class LazyClassToImplCache {
 		private final Map<Class<?>, Object> instances = new HashMap<>();
 

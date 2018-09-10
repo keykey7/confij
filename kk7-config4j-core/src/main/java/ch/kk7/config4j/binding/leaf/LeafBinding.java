@@ -1,5 +1,6 @@
 package ch.kk7.config4j.binding.leaf;
 
+import ch.kk7.config4j.binding.BindingException;
 import ch.kk7.config4j.binding.BindingType;
 import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.binding.ConfigBinding;
@@ -31,25 +32,29 @@ public class LeafBinding<T> implements ConfigBinding<T> {
 		return valueMapper.fromString(((SimpleConfigLeaf) config).get());
 	}
 
-	public static class AnnotatedLeafBindingFactory implements ConfigBindingFactory<LeafBinding> {
+	public static class ForcedLeafBindingFactory implements ConfigBindingFactory<LeafBinding> {
 		@Override
-		public Optional<LeafBinding> maybeCreate(BindingType type, ConfigBinder configBinder) {
-			return type.getBindingSettings()
-					.getValueMapper()
+		public Optional<LeafBinding> maybeCreate(BindingType bindingType, ConfigBinder configBinder) {
+			return bindingType.getBindingSettings()
+					.getForcedMapperFactory()
+					.map(iValueMapperFactory -> iValueMapperFactory.maybeForType(bindingType)
+							.orElseThrow(() -> new BindingException(
+									"forced a ValueMapping, but factory {} didn't return a Mapping for bindingType {}", iValueMapperFactory,
+									bindingType)))
 					.map(LeafBinding::new);
 		}
 	}
 
 	public static class LeafBindingFactory implements ConfigBindingFactory<LeafBinding> {
-		private final ValueMapperFactory factory;
-
-		public LeafBindingFactory(ValueMapperFactory factory) {
-			this.factory = factory;
-		}
-
 		@Override
-		public Optional<LeafBinding> maybeCreate(BindingType type, ConfigBinder configBinder) {
-			return factory.maybeForType(type)
+		public Optional<LeafBinding> maybeCreate(BindingType bindingType, ConfigBinder configBinder) {
+			return bindingType.getBindingSettings()
+					.getMapperFactories()
+					.stream()
+					.map(iValueMapperFactory -> iValueMapperFactory.maybeForType(bindingType))
+					.filter(Optional::isPresent)
+					.map(Optional::get)
+					.findFirst()
 					.map(LeafBinding::new);
 		}
 	}

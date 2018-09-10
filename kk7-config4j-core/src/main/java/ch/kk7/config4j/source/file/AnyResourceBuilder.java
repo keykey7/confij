@@ -26,6 +26,9 @@ public class AnyResourceBuilder implements ConfigSourceBuilder {
 		ServiceLoader<ResourceFormat> resourceFormatLoader = ServiceLoader.load(ResourceFormat.class);
 		supportedFormats = StreamSupport.stream(resourceFormatLoader.spliterator(), false)
 				.collect(Collectors.toList());
+		if (supportedFormats.isEmpty()) {
+			throw new IllegalStateException("Failed to load any ResourceFormat. Check your AnnotationProcessor.");
+		}
 	}
 
 	@Override

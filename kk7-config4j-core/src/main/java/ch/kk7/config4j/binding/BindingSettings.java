@@ -1,38 +1,79 @@
 package ch.kk7.config4j.binding;
 
 import ch.kk7.config4j.annotation.ValueMapper;
-import ch.kk7.config4j.binding.leaf.IValueMapper;
+import ch.kk7.config4j.annotation.ValueMapperFactory;
+import ch.kk7.config4j.binding.leaf.IValueMapperFactory;
+import ch.kk7.config4j.binding.leaf.mapper.EnumMapper;
+import ch.kk7.config4j.binding.leaf.mapper.ExplicitMapperFactory;
+import ch.kk7.config4j.binding.leaf.mapper.PrimitiveMapperFactory;
+import ch.kk7.config4j.binding.leaf.mapper.SoloConstructorMapper;
+import ch.kk7.config4j.binding.leaf.mapper.StaticFunctionMapper;
 import ch.kk7.config4j.format.FormatSettings.LazyClassToImplCache;
 
 import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import static ch.kk7.config4j.common.Util.getSoloAnnotationsByType;
 
 public class BindingSettings {
-	private final Class<? extends IValueMapper> valueMapperClass;
+	private final IValueMapperFactory forcedMapperFactory;
+	private final List<IValueMapperFactory> mapperFactories;
 	private final LazyClassToImplCache implCache;
 
-	protected BindingSettings(Class<? extends IValueMapper> valueMapperClass, LazyClassToImplCache implCache) {
-		this.valueMapperClass = valueMapperClass;
+	protected BindingSettings(IValueMapperFactory forcedMapperFactory, List<IValueMapperFactory> mapperFactories, LazyClassToImplCache implCache) {
+		this.forcedMapperFactory = forcedMapperFactory;
+		this.mapperFactories = Collections.unmodifiableList(mapperFactories);
 		this.implCache = Objects.requireNonNull(implCache);
 	}
 
 	public static BindingSettings newDefaultSettings() {
-		return new BindingSettings(null, new LazyClassToImplCache());
+		List<IValueMapperFactory> mapperFactories = Arrays.asList(new PrimitiveMapperFactory(), new ExplicitMapperFactory(),
+				new EnumMapper.EnumMapperFactory(), new StaticFunctionMapper.StaticFunctionMapperFactory(),
+				new SoloConstructorMapper.SoloConstructorMapperFactory());
+		return new BindingSettings(null, mapperFactories, new LazyClassToImplCache());
 	}
 
-	public Optional<IValueMapper> getValueMapper() {
-		return Optional.ofNullable(valueMapperClass)
-				.map(implCache::getInstance);
+	public Optional<IValueMapperFactory> getForcedMapperFactory() {
+		return Optional.ofNullable(forcedMapperFactory);
+	}
+
+	public List<IValueMapperFactory> getMapperFactories() {
+		return mapperFactories;
 	}
 
 	public BindingSettings settingsFor(AnnotatedElement element) {
+		List<IValueMapperFactory> mapperFactories = new ArrayList<>(this.mapperFactories);
+
 		// handle value mapping of the next type
-		Optional<Class<? extends IValueMapper>> valueMapperClassOpt = getSoloAnnotationsByType(element, ValueMapper.class).map(
-				ValueMapper::value);
-		final Class<? extends IValueMapper> valueMapperClass = valueMapperClassOpt.orElse(this.valueMapperClass);
-		return new BindingSettings(valueMapperClass, implCache);
+		final IValueMapperFactory forcedMapper = getSoloAnnotationsByType(element, ValueMapper.class).map(ValueMapper::value)
+				.map(implCache::getInstance) // TODO: a new instance would be safer...
+				.map(x -> (IValueMapperFactory) bindingType -> Optional.of(x))
+				.orElse(null);
+
+		// handle value mapping factories
+		Optional<ValueMapperFactory> annon = getSoloAnnotationsByType(element, ValueMapperFactory.class);
+		IValueMapperFactory forcedMapperFactory = annon.filter(ValueMapperFactory::force)
+				.map(ValueMapperFactory::value)
+				.map(implCache::getInstance)
+				.map(x -> {
+					if (forcedMapper != null) {
+						throw new BindingException("invalid annotation with mutually exclusive {} and {}", ValueMapper.class, ValueMapperFactory.class);
+					}
+					return (IValueMapperFactory) x;
+				})
+				.orElse(forcedMapper);
+
+		// handle value optional mapping factories
+		annon.filter(valueMapperFactory -> !valueMapperFactory.force())
+				.map(ValueMapperFactory::value)
+				.map(implCache::getInstance)
+				.ifPresent(mapperFactory -> mapperFactories.add(0, mapperFactory));
+
+		return new BindingSettings(forcedMapperFactory, mapperFactories, implCache);
 	}
 }
