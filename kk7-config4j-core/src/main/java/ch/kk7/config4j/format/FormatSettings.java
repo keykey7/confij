@@ -4,6 +4,7 @@ import ch.kk7.config4j.annotation.Default;
 import ch.kk7.config4j.annotation.NotNull;
 import ch.kk7.config4j.annotation.Nullable;
 import ch.kk7.config4j.annotation.VariableResolver;
+import ch.kk7.config4j.common.AnnotationUtil;
 import ch.kk7.config4j.common.Config4jException;
 import ch.kk7.config4j.format.resolve.DefaultResolver;
 import ch.kk7.config4j.format.resolve.IVariableResolver;
@@ -13,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import static ch.kk7.config4j.common.Util.getSoloAnnotationsByType;
 
 public class FormatSettings {
 	private final boolean isNullAllowed;
@@ -62,11 +61,14 @@ public class FormatSettings {
 		}
 
 		// handle default config values
-		String defaultValue = getSoloAnnotationsByType(element, Default.class).map(Default::value)
+		String defaultValue = AnnotationUtil.findAnnotation(element, Default.class)
+				.map(Default::value)
 				.orElse(null); // not inheriting the old default value on purpose here
 
 		// handle variable resolver
-		Optional<Class<? extends IVariableResolver>> variableResolverClassOpt = getSoloAnnotationsByType(element, VariableResolver.class).map(VariableResolver::value);
+		Optional<Class<? extends IVariableResolver>> variableResolverClassOpt = AnnotationUtil.findAnnotation(element,
+				VariableResolver.class)
+				.map(VariableResolver::value);
 		Class<? extends IVariableResolver> variableResolverClass = variableResolverClassOpt.orElse(this.variableResolverClass);
 		if (variableResolverClass == null) {
 			throw new FormatException("An element annotated with {} has an invalid null resolver class", VariableResolver.class);

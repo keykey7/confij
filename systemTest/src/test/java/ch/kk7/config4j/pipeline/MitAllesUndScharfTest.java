@@ -2,6 +2,7 @@ package ch.kk7.config4j.pipeline;
 
 import ch.kk7.config4j.annotation.Default;
 import ch.kk7.config4j.annotation.Nullable;
+import ch.kk7.config4j.binding.leaf.mapper.Base64Mapper.Base64;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
@@ -90,9 +91,13 @@ public class MitAllesUndScharfTest {
 	public interface Arrays {
 		int[] anIntArray();
 
-		default byte[] aByteArray() {
-			return new byte[]{1, 2, 3};
+		default byte[] aDefaultByteArray() {
+			return new byte[]{2, 2, 2};
 		}
+
+		@Base64
+		@Default("AQID")
+		byte[] aBase64ByteArray();
 
 		String[] aStringArray();
 
@@ -122,7 +127,6 @@ public class MitAllesUndScharfTest {
 
 		Arrays arrays = allDefaults.arrays();
 		assertThat(arrays.anIntArray().length, is(0));
-		assertThat(arrays.aByteArray().length, is(3));
 	}
 
 	@Test
@@ -137,5 +141,9 @@ public class MitAllesUndScharfTest {
 		Maps maps = allDefaults.maps();
 		assertThat(maps.mapStringString(), aMapWithSize(1));
 		assertThat(maps.mapStringString(), hasEntry("key", "value" + maps.hashCode()));
+
+		Arrays arrays = allDefaults.arrays();
+		assertThat(arrays.aDefaultByteArray().length, is(3));
+		assertThat(arrays.aBase64ByteArray(), is(new byte[]{1,2,3}));
 	}
 }

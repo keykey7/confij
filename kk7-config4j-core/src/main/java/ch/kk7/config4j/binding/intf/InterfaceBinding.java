@@ -2,8 +2,9 @@ package ch.kk7.config4j.binding.intf;
 
 import ch.kk7.config4j.annotation.Key;
 import ch.kk7.config4j.binding.BindingType;
-import ch.kk7.config4j.binding.ConfigBinding;
 import ch.kk7.config4j.binding.ConfigBinder;
+import ch.kk7.config4j.binding.ConfigBinding;
+import ch.kk7.config4j.common.AnnotationUtil;
 import ch.kk7.config4j.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.config4j.format.FormatSettings;
 import ch.kk7.config4j.source.simple.SimpleConfig;
@@ -16,8 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
-import static ch.kk7.config4j.common.Util.getSoloAnnotationsByType;
 
 public class InterfaceBinding<T> implements ConfigBinding<T> {
 	private final Map<String, AttributeInformation> siblingsByName;
@@ -35,7 +34,7 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 			BindingType methodBindingType = bindingType.bindingFor(method.getReturnType(), bindingType.getBindingSettings()
 					.settingsFor(method.getRawMember()));
 			ConfigBinding<?> methodDescription = configBinder.toConfigBinding(methodBindingType);
-			String configKey = getSoloAnnotationsByType(method.getRawMember(), Key.class).map(Key::value)
+			String configKey = AnnotationUtil.findAnnotation(method.getRawMember(), Key.class).map(Key::value)
 					.orElse(method.getName());
 			siblingsByName.put(configKey, new AttributeInformation(methodDescription, method));
 		}
