@@ -8,6 +8,7 @@ import ch.kk7.config4j.binding.leaf.mapper.ExplicitMapperFactory;
 import ch.kk7.config4j.binding.leaf.mapper.PrimitiveMapperFactory;
 import ch.kk7.config4j.binding.leaf.mapper.SoloConstructorMapper;
 import ch.kk7.config4j.binding.leaf.mapper.StaticFunctionMapper;
+import ch.kk7.config4j.common.AnnotationUtil;
 import ch.kk7.config4j.format.FormatSettings.LazyClassToImplCache;
 
 import java.lang.reflect.AnnotatedElement;
@@ -17,8 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import static ch.kk7.config4j.common.Util.getSoloAnnotationsByType;
 
 public class BindingSettings {
 	private final IValueMapperFactory forcedMapperFactory;
@@ -50,13 +49,13 @@ public class BindingSettings {
 		List<IValueMapperFactory> mapperFactories = new ArrayList<>(this.mapperFactories);
 
 		// handle value mapping of the next type
-		final IValueMapperFactory forcedMapper = getSoloAnnotationsByType(element, ValueMapper.class).map(ValueMapper::value)
+		final IValueMapperFactory forcedMapper = AnnotationUtil.findAnnotation(element, ValueMapper.class).map(ValueMapper::value)
 				.map(implCache::getInstance) // TODO: a new instance would be safer...
 				.map(x -> (IValueMapperFactory) bindingType -> Optional.of(x))
 				.orElse(null);
 
 		// handle value mapping factories
-		Optional<ValueMapperFactory> annon = getSoloAnnotationsByType(element, ValueMapperFactory.class);
+		Optional<ValueMapperFactory> annon = AnnotationUtil.findAnnotation(element, ValueMapperFactory.class);
 		IValueMapperFactory forcedMapperFactory = annon.filter(ValueMapperFactory::force)
 				.map(ValueMapperFactory::value)
 				.map(implCache::getInstance)
