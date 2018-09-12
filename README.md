@@ -1,6 +1,6 @@
 # TODO
 - add integration tests for each mapping type
-- implement @Base64 (for array and lists)
+- extend @Base64 with different charsets and base64 standards
 - implement @CsvSeparated (for array and lists)
 - configuration reload support
 - ...with locking functionality
