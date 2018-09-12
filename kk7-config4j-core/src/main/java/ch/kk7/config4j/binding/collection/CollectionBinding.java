@@ -12,16 +12,13 @@ import java.util.Collection;
 import java.util.List;
 
 public class CollectionBinding<T> implements ConfigBinding<Collection<T>> {
-	private final Collection<T> set;
-	private final Collection<T> publicSet;
+	private final CollectionBuilder builder;
 	private final ConfigBinding<T> componentDescription;
 
-	public CollectionBinding(UnmodifiableCollectionBuilder<T, Collection<T>> builder, BindingType bindingType,
-			ConfigBinder configBinder) {
-		set = builder.getModifyableInstance();
-		publicSet = builder.harden(set);
+	public CollectionBinding(CollectionBuilder builder, BindingType componentBindingType, ConfigBinder configBinder) {
+		this.builder = builder;
 		//noinspection unchecked
-		componentDescription = (ConfigBinding<T>) configBinder.toConfigBinding(bindingType);
+		componentDescription = (ConfigBinding<T>) configBinder.toConfigBinding(componentBindingType);
 	}
 
 	@Override
@@ -35,11 +32,11 @@ public class CollectionBinding<T> implements ConfigBinding<Collection<T>> {
 			throw new IllegalStateException("expected a config list, but got: " + config);
 		}
 		List<SimpleConfig> configList = ((SimpleConfigList) config).list();
-		set.clear();
+		Collection<T> collection = builder.newInstance();
 		for (SimpleConfig configItem : configList) {
 			T listItem = componentDescription.bind(configItem);
-			set.add(listItem);
+			collection.add(listItem);
 		}
-		return publicSet;
+		return builder.tryHarden(collection);
 	}
 }

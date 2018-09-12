@@ -38,6 +38,7 @@ public class Base64Mapper<T> implements IValueMapper<T> {
 	}
 
 	// TODO: support different encodings and base64 standards
+	// would require the BindingSettings to pass on the Base64 annotation itself
 	public static class Base64MapperFactory implements IValueMapperFactory {
 		@Override
 		public Optional<IValueMapper<?>> maybeForType(BindingType bindingType) {

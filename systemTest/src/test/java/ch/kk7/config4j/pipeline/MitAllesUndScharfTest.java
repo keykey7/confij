@@ -7,9 +7,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
@@ -19,6 +21,7 @@ import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.hamcrest.junit.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MitAllesUndScharfTest {
 	@Nullable
@@ -73,7 +76,11 @@ public class MitAllesUndScharfTest {
 
 		Set<Generic<String>> setGenericString();
 
+		SortedSet<Integer> sortedSet();
+
 		List<Set<Collection<Integer>>> listSetCollectionInteger();
+
+		HashSet<String> hashSet();
 	}
 
 	public interface Maps {
@@ -137,6 +144,15 @@ public class MitAllesUndScharfTest {
 		assertThat(primitives.anInt(), is(42));
 		assertThat(primitives.aLong(), is(1337L));
 		assertThat(primitives.aByte(), is((byte) 100));
+
+		Collections collections = allDefaults.collections();
+		assertThrows(UnsupportedOperationException.class, () -> collections.setString()
+				.clear());
+		assertThrows(UnsupportedOperationException.class, () -> collections.listSetCollectionInteger()
+				.clear());
+		// but a concrete class IS modifyable...
+		collections.hashSet()
+				.clear();
 
 		Maps maps = allDefaults.maps();
 		assertThat(maps.mapStringString(), aMapWithSize(1));
