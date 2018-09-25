@@ -6,18 +6,17 @@ import ch.kk7.config4j.format.ConfigFormat.ConfigFormatLeaf;
 import ch.kk7.config4j.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.config4j.format.FormatSettings;
 import ch.kk7.config4j.source.simple.SimpleConfig;
+import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.junit.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DefaultResolverTest {
 
-	private String resolve(String template, String... x) {
+	private static String resolve(String template, String... x) {
 		FormatSettings settings = FormatSettings.newDefaultSettings();
 		ConfigFormat format = ConfigFormatMap.anyKeyMap(settings, new ConfigFormatLeaf(settings));
 		Map<String, String> map = new HashMap<>();
@@ -28,34 +27,38 @@ class DefaultResolverTest {
 		return new DefaultResolver().resolve(config, template);
 	}
 
+	private static AbstractStringAssert<?> assertThat(String template, String... x) {
+		return org.assertj.core.api.Assertions.assertThat(resolve(template, x));
+	}
+
 	@Test
 	public void resolveStatic() {
-		assertThat(resolve("hello"), is("hello"));
+		assertThat("hello").isEqualTo("hello");
 	}
 
 	@Test
 	public void resolveEmpty() {
-		assertThat(resolve(""), is(""));
+		assertThat("").isEqualTo("");
 	}
 
 	@Test
 	public void resolveOne() {
-		assertThat(resolve("hello ${x1}", "v1"), is("hello v1"));
+		assertThat("hello ${x1}", "v1").isEqualTo("hello v1");
 	}
 
 	@Test
 	public void resolveTwo() {
-		assertThat(resolve("hello ${x1} ${x2}!", "one", "two"), is("hello one two!"));
+		assertThat("hello ${x1} ${x2}!", "one", "two").isEqualTo("hello one two!");
 	}
 
 	@Test
 	public void resolveEmbedded() {
-		assertThat(resolve("hello ${${x1}}", "x2", "yo"), is("hello yo"));
+		assertThat("hello ${${x1}}", "x2", "yo").isEqualTo("hello yo");
 	}
 
 	@Test
 	public void resolveEmbedded2() {
-		assertThat(resolve("hello ${${${x1}}}", "x2", "x3", "yo"), is("hello yo"));
+		assertThat("hello ${${${x1}}}", "x2", "x3", "yo").isEqualTo("hello yo");
 	}
 
 	@Test
@@ -65,12 +68,12 @@ class DefaultResolverTest {
 
 	@Test
 	public void resolveNested() {
-		assertThat(resolve("hello ${x1}", "one ${x2}", "two"), is("hello one two"));
+		assertThat("hello ${x1}", "one ${x2}", "two").isEqualTo("hello one two");
 	}
 
 	@Test
 	public void resolveNested2() {
-		assertThat(resolve("hello ${x1}", "one ${x2}", "two ${x3}", "three"), is("hello one two three"));
+		assertThat("hello ${x1}", "one ${x2}", "two ${x3}", "three").isEqualTo("hello one two three");
 	}
 
 	@Test
@@ -80,7 +83,7 @@ class DefaultResolverTest {
 
 	@Test
 	public void looksLikeAVariable() {
-		assertThat(resolve("${x1${${x1"), is("${x1${${x1"));
+		assertThat("${x1${${x1").isEqualTo("${x1${${x1");
 	}
 
 	@Test
@@ -95,26 +98,26 @@ class DefaultResolverTest {
 
 	@Test
 	public void escapedVariable() {
-		assertThat(resolve("hello \\${x1}", "one"), is("hello ${x1}"));
+		assertThat("hello \\${x1}", "one").isEqualTo("hello ${x1}");
 	}
 
 	@Test
 	public void escapedNothing() {
-		assertThat(resolve("hello \\${xxx", "one"), is("hello ${xxx"));
+		assertThat("hello \\${xxx", "one").isEqualTo("hello ${xxx");
 	}
 
 	@Test
 	public void doubleEscaped() {
-		assertThat(resolve("hello \\\\${x1}", "one"), is("hello \\one"));
+		assertThat("hello \\\\${x1}", "one").isEqualTo("hello \\one");
 	}
 
 	@Test
 	public void unnessessaryEscape() {
-		assertThat(resolve("hello \\!${x1}", "one"), is("hello !one"));
+		assertThat("hello \\!${x1}", "one").isEqualTo("hello !one");
 	}
 
 	@Test
 	public void escapedNested() {
-		assertThat(resolve("hello ${x1}", "~\\${x2}~", "two"), is("hello ~${x2}~"));
+		assertThat("hello ${x1}", "~\\${x2}~", "two").isEqualTo("hello ~${x2}~");
 	}
 }

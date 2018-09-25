@@ -1,7 +1,7 @@
 buildscript {
 	repositories {
-		jcenter()
 		mavenLocal()
+		jcenter()
 	}
 }
 
@@ -29,14 +29,17 @@ subprojects {
 		compileOnly 'com.google.auto.service:auto-service:1.0-rc4'
 		annotationProcessor 'com.google.auto.service:auto-service:1.0-rc4'
 
+		testImplementation "org.assertj:assertj-core:3.11.1"
 		def junitVersion = '5.3.0'
 		testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-		testImplementation('org.hamcrest:hamcrest-junit:2.0.0.0') {
-			exclude group: 'junit', module: 'junit'
+//		testImplementation('org.hamcrest:hamcrest-junit:2.0.0.0') {
+//			exclude group: 'junit', module: 'junit'
+//		}
+		testImplementation('org.junit-pioneer:junit-pioneer:0.1.2') {
+			exclude group: 'org.junit.jupiter'
 		}
-		testImplementation 'org.junit-pioneer:junit-pioneer:0.1.2'
-		testImplementation 'com.github.npathai:hamcrest-optional:2.0.0'
+//		testImplementation 'com.github.npathai:hamcrest-optional:2.0.0'
 	}
 
 	test {
