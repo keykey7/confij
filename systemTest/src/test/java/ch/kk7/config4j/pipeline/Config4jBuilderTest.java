@@ -1,6 +1,7 @@
 package ch.kk7.config4j.pipeline;
 
 import ch.kk7.config4j.source.Config4jSourceException;
+import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junitpioneer.jupiter.TempDirectory;
@@ -10,21 +11,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class Config4jBuilderTest {
-	public interface MyConfig {
-		String aString();
-	}
-
-	private static void assertSourceBecomes(String source, String expectedValue) {
-		assertThat(Config4jBuilder.of(MyConfig.class)
+	private static AbstractStringAssert<?> assertSourceBecomes(String source, String expectedValue) {
+		return assertThat(Config4jBuilder.of(MyConfig.class)
 				.withSource(source)
 				.build()
-				.aString(), is(expectedValue));
+				.aString()).isEqualTo(expectedValue);
 	}
 
 	@Test
@@ -64,5 +60,9 @@ class Config4jBuilderTest {
 		Files.copy(ClassLoader.getSystemResourceAsStream("MyConfig.yaml"), configFile);
 		assertSourceBecomes(configFile.toAbsolutePath()
 				.toString(), "iamfromyaml");
+	}
+
+	public interface MyConfig {
+		String aString();
 	}
 }

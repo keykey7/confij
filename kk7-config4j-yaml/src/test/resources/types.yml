@@ -1,0 +1,50 @@
+# based on http://sweetohm.net/article/introduction-yaml.en.html
+strings:
+  - String
+  - "3"
+  - String on
+    a single line
+  - "Double quotation marks\t"
+  - 'Single quotation marks\t'
+integers:
+  canonical:   12345
+  decimal:     +12_345
+  sexagesimal: 3:25:45
+  octal:       030071
+  hexadecimal: 0x3039
+floats:
+  canonical:         1.23015e+3
+  exponential:       12.3015e+02
+  sexagesimal:       20:30.15
+  fixed:             1_230.15
+  infinite negative: -.inf
+  not a number:      .NaN
+dates:
+  canonical: 2001-12-15T02:59:43.1Z
+  iso8601:   2001-12-14t21:59:43.10-05:00
+  space:     2001-12-14 21:59:43.10 -5
+  date:      2002-12-14
+# comment
+miscellaneous:
+  null: null
+  null bis: ~
+  true: true
+  true bis: yes
+  true ter: on
+  false: false
+  false bis: no
+  false ter: off
+references:
+  a: &p 'potatoes'
+  b: *p
+tags:
+  null:    !!null
+  integer: !!int    3
+  float:   !!float  1.2
+  string:  !!str    string
+  boolean: !!bool   true
+  binary:  !!binary dGVzdA==
+  map:     !!map    { key: value }
+  seq:     !!seq    [ element1, element2 ]
+  set:     !!set    { element1, element2 }
+  omap:    !!omap   [ key: value ]

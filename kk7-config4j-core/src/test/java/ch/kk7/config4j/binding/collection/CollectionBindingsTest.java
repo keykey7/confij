@@ -15,8 +15,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Stream;
 
-import static com.github.npathai.hamcrestopt.OptionalMatchers.isPresent;
-import static org.hamcrest.junit.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CollectionBindingsTest {
@@ -72,7 +71,7 @@ class CollectionBindingsTest {
 	@ParameterizedTest
 	@MethodSource("validCollectionTypes")
 	public void validSetsProduceABinding(BindingType type) {
-		assertThat(collectionFactory.maybeCreate(type, configBinder), isPresent());
+		assertThat(collectionFactory.maybeCreate(type, configBinder)).isPresent();
 	}
 
 	@ParameterizedTest

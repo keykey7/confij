@@ -13,14 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.hamcrest.collection.IsMapContaining.hasEntry;
-import static org.hamcrest.collection.IsMapWithSize.aMapWithSize;
-import static org.hamcrest.collection.IsMapWithSize.anEmptyMap;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNull.notNullValue;
-import static org.hamcrest.core.IsNull.nullValue;
-import static org.hamcrest.junit.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MitAllesUndScharfTest {
@@ -120,20 +113,20 @@ public class MitAllesUndScharfTest {
 		MitAllesUndScharf allDefaults = Config4jBuilder.of(MitAllesUndScharf.class)
 				.build();
 		Primitives primitives = allDefaults.primitives();
-		assertThat(primitives, notNullValue());
-		assertThat(primitives.aBoolean(), is(false));
-		assertThat(primitives.aString(), nullValue());
-		assertThat(primitives.aChar(), is('\0'));
+		assertThat(primitives).isNotNull();
+		assertThat(primitives.aBoolean()).isFalse();
+		assertThat(primitives.aString()).isNull();
+		assertThat(primitives.aChar()).isEqualTo('\0');
 
 		Collections collections = allDefaults.collections();
-		assertThat(collections.setSetString(), empty());
-		assertThat(collections.setPrimitives(), empty());
+		assertThat(collections.setSetString()).isEmpty();
+		assertThat(collections.setPrimitives()).isEmpty();
 
 		Maps maps = allDefaults.maps();
-		assertThat(maps.mapStringMapStringString(), anEmptyMap());
+		assertThat(maps.mapStringMapStringString()).isEmpty();
 
 		Arrays arrays = allDefaults.arrays();
-		assertThat(arrays.anIntArray().length, is(0));
+		assertThat(arrays.anIntArray()).isEmpty();
 	}
 
 	@Test
@@ -141,9 +134,9 @@ public class MitAllesUndScharfTest {
 		MitAllesUndScharf allDefaults = Config4jBuilder.of(MitAllesUndScharf.class)
 				.build();
 		Primitives primitives = allDefaults.primitives();
-		assertThat(primitives.anInt(), is(42));
-		assertThat(primitives.aLong(), is(1337L));
-		assertThat(primitives.aByte(), is((byte) 100));
+		assertThat(primitives.anInt()).isEqualTo(42);
+		assertThat(primitives.aLong()).isEqualTo(1337L);
+		assertThat(primitives.aByte()).isEqualTo((byte) 100);
 
 		Collections collections = allDefaults.collections();
 		assertThrows(UnsupportedOperationException.class, () -> collections.setString()
@@ -155,11 +148,11 @@ public class MitAllesUndScharfTest {
 				.clear();
 
 		Maps maps = allDefaults.maps();
-		assertThat(maps.mapStringString(), aMapWithSize(1));
-		assertThat(maps.mapStringString(), hasEntry("key", "value" + maps.hashCode()));
+		assertThat(maps.mapStringString()).hasSize(1);
+		assertThat(maps.mapStringString()).hasEntrySatisfying("key", value -> assertThat(value).isEqualTo("value" + maps.hashCode()));
 
 		Arrays arrays = allDefaults.arrays();
-		assertThat(arrays.aDefaultByteArray().length, is(3));
-		assertThat(arrays.aBase64ByteArray(), is(new byte[]{1,2,3}));
+		assertThat(arrays.aDefaultByteArray()).hasSize(3);
+		assertThat(arrays.aBase64ByteArray()).containsExactly(1,2,3);
 	}
 }
