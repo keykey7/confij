@@ -11,14 +11,11 @@ import ch.kk7.config4j.source.simple.SimpleConfigMap;
 import java.util.Map;
 
 public class MapBinding<T> implements ConfigBinding<Map<String, T>> {
-	private final Map<String, T> map;
-	private final Map<String, T> publicMap;
+	private final MapBuilder builder;
 	private final ConfigBinding<T> componentDescription;
 
-	public MapBinding(UnmodifiableMapBuilder<T, Map<String, T>> builder, BindingType bindingType,
-			ConfigBinder configBinder) {
-		map = builder.getModifyableInstance();
-		publicMap = builder.harden(map);
+	public MapBinding(MapBuilder builder, BindingType bindingType, ConfigBinder configBinder) {
+		this.builder = builder;
 		//noinspection unchecked
 		componentDescription = (ConfigBinding<T>) configBinder.toConfigBinding(bindingType);
 	}
@@ -33,13 +30,12 @@ public class MapBinding<T> implements ConfigBinding<Map<String, T>> {
 		if (!(config instanceof SimpleConfigMap)) {
 			throw new IllegalStateException("expected a config map, but got: " + config);
 		}
-		// TODO: instead of clearing the map: replace already known keys, invalidate (not delete) removed keys
-		map.clear();
+		Map<String, T> map = builder.newInstance();
 		for (Map.Entry<String, SimpleConfig> configEntry : ((SimpleConfigMap) config).map()
 				.entrySet()) {
 			T item = componentDescription.bind(configEntry.getValue());
 			map.put(configEntry.getKey(), item);
 		}
-		return publicMap;
+		return builder.tryHarden(map);
 	}
 }

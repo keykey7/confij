@@ -1,11 +1,11 @@
 # based on http://sweetohm.net/article/introduction-yaml.en.html
 strings:
-  - String
-  - "3"
-  - String on
+  0: String
+  1: "3"
+  2: String on
     a single line
-  - "Double quotation marks\t"
-  - 'Single quotation marks\t'
+  3: "Double quotation marks\t"
+  4: 'Single quotation marks\t'
 integers:
   canonical:   12345
   decimal:     +12_345
@@ -44,7 +44,3 @@ tags:
   string:  !!str    string
   boolean: !!bool   true
   binary:  !!binary dGVzdA==
-  map:     !!map    { key: value }
-  seq:     !!seq    [ element1, element2 ]
-  set:     !!set    { element1, element2 }
-  omap:    !!omap   [ key: value ]

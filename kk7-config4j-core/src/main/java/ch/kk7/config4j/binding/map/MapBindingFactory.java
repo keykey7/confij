@@ -4,32 +4,24 @@ import ch.kk7.config4j.binding.BindingException;
 import ch.kk7.config4j.binding.BindingType;
 import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.binding.ConfigBindingFactory;
+import ch.kk7.config4j.common.Util;
 import com.fasterxml.classmate.ResolvedType;
-import com.fasterxml.classmate.types.ResolvedObjectType;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 public class MapBindingFactory implements ConfigBindingFactory<MapBinding> {
-	private static final ResolvedType rawObjectType = ResolvedObjectType.create(Object.class, null, null, null);
-	private final List<UnmodifiableMapBuilder<?, ?>> builders;
+
+	private final Function<ResolvedType, ? extends MapBuilder> builderFactory;
 
 	public MapBindingFactory() {
-		this(Collections.singletonList(UnmodifiableMapBuilder.mapBuilder()));
+		this(MapBuilder::new);
 	}
 
-	public MapBindingFactory(List<UnmodifiableMapBuilder<?, ?>> builders) {
-		this.builders = Collections.unmodifiableList(builders);
-	}
-
-	private String supportedMapClasses() {
-		return builders.stream()
-				.map(UnmodifiableMapBuilder::getInstanceClass)
-				.map(Class::toGenericString)
-				.collect(Collectors.joining(", "));
+	public MapBindingFactory(Function<ResolvedType, ? extends MapBuilder> builderFactory) {
+		this.builderFactory = builderFactory;
 	}
 
 	@Override
@@ -48,19 +40,12 @@ public class MapBindingFactory implements ConfigBindingFactory<MapBinding> {
 						"However, we can only handle Map<String,?> as String is the only supported key type, sorry.", type, keyType,
 						componentType);
 			}
-			if (rawObjectType.equals(componentType)) {
+			if (Util.rawObjectType.equals(componentType)) {
 				throw new BindingException("Attempted to bind an invalid type {}, which extends Map<{},{}>. " +
 						"However, this value type is unbound which indicates it was a wildcard or an unbound generic type", type, keyType,
 						componentType);
 			}
-			UnmodifiableMapBuilder<?, ?> builder = builders.stream()
-					.filter(b -> type.getErasedType()
-							.isAssignableFrom(b.getInstanceClass()))
-					.findFirst()
-					.orElseThrow(() -> new BindingException("Your type '{}' is a Map, however this type is not supported. " +
-							"Expected are types that are assignable from any of the implementing classes: {}. " +
-							"If you need another Map implementation, consider adding an additional builder to {}", type,
-							supportedMapClasses(), UnmodifiableMapBuilder.class.getName()));
+			MapBuilder builder = builderFactory.apply(type);
 			//noinspection unchecked
 			return Optional.of(new MapBinding(builder, bindingType.bindingFor(componentType), configBinder));
 		}

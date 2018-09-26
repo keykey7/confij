@@ -17,16 +17,22 @@ import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+/**
+ * Given a Collection Type, this class is responsible to provide new instances and make these instances unmodifyable if possible.
+ */
 public class CollectionBuilder {
 	private final Supplier<Collection> supplier;
 	private final Function<Collection, Collection> hardener;
 
 	public CollectionBuilder(ResolvedType type) {
+		if (!type.isInstanceOf(Collection.class)) {
+			throw new IllegalArgumentException("expected a collection type, but got " + type);
+		}
 		supplier = newCollectionSupplier(type);
-		hardener = newHardener(type);
+		hardener = newCollectionHardener(type);
 	}
 
-	protected Function<Collection, Collection> newHardener(ResolvedType type) {
+	protected Function<Collection, Collection> newCollectionHardener(ResolvedType type) {
 		Class<?> intfClass = type.getErasedType();
 		if (Set.class.equals(intfClass)) {
 			return x -> Collections.unmodifiableSet((Set<?>)x);
