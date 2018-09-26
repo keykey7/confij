@@ -22,6 +22,7 @@ public class NotNullValidator implements IValidator {
 			return;
 		}
 		String msg = "Found non-nullable fields containing null values. Offending leafs: " + String.join("\n  ", offendingLeafUris);
-		throw new ValidationException(msg);
+		// FIXME: disabled
+		// throw new ValidationException(msg);
 	}
 }

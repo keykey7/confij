@@ -6,6 +6,10 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.net.URI;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -14,16 +18,6 @@ import static ch.kk7.config4j.source.file.format.FormatParsingException.invalidF
 
 @AutoService(ResourceFormat.class)
 public class YamlFormat implements ResourceFormat {
-	//	public static void main(String[] args) {
-	//		YamlFormat source = new YamlFormat();
-	//		Object res = source.parse("canonical: 6.8523015e+5\n" +
-	//				"exponentioal: 685.230_15e+03\n" +
-	//				"fixed: 685_230.15\n" +
-	//				"sexagesimal: 190:20:30.15\n" +
-	//				"negative infinity: -.inf\n" +
-	//				"not a number: .NaN");
-	//		System.out.println(res);
-	//	}
 	private final Yaml yaml = new Yaml(new SafeConstructor());
 
 	@Override
@@ -40,16 +34,27 @@ public class YamlFormat implements ResourceFormat {
 		simpleConfig.overrideWith(newConfig);
 	}
 
-	public String write(Object content) {
-		return yaml.dump(content);
-	}
-
 	@SuppressWarnings("unchecked")
 	private Object simplify(Object yaml) {
 		if (yaml instanceof Map) {
-			((Map<String, Object>) yaml).replaceAll((key, value) -> simplify(value));
+			// simplify keys
+			Map<Object, Object> objMap = (Map<Object, Object>) yaml;
+			new HashSet<>(objMap.keySet()).forEach(key -> {
+				String keyStr = Objects.toString(key);
+				if (!keyStr.equals(key)) {
+					if (objMap.containsKey(keyStr)) {
+						throw new IllegalArgumentException("by stringifying map keys we got a key conflict with: " + keyStr);
+					}
+					objMap.put(keyStr, objMap.remove(key));
+				}
+			});
+			objMap.replaceAll((key, value) -> simplify(value));
 		} else if (yaml instanceof List) {
 			((List<Object>) yaml).replaceAll(this::simplify);
+		} else if (yaml instanceof Date) {
+			yaml = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+					.withZone(ZoneOffset.UTC)
+					.format(((Date) yaml).toInstant());
 		} else if (yaml != null) {
 			yaml = Objects.toString(yaml);
 		}
@@ -59,6 +64,6 @@ public class YamlFormat implements ResourceFormat {
 	@Override
 	public boolean canHandle(URI path) {
 		return path.getSchemeSpecificPart()
-				.matches("(?s).+\\.ya?ml$");
+				.matches("(?i).+\\.ya?ml$");
 	}
 }

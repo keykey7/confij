@@ -3,7 +3,6 @@ package ch.kk7.config4j.binding.collection;
 import ch.kk7.config4j.binding.BindingType;
 import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.common.Config4jException;
-import com.fasterxml.classmate.TypeResolver;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -19,7 +18,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CollectionBindingsTest {
-	private static TypeResolver typeResolver = new TypeResolver();
 	private CollectionBindingFactory collectionFactory = new CollectionBindingFactory();
 	private ConfigBinder configBinder = new ConfigBinder();
 
@@ -39,6 +37,8 @@ class CollectionBindingsTest {
 		Set<? extends Integer> wildcardExtendedSet();
 
 		<T extends String> Set<T> genericExtendedSet();
+
+		CopyOnWriteArraySet<String> notAnInterface();
 	}
 
 	@SuppressWarnings("unused")
@@ -48,8 +48,6 @@ class CollectionBindingsTest {
 		Set rawSet();
 
 		<T> Set<T> genericSet();
-
-		CopyOnWriteArraySet<String> notAnInterface();
 
 		CustomSet<String> noBuilderForAnUnmodifiableSet();
 	}

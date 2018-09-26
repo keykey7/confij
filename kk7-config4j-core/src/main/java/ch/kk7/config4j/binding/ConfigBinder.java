@@ -8,6 +8,7 @@ import ch.kk7.config4j.binding.leaf.LeafBinding.LeafBindingFactory;
 import ch.kk7.config4j.binding.map.MapBindingFactory;
 import ch.kk7.config4j.common.Config4jException;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -29,8 +30,8 @@ public class ConfigBinder {
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> ConfigBinding<T> toRootConfigBinding(Class<T> forClass) {
-		return (ConfigBinding<T>) toConfigBinding(BindingType.newBindingType(forClass));
+	public ConfigBinding<?> toRootConfigBinding(Type forType) {
+		return toConfigBinding(BindingType.newBindingType(forType));
 	}
 
 	public ConfigBinding<?> toConfigBinding(BindingType bindingType) {

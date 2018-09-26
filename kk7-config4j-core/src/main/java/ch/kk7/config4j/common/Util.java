@@ -8,8 +8,6 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static ch.kk7.config4j.source.simple.SimpleConfigException.classOf;
-
 public class Util {
 
 	public static final ResolvedType rawObjectType = ResolvedObjectType.create(Object.class, null, null, null);
@@ -32,7 +30,7 @@ public class Util {
 
 	public static <T, C> T assertClass(C instance, Class<T> clazz) {
 		if (!clazz.isAssignableFrom(instance.getClass())) {
-			throw new Config4jException("expected config to be of class {}", classOf(clazz));
+			throw new Config4jException("expected {} to be of {}", instance, clazz);
 		}
 		//noinspection unchecked
 		return (T) instance;

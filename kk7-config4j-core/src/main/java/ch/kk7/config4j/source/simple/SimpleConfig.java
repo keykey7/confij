@@ -6,7 +6,9 @@ import ch.kk7.config4j.format.ConfigFormat.ConfigFormatLeaf;
 import ch.kk7.config4j.format.ConfigFormat.ConfigFormatList;
 import ch.kk7.config4j.format.ConfigFormat.ConfigFormatMap;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,14 @@ public abstract class SimpleConfig {
 		assertFormatMatches();
 	}
 
+	private String uriEncode(String key) {
+		try {
+			return URLEncoder.encode(key, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			throw new IllegalArgumentException(e);
+		}
+	}
+
 	protected SimpleConfig(SimpleConfig parent, String key) {
 		this.parent = Objects.requireNonNull(parent);
 		this.root = parent.root;
@@ -37,7 +47,7 @@ public abstract class SimpleConfig {
 			throw new IllegalArgumentException("empty key is not allowed");
 		}
 		String uriTerminator = this instanceof SimpleConfigLeaf ? "" : "/";
-		this.uri = parent.uri.resolve(key + uriTerminator);
+		this.uri = parent.uri.resolve(uriEncode(key) + uriTerminator);
 		if (parent.config instanceof ConfigFormatList) {
 			config = ((ConfigFormatList) parent.config).anyChild();
 		} else if (parent.config instanceof ConfigFormatMap) {

@@ -1,20 +1,54 @@
 package ch.kk7.config4j.source.file.format;
 
 import ch.kk7.config4j.pipeline.Config4jBuilder;
+import com.fasterxml.classmate.GenericType;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class YamlFormatTest {
-	interface YamlTypes extends Map<String, Map<String, String>> {
+	private static Map<String, Map<String, String>> types;
+
+	@BeforeAll
+	public static void setupTypes() {
+		types = Config4jBuilder.of(new GenericType<Map<String, Map<String, String>>>() {
+		})
+				.withSource("classpath:types.yml")
+				.build();
 	}
 
 	@Test
-	public void x() {
-		Config4jBuilder.of(YamlTypes.class)
-				.withSource("classpath:types.yml")
-				.build();
+	public void integers() {
+		assertThat(types.get("integers")
+				.values()).allSatisfy(s -> assertThat(s).isEqualTo("12345"));
+	}
+
+	@Test
+	public void floats() {
+		Map<String,String> floats = types.get("floats");
+		assertThat(floats.get("exponential")).isEqualTo("1230.15");
+		assertThat(floats.get("fixed")).isEqualTo("1230.15");
+		assertThat(floats.get("infinite negative")).isEqualTo("-Infinity");
+		assertThat(floats.get("not a number")).isEqualTo("NaN");
+	}
+
+	@Test
+	public void dates() {
+		Map<String,String> dates = types.get("dates");
+		assertThat(dates.get("canonical")).isEqualTo("2001-12-15T02:59:43.1Z");
+		assertThat(dates.get("iso8601")).isEqualTo("2001-12-15T02:59:43.1Z");
+		assertThat(dates.get("space")).isEqualTo("2001-12-15T02:59:43.1Z");
+	}
+
+	@Test
+	public void miscellaneous() {
+		Map<String,String> miscellaneous = types.get("miscellaneous");
+		assertThat(miscellaneous.get("null")).isEqualTo(null);
+		assertThat(miscellaneous.get("null bis")).isEqualTo(null);
+		assertThat(miscellaneous.get("true ter")).isEqualTo("true");
+		assertThat(miscellaneous.get("false bis")).isEqualTo("false");
 	}
 }

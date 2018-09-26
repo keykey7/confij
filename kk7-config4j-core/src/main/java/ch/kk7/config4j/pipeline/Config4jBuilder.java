@@ -9,7 +9,9 @@ import ch.kk7.config4j.format.validation.NotNullValidator;
 import ch.kk7.config4j.source.AnySource;
 import ch.kk7.config4j.source.ConfigSource;
 import ch.kk7.config4j.source.defaults.DefaultSource;
+import com.fasterxml.classmate.GenericType;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,17 +31,21 @@ public class Config4jBuilder<T> {
 	// .withPrefix("/my/config")
 	// .withLockHandler(...)
 	// .build()
-	private final Class<T> forClass;
+	private final Type forType;
 	private List<ConfigSource> sources = new ArrayList<>();
 	private List<IValidator> validators = new ArrayList<>(Collections.singleton(new NotNullValidator()));
 	private FormatSettings formatSettings = FormatSettings.newDefaultSettings();
 
-	protected Config4jBuilder(Class<T> forClass) {
-		this.forClass = forClass;
+	protected Config4jBuilder(Type forType) {
+		this.forType = forType;
 	}
 
 	public static <X> Config4jBuilder<X> of(Class<X> forClass) {
 		return new Config4jBuilder<>(forClass);
+	}
+
+	public static <X> Config4jBuilder<X> of(GenericType<X> forType) {
+		return new Config4jBuilder<>(forType);
 	}
 
 	public Config4jBuilder<T> withSource(String... sourceStr) {
@@ -71,7 +77,7 @@ public class Config4jBuilder<T> {
 
 	public T build() {
 		ConfigBinder configBinder = new ConfigBinder();
-		ConfigBinding<T> configBinding = configBinder.toRootConfigBinding(forClass);
+		@SuppressWarnings("unchecked") ConfigBinding<T> configBinding = (ConfigBinding<T>) configBinder.toRootConfigBinding(forType);
 		ConfigFormat configFormat = configBinding.describe(formatSettings);
 		Config4jPipeline<T> pipeline = new Config4jPipeline<>(sources, new DefaultSource(), validators, configBinding, configFormat);
 		return pipeline.build();

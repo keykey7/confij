@@ -10,8 +10,18 @@ import com.fasterxml.classmate.ResolvedType;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class CollectionBindingFactory implements ConfigBindingFactory<CollectionBinding> {
+	private final Function<ResolvedType, ? extends CollectionBuilder> builderFactory;
+
+	public CollectionBindingFactory() {
+		this(CollectionBuilder::new);
+	}
+
+	public CollectionBindingFactory(Function<ResolvedType, ? extends CollectionBuilder> builderFactory) {
+		this.builderFactory = builderFactory;
+	}
 
 	@Override
 	public Optional<CollectionBinding> maybeCreate(BindingType bindingType, ConfigBinder configBinder) {
@@ -26,7 +36,7 @@ public class CollectionBindingFactory implements ConfigBindingFactory<Collection
 				throw new BindingException("cannot resolve the generic type within Collection<?> for " + type);
 			}
 			// otherwise: we have at least an upper bound for the generic (like <? extends Integer> becomes Integer.class)
-			CollectionBuilder builder = new CollectionBuilder(type);
+			CollectionBuilder builder = builderFactory.apply(type);
 			//noinspection unchecked
 			return Optional.of(new CollectionBinding(builder, bindingType.bindingFor(componentType), configBinder));
 		}
