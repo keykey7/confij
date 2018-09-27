@@ -4,6 +4,7 @@ import ch.kk7.config4j.binding.BindingException;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.RawConstructor;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,12 +36,12 @@ public class CollectionBuilder {
 	protected Function<Collection, Collection> newCollectionHardener(ResolvedType type) {
 		Class<?> intfClass = type.getErasedType();
 		if (Set.class.equals(intfClass)) {
-			return x -> Collections.unmodifiableSet((Set<?>)x);
+			return x -> Collections.unmodifiableSet((Set<?>) x);
 		} else if (List.class.equals(intfClass)) {
 			return x -> Collections.unmodifiableList((List<?>) x);
 		} else if (SortedSet.class.equals(intfClass)) {
 			return x -> Collections.unmodifiableSortedSet((SortedSet<?>) x);
-		}else if (NavigableSet.class.equals(intfClass)) {
+		} else if (NavigableSet.class.equals(intfClass)) {
 			return x -> Collections.unmodifiableNavigableSet((NavigableSet<?>) x);
 		}
 		// otherwise no hardening supported
@@ -70,18 +71,19 @@ public class CollectionBuilder {
 	}
 
 	protected Supplier<Collection> constructorSupplier(ResolvedType type) {
+		@SuppressWarnings("unchecked")
+		Constructor<Collection> constructor = (Constructor<Collection>) type.getConstructors()
+				.stream()
+				.map(RawConstructor::getRawMember)
+				.filter(c -> c.getParameterCount() == 0)
+				.findAny()
+				.orElseThrow(() -> new BindingException("Attempted to bind to a Collection of type {}. " +
+						"However this class doesn't provide a no-arg constructor. " +
+						"It's preferable to use simple Set or List interfaces " +
+						"instead of concrete Collection classes.", type));
 		return () -> {
 			try {
-				return (Collection) type.getConstructors()
-						.stream()
-						.map(RawConstructor::getRawMember)
-						.filter(c -> c.getParameterCount() == 0)
-						.findAny()
-						.orElseThrow(() -> new BindingException("Attempted to bind to a Collection of type {}. " +
-								"However this class doesn't provide a no-arg constructor. " +
-								"It's preferable to use simple Set or List interfaces " +
-								"instead of concrete Collection classes.", type))
-						.newInstance();
+				return constructor.newInstance();
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 				throw new BindingException("unable to call no-arg constructor on {}", type, e);
 			}

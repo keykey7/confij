@@ -7,8 +7,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -22,6 +24,12 @@ class CollectionBindingsTest {
 	private ConfigBinder configBinder = new ConfigBinder();
 
 	private interface CustomSet<T extends String> extends Set<T> {
+	}
+
+	public static class NoEmptyConstructor extends ArrayList<String> {
+		public NoEmptyConstructor(String whatever) {
+			// noop
+		}
 	}
 
 	@SuppressWarnings("unused")
@@ -50,10 +58,13 @@ class CollectionBindingsTest {
 		<T> Set<T> genericSet();
 
 		CustomSet<String> noBuilderForAnUnmodifiableSet();
+
+		NoEmptyConstructor noEmptyConstructor();
 	}
 
 	private static Stream<BindingType> toMethodStream(Class<?> clazz) {
 		return Arrays.stream(clazz.getMethods())
+				.sorted(Comparator.comparing(Method::getName))
 				.map(Method::getGenericReturnType)
 				.map(BindingType::newBindingType);
 	}
