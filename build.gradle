@@ -6,7 +6,8 @@ buildscript {
 }
 
 plugins {
-	id 'net.ltgt.apt-idea' version "0.18"
+	id 'net.ltgt.apt-idea' version '0.18'
+	id 'com.github.ben-manes.versions' version '0.20.0'
 }
 
 allprojects {
@@ -16,6 +17,8 @@ allprojects {
 	apply plugin: 'idea'
 	group 'ch.kk7'
 	version '0.0.0-SNAPSHOT'
+
+	dependencyUpdates.revision = 'release'
 }
 
 subprojects {
@@ -30,16 +33,12 @@ subprojects {
 		annotationProcessor 'com.google.auto.service:auto-service:1.0-rc4'
 
 		testImplementation "org.assertj:assertj-core:3.11.1"
-		def junitVersion = '5.3.0'
+		def junitVersion = '5.3.1'
 		testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-//		testImplementation('org.hamcrest:hamcrest-junit:2.0.0.0') {
-//			exclude group: 'junit', module: 'junit'
-//		}
 		testImplementation('org.junit-pioneer:junit-pioneer:0.1.2') {
 			exclude group: 'org.junit.jupiter'
 		}
-//		testImplementation 'com.github.npathai:hamcrest-optional:2.0.0'
 	}
 
 	test {
@@ -49,6 +48,6 @@ subprojects {
 }
 
 wrapper {
-	gradleVersion = '4.10'
+	gradleVersion = '4.10.2'
 	distributionType = Wrapper.DistributionType.ALL
 }

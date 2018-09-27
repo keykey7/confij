@@ -4,6 +4,7 @@ import ch.kk7.config4j.binding.BindingException;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.RawConstructor;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,18 +48,19 @@ public class MapBuilder {
 	}
 
 	protected Supplier<Map> constructorSupplier(ResolvedType type) {
+		@SuppressWarnings("unchecked")
+		Constructor<Map> constructor = (Constructor<Map>) type.getConstructors()
+				.stream()
+				.map(RawConstructor::getRawMember)
+				.filter(c -> c.getParameterCount() == 0)
+				.findAny()
+				.orElseThrow(() -> new BindingException("Attempted to bind to a Map of type {}. " +
+						"However this class doesn't provide a no-arg constructor. " +
+						"It's preferable to use a simple Map interface " +
+						"instead of concrete Map classes.", type));
 		return () -> {
 			try {
-				return (Map) type.getConstructors()
-						.stream()
-						.map(RawConstructor::getRawMember)
-						.filter(c -> c.getParameterCount() == 0)
-						.findAny()
-						.orElseThrow(() -> new BindingException("Attempted to bind to a Map of type {}. " +
-								"However this class doesn't provide a no-arg constructor. " +
-								"It's preferable to use a simple Map interface " +
-								"instead of concrete Map classes.", type))
-						.newInstance();
+				return constructor.newInstance();
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
 				throw new BindingException("unable to call no-arg constructor on {}", type, e);
 			}
