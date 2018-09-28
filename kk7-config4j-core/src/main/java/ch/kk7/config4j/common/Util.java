@@ -3,10 +3,13 @@ package ch.kk7.config4j.common;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.types.ResolvedObjectType;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class Util {
 
@@ -34,6 +37,12 @@ public class Util {
 		}
 		//noinspection unchecked
 		return (T) instance;
+	}
+
+	public static <T> List<T> serviceLoaderOf(Class<T> service) {
+		ServiceLoader<T> resourceFormatLoader = ServiceLoader.load(service);
+		return StreamSupport.stream(resourceFormatLoader.spliterator(), false)
+				.collect(Collectors.toList());
 	}
 
 	public static <T> Optional<T> firstOf(Optional<T>... optionals) {

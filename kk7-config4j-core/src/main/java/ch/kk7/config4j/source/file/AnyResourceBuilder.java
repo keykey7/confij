@@ -12,9 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.ServiceLoader;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+
+import static ch.kk7.config4j.common.Util.serviceLoaderOf;
 
 public class AnyResourceBuilder implements ConfigSourceBuilder {
 	private final List<Config4jResource> supportedResources;
@@ -22,10 +21,7 @@ public class AnyResourceBuilder implements ConfigSourceBuilder {
 
 	public AnyResourceBuilder() {
 		supportedResources = new ArrayList<>(Arrays.asList(new ClasspathResource(), new FileResource(), new URLResource()));
-		//supportedFormats = new ArrayList<>(Arrays.asList(new PropertiesFormat(), new YamlFormat()));
-		ServiceLoader<ResourceFormat> resourceFormatLoader = ServiceLoader.load(ResourceFormat.class);
-		supportedFormats = StreamSupport.stream(resourceFormatLoader.spliterator(), false)
-				.collect(Collectors.toList());
+		supportedFormats = serviceLoaderOf(ResourceFormat.class);
 		if (supportedFormats.isEmpty()) {
 			throw new IllegalStateException("Failed to load any ResourceFormat. Check your AnnotationProcessor.");
 		}

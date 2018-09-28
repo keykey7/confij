@@ -1,8 +1,6 @@
 package ch.kk7.config4j.format;
 
 import ch.kk7.config4j.annotation.Default;
-import ch.kk7.config4j.annotation.NotNull;
-import ch.kk7.config4j.annotation.Nullable;
 import ch.kk7.config4j.annotation.VariableResolver;
 import ch.kk7.config4j.common.AnnotationUtil;
 import ch.kk7.config4j.common.Config4jException;
@@ -16,21 +14,15 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class FormatSettings {
-	private final boolean isNullAllowed;
 	private final String defaultValue;
 	private final Class<? extends IVariableResolver> variableResolverClass;
 	private final LazyClassToImplCache implCache;
 
-	protected FormatSettings(boolean isNullAllowed, String defaultValue, Class<? extends IVariableResolver> variableResolverClass,
+	protected FormatSettings(String defaultValue, Class<? extends IVariableResolver> variableResolverClass,
 			LazyClassToImplCache implCache) {
-		this.isNullAllowed = isNullAllowed;
 		this.defaultValue = defaultValue;
 		this.variableResolverClass = Objects.requireNonNull(variableResolverClass);
 		this.implCache = Objects.requireNonNull(implCache);
-	}
-
-	public boolean isNullAllowed() {
-		return isNullAllowed;
 	}
 
 	public String getDefaultValue() {
@@ -42,24 +34,10 @@ public class FormatSettings {
 	}
 
 	public static FormatSettings newDefaultSettings() {
-		return new FormatSettings(false, null, DefaultResolver.class, new LazyClassToImplCache());
+		return new FormatSettings( null, DefaultResolver.class, new LazyClassToImplCache());
 	}
 
 	public FormatSettings settingsFor(AnnotatedElement element) {
-		// handle null config values
-		boolean willNullBeAllowed = isNullAllowed;
-		boolean forceNullable = element.isAnnotationPresent(Nullable.class);
-		boolean forceNotNull = element.isAnnotationPresent(NotNull.class);
-		if (forceNullable && forceNotNull) {
-			throw new IllegalArgumentException(Nullable.class + " and " + NotNull.class + " cannot be present at once");
-		}
-		if (forceNullable) {
-			willNullBeAllowed = true;
-		}
-		if (forceNotNull) {
-			willNullBeAllowed = false;
-		}
-
 		// handle default config values
 		String defaultValue = AnnotationUtil.findAnnotation(element, Default.class)
 				.map(Default::value)
@@ -74,7 +52,7 @@ public class FormatSettings {
 			throw new FormatException("An element annotated with {} has an invalid null resolver class", VariableResolver.class);
 		}
 
-		return new FormatSettings(willNullBeAllowed, defaultValue, variableResolverClass, implCache);
+		return new FormatSettings(defaultValue, variableResolverClass, implCache);
 	}
 
 	public static class LazyClassToImplCache {

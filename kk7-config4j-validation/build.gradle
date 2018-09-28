@@ -1,0 +1,8 @@
+dependencies {
+	api project(':kk7-config4j-core')
+	api 'javax.validation:validation-api:2.0.1.Final'
+	implementation 'org.hibernate.validator:hibernate-validator:6.0.13.Final'
+
+	// optional: https://docs.jboss.org/hibernate/stable/validator/reference/en-US/html_single/#validator-gettingstarted-uel
+	// implementation 'org.glassfish:javax.el:3.0.1-b09'
+}

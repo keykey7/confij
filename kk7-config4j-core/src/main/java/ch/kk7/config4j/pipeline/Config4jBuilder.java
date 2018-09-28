@@ -4,8 +4,8 @@ import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.binding.ConfigBinding;
 import ch.kk7.config4j.format.ConfigFormat;
 import ch.kk7.config4j.format.FormatSettings;
-import ch.kk7.config4j.format.validation.IValidator;
-import ch.kk7.config4j.format.validation.NotNullValidator;
+import ch.kk7.config4j.validation.IValidator;
+import ch.kk7.config4j.validation.ServiceLoaderValidator;
 import ch.kk7.config4j.source.AnySource;
 import ch.kk7.config4j.source.ConfigSource;
 import ch.kk7.config4j.source.defaults.DefaultSource;
@@ -14,9 +14,9 @@ import com.fasterxml.classmate.GenericType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class Config4jBuilder<T> {
@@ -33,7 +33,7 @@ public class Config4jBuilder<T> {
 	// .build()
 	private final Type forType;
 	private List<ConfigSource> sources = new ArrayList<>();
-	private List<IValidator> validators = new ArrayList<>(Collections.singleton(new NotNullValidator()));
+	private IValidator validator = null;
 	private FormatSettings formatSettings = FormatSettings.newDefaultSettings();
 
 	protected Config4jBuilder(Type forType) {
@@ -59,15 +59,14 @@ public class Config4jBuilder<T> {
 		sources.addAll(Arrays.asList(source));
 		return this;
 	}
-//
-//	public <X> Config4jBuilder<T> withValueMapping(Class<X> forClass, IValueMapper<X> mapping) {
-//		valueMapperFactory.withMapping(forClass, mapping);
-//		return this;
-//	}
 
 	public Config4jBuilder<T> withValidator(IValidator validator) {
-		validators.add(Objects.requireNonNull(validator, "validator"));
+		this.validator = Objects.requireNonNull(validator, "validator");
 		return this;
+	}
+
+	public Config4jBuilder<T> withoutValidator() {
+		return withValidator(IValidator.NOOP);
 	}
 
 	public Config4jBuilder<T> withFormatSettings(FormatSettings formatSettings) {
@@ -76,10 +75,13 @@ public class Config4jBuilder<T> {
 	}
 
 	public T build() {
+		validator = Optional.ofNullable(validator)
+				.orElseGet(ServiceLoaderValidator::new);
 		ConfigBinder configBinder = new ConfigBinder();
-		@SuppressWarnings("unchecked") ConfigBinding<T> configBinding = (ConfigBinding<T>) configBinder.toRootConfigBinding(forType);
+		@SuppressWarnings("unchecked")
+		ConfigBinding<T> configBinding = (ConfigBinding<T>) configBinder.toRootConfigBinding(forType);
 		ConfigFormat configFormat = configBinding.describe(formatSettings);
-		Config4jPipeline<T> pipeline = new Config4jPipeline<>(sources, new DefaultSource(), validators, configBinding, configFormat);
+		Config4jPipeline<T> pipeline = new Config4jPipeline<>(sources, new DefaultSource(), validator, configBinding, configFormat);
 		return pipeline.build();
 	}
 }
