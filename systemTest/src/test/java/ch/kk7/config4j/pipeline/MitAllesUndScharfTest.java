@@ -1,7 +1,6 @@
 package ch.kk7.config4j.pipeline;
 
 import ch.kk7.config4j.annotation.Default;
-import ch.kk7.config4j.annotation.Nullable;
 import ch.kk7.config4j.binding.leaf.mapper.Base64Mapper.Base64;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class MitAllesUndScharfTest {
-	@Nullable
 	public interface MitAllesUndScharf {
 		Primitives primitives();
 

@@ -35,7 +35,7 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 	private final T instance;
 
 	public interface Config4jHandled {
-		// marker interface
+		Map<Method, Object> methodToValue();
 	}
 
 	public InterfaceInvocationHandler(ResolvedInterfaceType type) {
@@ -105,6 +105,9 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 	public Object invoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
 		if (Object.class.equals(method.getDeclaringClass())) {
 			return method.invoke(this, args);
+		}
+		if (Config4jHandled.class.equals(method.getDeclaringClass())) {
+			return methodToValue;
 		}
 		if (!methodToValue.containsKey(method)) {
 			if (Modifier.isStatic(method.getModifiers())) {

@@ -91,6 +91,7 @@ public class PropertiesFormat implements ResourceFormat {
 					}
 				})
 				.distinct()
+				.sorted()
 				.forEach(i -> result.add(i, flatToDeep(format.anyChild(), submapOf(map, "" + i))));
 		return result;
 	}

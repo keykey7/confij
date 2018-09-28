@@ -115,16 +115,18 @@ public class SimpleConfigList extends SimpleConfig {
 
 	@Override
 	public void overrideWith(SimpleConfig simpleConfig) {
-		ch.kk7.config4j.source.simple.SimpleConfigList other = assertClass(simpleConfig,
+		ch.kk7.config4j.source.simple.SimpleConfigList winner = assertClass(simpleConfig,
 				ch.kk7.config4j.source.simple.SimpleConfigList.class);
-		for (int i = 0; i < other.list.size(); i++) {
-			SimpleConfig otherItem = other.list.get(i);
-			SimpleConfig currentItem = list.size() >= i ? null : list.get(i);
-			if (currentItem == null) {
-				list.set(i, otherItem);
-			} else {
-				currentItem.overrideWith(otherItem);
-			}
+
+		int overrideUntil = Math.min(winner.list.size(), list.size());
+		// override existing items
+		for (int i = 0; i < overrideUntil; i++) {
+			SimpleConfig current = list.get(i);
+			current.overrideWith(winner.list.get(i));
+		}
+		// append if input has even more items
+		for (int i = overrideUntil; i < winner.list.size(); i++) {
+			list.add(winner.list.get(i));
 		}
 	}
 

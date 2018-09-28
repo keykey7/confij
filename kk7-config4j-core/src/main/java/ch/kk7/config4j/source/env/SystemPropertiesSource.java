@@ -1,23 +1,15 @@
 package ch.kk7.config4j.source.env;
 
-import ch.kk7.config4j.source.ConfigSource;
 import ch.kk7.config4j.source.ConfigSourceBuilder;
-import ch.kk7.config4j.source.file.format.PropertiesFormat;
-import ch.kk7.config4j.source.simple.SimpleConfig;
 
 import java.net.URI;
 import java.util.Optional;
 
-public class SystemPropertiesSource extends PropertiesFormat implements ConfigSource, ConfigSourceBuilder {
+public class SystemPropertiesSource extends PropertiesSource implements ConfigSourceBuilder {
 	public static final String SCHEME = "sys";
 
 	public SystemPropertiesSource() {
-		setSeparator(".");
-	}
-
-	@Override
-	public void override(SimpleConfig simpleConfig) {
-		overrideWithProperties(simpleConfig, System.getProperties());
+		super(System.getProperties());
 	}
 
 	@Override

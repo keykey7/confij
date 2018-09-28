@@ -1,7 +1,5 @@
 package ch.kk7.config4j.format;
 
-import ch.kk7.config4j.annotation.NotNull;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -35,7 +33,6 @@ public abstract class ConfigFormat {
 			this.anyChild = Objects.requireNonNull(anyChild);
 		}
 
-		@NotNull
 		public ConfigFormat anyChild() {
 			return anyChild;
 		}
