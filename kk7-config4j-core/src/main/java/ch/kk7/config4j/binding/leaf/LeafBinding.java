@@ -4,6 +4,7 @@ import ch.kk7.config4j.binding.BindingException;
 import ch.kk7.config4j.binding.BindingType;
 import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.binding.ConfigBinding;
+import ch.kk7.config4j.binding.ConfigBinding.BindResult.BindResultBuilder;
 import ch.kk7.config4j.binding.ConfigBindingFactory;
 import ch.kk7.config4j.format.ConfigFormat.ConfigFormatLeaf;
 import ch.kk7.config4j.format.FormatSettings;
@@ -25,11 +26,14 @@ public class LeafBinding<T> implements ConfigBinding<T> {
 	}
 
 	@Override
-	public T bind(SimpleConfig config) {
+	public BindResult<T> bind(SimpleConfig config) {
 		if (!(config instanceof SimpleConfigLeaf)) {
 			throw new IllegalStateException("expected a leaf, but got: " + config);
 		}
-		return valueMapper.fromString(((SimpleConfigLeaf) config).get());
+		T result = valueMapper.fromString(((SimpleConfigLeaf) config).get());
+		BindResultBuilder<T> resultBuilder = BindResult.builder();
+		return resultBuilder.value(result)
+				.build();
 	}
 
 	public static class ForcedLeafBindingFactory implements ConfigBindingFactory<LeafBinding> {

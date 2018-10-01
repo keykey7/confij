@@ -3,11 +3,9 @@ package ch.kk7.config4j.validation;
 import ch.kk7.config4j.annotation.Default;
 import ch.kk7.config4j.pipeline.Config4jBuilder;
 import ch.kk7.config4j.source.env.PropertiesSource;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -17,7 +15,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-class JSR303ValidatorTest {
+class JSR380ValidatorTest {
 
 	public interface ValidatedConfig {
 		@Min(100)
@@ -29,7 +27,16 @@ class JSR303ValidatorTest {
 		@Default("AAAAA")
 		String aString();
 
-		Set<@Valid NestedValidatedConfig> aSet();
+		@Pattern(regexp = "A+")
+		@Default("AV")
+		String getXxxxx();
+
+		String aNullString();
+
+		// notably not: @Valid
+		NestedValidatedConfig nested();
+
+		Set<NestedValidatedConfig> aSet();
 	}
 
 	public interface NestedValidatedConfig {
@@ -50,11 +57,20 @@ class JSR303ValidatorTest {
 				.withSource(new PropertiesSource().with("anInt", "23"));
 		assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(builder::build)
 				.satisfies(e -> assertThat(e.getConstraintViolations()).hasSize(1));
+		//builder.build();
 	}
 
-	@Disabled("nested objects are not working yet... still proxy obj issues")
 	@Test
 	public void testNestedInvalid() {
+		Config4jBuilder<ValidatedConfig> builder = Config4jBuilder.of(ValidatedConfig.class)
+				.withSource(new PropertiesSource()
+						.with("nested.aString", ""));
+		assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(builder::build)
+				.satisfies(e -> assertThat(e.getConstraintViolations()).hasSize(1));
+	}
+
+	@Test
+	public void testNestedSetInvalid() {
 		Config4jBuilder<ValidatedConfig> builder = Config4jBuilder.of(ValidatedConfig.class)
 				.withSource(new PropertiesSource()
 						.with("aSet.0.aString", "")

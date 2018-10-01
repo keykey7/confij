@@ -3,6 +3,7 @@ package ch.kk7.config4j.binding.map;
 import ch.kk7.config4j.binding.BindingType;
 import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.binding.ConfigBinding;
+import ch.kk7.config4j.binding.ConfigBinding.BindResult.BindResultBuilder;
 import ch.kk7.config4j.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.config4j.format.FormatSettings;
 import ch.kk7.config4j.source.simple.SimpleConfig;
@@ -26,16 +27,19 @@ public class MapBinding<T> implements ConfigBinding<Map<String, T>> {
 	}
 
 	@Override
-	public Map<String, T> bind(SimpleConfig config) {
+	public BindResult<Map<String, T>> bind(SimpleConfig config) {
 		if (!(config instanceof SimpleConfigMap)) {
 			throw new IllegalStateException("expected a config map, but got: " + config);
 		}
-		Map<String, T> map = builder.newInstance();
+		BindResultBuilder<Map<String, T>> resultBuilder = BindResult.builder();
+		Map<String, T> map = this.builder.newInstance();
 		for (Map.Entry<String, SimpleConfig> configEntry : ((SimpleConfigMap) config).map()
 				.entrySet()) {
-			T item = componentDescription.bind(configEntry.getValue());
-			map.put(configEntry.getKey(), item);
+			BindResult<T> bindResultItem = componentDescription.bind(configEntry.getValue());
+			map.put(configEntry.getKey(), bindResultItem.getValue());
+			resultBuilder.sibling(configEntry.getKey(), bindResultItem);
 		}
-		return builder.tryHarden(map);
+		return resultBuilder.value(this.builder.tryHarden(map))
+				.build();
 	}
 }

@@ -3,6 +3,7 @@ package ch.kk7.config4j.binding.collection;
 import ch.kk7.config4j.binding.BindingType;
 import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.binding.ConfigBinding;
+import ch.kk7.config4j.binding.ConfigBinding.BindResult.BindResultBuilder;
 import ch.kk7.config4j.format.ConfigFormat.ConfigFormatList;
 import ch.kk7.config4j.format.FormatSettings;
 import ch.kk7.config4j.source.simple.SimpleConfig;
@@ -27,16 +28,20 @@ public class CollectionBinding<T> implements ConfigBinding<Collection<T>> {
 	}
 
 	@Override
-	public Collection<T> bind(SimpleConfig config) {
+	public BindResult<Collection<T>> bind(SimpleConfig config) {
 		if (!(config instanceof SimpleConfigList)) {
 			throw new IllegalStateException("expected a config list, but got: " + config);
 		}
+		BindResultBuilder<Collection<T>> resultBuilder = BindResult.builder();
 		List<SimpleConfig> configList = ((SimpleConfigList) config).list();
 		Collection<T> collection = builder.newInstance();
-		for (SimpleConfig configItem : configList) {
-			T listItem = componentDescription.bind(configItem);
-			collection.add(listItem);
+
+		for (int i = 0; i < configList.size(); i++) {
+			BindResult<T> itemBindResult = componentDescription.bind(configList.get(i));
+			collection.add(itemBindResult.getValue());
+			resultBuilder.sibling(String.valueOf(i), itemBindResult);
 		}
-		return builder.tryHarden(collection);
+		return resultBuilder.value(builder.tryHarden(collection))
+				.build();
 	}
 }

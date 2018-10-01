@@ -3,6 +3,7 @@
 - extend @Base64 with different charsets and base64 standards
 - implement @CsvSeparated (for array and lists)
 - configuration reload support
+- immutable interface handler
 - ...with locking functionality
     lock types: async (never blocking) vs blocking
     trigger type: time based, file listener, manual

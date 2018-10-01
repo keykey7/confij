@@ -1,6 +1,7 @@
 package ch.kk7.config4j.pipeline;
 
 import ch.kk7.config4j.binding.ConfigBinding;
+import ch.kk7.config4j.binding.ConfigBinding.BindResult;
 import ch.kk7.config4j.format.ConfigFormat;
 import ch.kk7.config4j.validation.IValidator;
 import ch.kk7.config4j.source.ConfigSource;
@@ -43,14 +44,14 @@ public class Config4jPipeline<T> {
 		return simpleConfig;
 	}
 
-	protected T bind(SimpleConfig simpleConfig) {
+	protected BindResult<T> bind(SimpleConfig simpleConfig) {
 		return configBinding.bind(simpleConfig);
 	}
 
 	public T build() {
 		SimpleConfig simpleConfig = readSimpleConfig();
-		T config = bind(simpleConfig);
-		validator.validate(config);
-		return config;
+		BindResult<T> bindResult = bind(simpleConfig);
+		validator.validate(bindResult);
+		return bindResult.getValue();
 	}
 }

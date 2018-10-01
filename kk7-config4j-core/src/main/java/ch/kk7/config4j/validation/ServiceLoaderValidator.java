@@ -1,5 +1,7 @@
 package ch.kk7.config4j.validation;
 
+import ch.kk7.config4j.binding.ConfigBinding.BindResult;
+
 import java.util.List;
 
 import static ch.kk7.config4j.common.Util.serviceLoaderOf;
@@ -13,7 +15,7 @@ public class ServiceLoaderValidator implements IValidator {
 	}
 
 	@Override
-	public void validate(Object config) {
-		validators.forEach(validator -> validator.validate(config));
+	public void validate(BindResult<?> bindResult) {
+		validators.forEach(validator -> validator.validate(bindResult));
 	}
 }

@@ -4,6 +4,7 @@ import ch.kk7.config4j.annotation.Key;
 import ch.kk7.config4j.binding.BindingType;
 import ch.kk7.config4j.binding.ConfigBinder;
 import ch.kk7.config4j.binding.ConfigBinding;
+import ch.kk7.config4j.binding.ConfigBinding.BindResult.BindResultBuilder;
 import ch.kk7.config4j.common.AnnotationUtil;
 import ch.kk7.config4j.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.config4j.format.FormatSettings;
@@ -33,10 +34,10 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 		for (ResolvedMethod method : interfaceHandler.getSupportedMethods()) {
 			BindingType methodBindingType = bindingType.bindingFor(method.getReturnType(), bindingType.getBindingSettings()
 					.settingsFor(method.getRawMember()));
-			ConfigBinding<?> methodDescription = configBinder.toConfigBinding(methodBindingType);
+			ConfigBinding<?> methodBinding = configBinder.toConfigBinding(methodBindingType);
 			String configKey = AnnotationUtil.findAnnotation(method.getRawMember(), Key.class).map(Key::value)
 					.orElse(method.getName());
-			siblingsByName.put(configKey, new AttributeInformation(methodDescription, method));
+			siblingsByName.put(configKey, new AttributeInformation(methodBinding, method));
 		}
 		publicInstance = interfaceHandler.instance();
 	}
@@ -56,18 +57,23 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 	}
 
 	@Override
-	public T bind(SimpleConfig config) {
+	public BindResult<T> bind(SimpleConfig config) {
 		if (!(config instanceof SimpleConfigMap)) {
 			throw new IllegalStateException("expected a config map, but got: " + config);
 		}
 		Map<String, SimpleConfig> configMap = ((SimpleConfigMap) config).map();
+
+		// FIXME: interface handler should be immutable
+		BindResultBuilder<T> resultBuilder = BindResult.builder();
 		interfaceHandler.clear();
 		siblingsByName.forEach((key, siblingDescription) -> {
-			Object siblingValue = siblingDescription.getDescription()
+			BindResult<?> siblingBindResult = siblingDescription.getDescription()
 					.bind(configMap.get(key));
-			interfaceHandler.setMethod(siblingDescription.getMethod(), siblingValue);
+			interfaceHandler.setMethod(siblingDescription.getMethod(), siblingBindResult.getValue());
+			resultBuilder.sibling(key, siblingBindResult);
 		});
-		return publicInstance;
+		return resultBuilder.value(publicInstance)
+				.build();
 	}
 
 	public static class AttributeInformation {
