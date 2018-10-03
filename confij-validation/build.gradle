@@ -1,17 +1,3 @@
-repositories {
-	maven { url 'http://ci.hibernate.org/plugin/repository/project/hibernate-validator-master/LastSuccessful/repository' }
-	// broken by hibernate. We therefore use a custom (idiotic) ivy repo pattern to get a snapshot version
-	ivy {
-		url 'http://ci.hibernate.org/plugin/repository/project/hibernate-validator-master/LastSuccessful/repository'
-		layout 'pattern' , {
-			layout 'pattern', {
-				m2compatible = true
-				artifact '[organisation]/[module]/[revision]/[artifact]-[revision](.[ext])'
-			}
-		}
-	}
-}
-
 dependencies {
 	api project(':confij-core')
 
