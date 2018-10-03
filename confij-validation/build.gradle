@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-	api project(':kk7-config4j-core')
+	api project(':confij-core')
 
 	implementation 'org.hibernate.validator:hibernate-validator:6.1.+'
 	// transitive of hibernate-validator since snapshot doesn't declare 'em (fasterxml is already on core classpath)

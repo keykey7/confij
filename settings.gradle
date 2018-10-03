@@ -1,4 +1,4 @@
-include 'kk7-config4j-core'
-include 'kk7-config4j-yaml'
-include 'kk7-config4j-validation'
-include 'systemTest'
+include 'confij-core'
+include 'confij-yaml'
+include 'confij-validation'
+include 'confij-example'

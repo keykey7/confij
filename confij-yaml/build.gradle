@@ -1,4 +1,4 @@
 dependencies {
-	api project(':kk7-config4j-core')
+	api project(':confij-core')
 	api 'org.yaml:snakeyaml:1.23'
 }
