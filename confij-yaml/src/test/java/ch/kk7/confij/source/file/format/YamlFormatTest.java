@@ -1,6 +1,6 @@
 package ch.kk7.confij.source.file.format;
 
-import ch.kk7.confij.pipeline.Config4jBuilder;
+import ch.kk7.confij.pipeline.ConfijBuilder;
 import com.fasterxml.classmate.GenericType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ class YamlFormatTest {
 
 	@BeforeAll
 	public static void setupTypes() {
-		types = Config4jBuilder.of(new GenericType<Map<String, Map<String, String>>>() {
+		types = ConfijBuilder.of(new GenericType<Map<String, Map<String, String>>>() {
 		})
 				.withSource("classpath:types.yml")
 				.build();

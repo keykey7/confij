@@ -108,7 +108,7 @@ public class MitAllesUndScharfTest {
 
 	@Test
 	public void canInstantiateEmpty() {
-		MitAllesUndScharf allDefaults = Config4jBuilder.of(MitAllesUndScharf.class)
+		MitAllesUndScharf allDefaults = ConfijBuilder.of(MitAllesUndScharf.class)
 				.build();
 		Primitives primitives = allDefaults.primitives();
 		assertThat(primitives).isNotNull();
@@ -129,7 +129,7 @@ public class MitAllesUndScharfTest {
 
 	@Test
 	public void canInstantiateDefaults() {
-		MitAllesUndScharf allDefaults = Config4jBuilder.of(MitAllesUndScharf.class)
+		MitAllesUndScharf allDefaults = ConfijBuilder.of(MitAllesUndScharf.class)
 				.build();
 		Primitives primitives = allDefaults.primitives();
 		assertThat(primitives.anInt()).isEqualTo(42);

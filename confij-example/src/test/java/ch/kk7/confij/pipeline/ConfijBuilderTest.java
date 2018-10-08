@@ -15,9 +15,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-class Config4jBuilderTest {
+class ConfijBuilderTest {
 	private static AbstractStringAssert<?> assertSourceBecomes(String source, String expectedValue) {
-		return assertThat(Config4jBuilder.of(MyConfig.class)
+		return assertThat(ConfijBuilder.of(MyConfig.class)
 				.withSource(source)
 				.build()
 				.aString()).isEqualTo(expectedValue);
@@ -48,7 +48,7 @@ class Config4jBuilderTest {
 
 	@Test
 	public void unknownScheme() {
-		Config4jBuilder builder = Config4jBuilder.of(MyConfig.class)
+		ConfijBuilder builder = ConfijBuilder.of(MyConfig.class)
 				.withSource("unknown:whatever");
 		assertThrows(Config4jSourceException.class, builder::build);
 	}

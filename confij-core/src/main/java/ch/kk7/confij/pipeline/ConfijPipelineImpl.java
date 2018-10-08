@@ -9,14 +9,14 @@ import ch.kk7.confij.source.simple.SimpleConfig;
 import java.util.List;
 import java.util.Objects;
 
-public class Config4jPipeline<T> {
+public class ConfijPipelineImpl<T> implements ConfijPipeline<T> {
 	private final List<ConfigSource> sources;
 	private final ConfigSource defaultSource;
 	private final IValidator validator;
 	private final ConfigBinding<T> configBinding;
 	private final ConfigFormat format;
 
-	public Config4jPipeline(List<ConfigSource> sources, ConfigSource defaultSource, IValidator validator,
+	public ConfijPipelineImpl(List<ConfigSource> sources, ConfigSource defaultSource, IValidator validator,
 			ConfigBinding<T> configBinding, ConfigFormat format) {
 		this.sources = Objects.requireNonNull(sources);
 		this.defaultSource = Objects.requireNonNull(defaultSource);
@@ -47,6 +47,7 @@ public class Config4jPipeline<T> {
 		return configBinding.bind(simpleConfig);
 	}
 
+	@Override
 	public T build() {
 		SimpleConfig simpleConfig = readSimpleConfig();
 		T config = bind(simpleConfig);
