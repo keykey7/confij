@@ -51,6 +51,7 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 	}
 
 	protected MemberResolver newMemberResolver() {
+		// TODO: use the common typeResolver
 		MemberResolver memberResolver = new MemberResolver(new TypeResolver());
 		memberResolver.setMethodFilter(method -> {
 			if (isIgnorableMethod(method)) {
@@ -104,6 +105,9 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
 		if (Object.class.equals(method.getDeclaringClass())) {
+			if ("toString".equals(method.getName())) {
+				return intfToString();
+			}
 			return method.invoke(this, args);
 		}
 		if (Config4jHandled.class.equals(method.getDeclaringClass())) {
@@ -113,7 +117,8 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 			if (Modifier.isStatic(method.getModifiers())) {
 				return method.invoke(null, args);
 			}
-			throw new IllegalStateException("unable to handle " + method + ", known are: " + methodToValue.keySet());
+			throw new BindingException("cannot call method '{}' as it was not initialized. Known methods on this type are: {}", method,
+					methodToValue.keySet());
 		}
 		return methodToValue.get(method);
 	}
@@ -139,6 +144,20 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 	@SuppressWarnings("unchecked")
 	protected static <T> T classToPrimitive(Class<T> primitiveClass) {
 		return (T) PRIMITIVE_ZEROS.get(primitiveClass);
+	}
+
+	protected String intfToString() {
+		StringBuilder sb = new StringBuilder(type.getErasedType()
+				.getSimpleName()).append("@")
+				.append(Integer.toHexString(hashCode()))
+				.append("{");
+		methodToValue.forEach((k, v) -> sb.append(k.getName())
+				.append("=")
+				.append(v)
+				.append(", "));
+		sb.setLength(sb.length() - 2);
+		sb.append("}");
+		return sb.toString();
 	}
 
 	@SuppressWarnings("unchecked")
