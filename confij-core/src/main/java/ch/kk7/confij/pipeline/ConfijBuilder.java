@@ -5,8 +5,7 @@ import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.format.ConfigFormat;
 import ch.kk7.confij.format.FormatSettings;
 import ch.kk7.confij.reload.ConfijReloader;
-import ch.kk7.confij.reload.ReloadStrategy;
-import ch.kk7.confij.reload.TimeIntervalReloadStrategy;
+import ch.kk7.confij.reload.TimedBlockingReloader;
 import ch.kk7.confij.source.AnySource;
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.defaults.DefaultSource;
@@ -27,7 +26,7 @@ public class ConfijBuilder<T> {
 	private List<ConfigSource> sources = new ArrayList<>();
 	private IValidator validator = null;
 	private FormatSettings formatSettings = FormatSettings.newDefaultSettings();
-	private ReloadStrategy reloadStrategy = null;
+	private ConfijReloader<T> reloader = null;
 
 	protected ConfijBuilder(Type forType) {
 		this.forType = forType;
@@ -67,8 +66,8 @@ public class ConfijBuilder<T> {
 		return this;
 	}
 
-	public ConfijBuilder<T> withReloadStrategy(ReloadStrategy reloadStrategy) {
-		this.reloadStrategy = Objects.requireNonNull(reloadStrategy, "reloadStrategy");
+	public ConfijBuilder<T> withReloader(ConfijReloader<T> reloader) {
+		this.reloader = Objects.requireNonNull(reloader, "reloader");
 		return this;
 	}
 
@@ -87,12 +86,9 @@ public class ConfijBuilder<T> {
 	}
 
 	public ConfijReloader<T> buildReloadable() {
-		reloadStrategy = Optional.ofNullable(reloadStrategy)
-				.orElseGet(() -> TimeIntervalReloadStrategy.builder()
-						.build());
-		return ConfijReloader.<T>builder()
-				.pipeline(buildPipeline())
-				.reloadStrategy(reloadStrategy)
-				.build();
+		reloader = Optional.ofNullable(reloader)
+				.orElseGet(TimedBlockingReloader::new);
+		reloader.initialize(buildPipeline());
+		return reloader;
 	}
 }
