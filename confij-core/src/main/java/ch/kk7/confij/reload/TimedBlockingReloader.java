@@ -1,6 +1,7 @@
 package ch.kk7.confij.reload;
 
 import ch.kk7.confij.pipeline.ConfijPipeline;
+import lombok.ToString;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -13,6 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * reload the configuration. Other concurrent threads continue using the old instance without delay.
  * @param <T>
  */
+@ToString
 public class TimedBlockingReloader<T> implements ConfijReloader<T> {
 	private final Duration pauseAfterSuccess;
 	private final Duration pauseAfterFailure;
@@ -22,7 +24,7 @@ public class TimedBlockingReloader<T> implements ConfijReloader<T> {
 	private T current;
 
 	public TimedBlockingReloader() {
-		this(Duration.ofSeconds(10), Duration.ofSeconds(10));
+		this(Duration.ofSeconds(30), Duration.ofSeconds(30));
 	}
 
 	public TimedBlockingReloader(Duration pauseAfterSuccess, Duration pauseAfterFailure) {
@@ -32,10 +34,12 @@ public class TimedBlockingReloader<T> implements ConfijReloader<T> {
 
 	@Override
 	public void initialize(ConfijPipeline<T> pipeline) {
-		if (this.pipeline != null) {
-			throw new IllegalStateException("already initialized");
+		synchronized (this) {
+			if (this.pipeline != null) {
+				throw new IllegalStateException("already initialized");
+			}
+			this.pipeline = Objects.requireNonNull(pipeline);
 		}
-		this.pipeline = Objects.requireNonNull(pipeline);
 		doReload();
 	}
 

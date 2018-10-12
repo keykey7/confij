@@ -8,10 +8,7 @@
 - load via JNDI
 - support Random or @Random for random values
 - load resources with wildcard support (like *.properties)
-- configuration reload support: new interface Reloadable? or a Reloader.reload(cfg) ?
-- ...with locking functionality
-    lock types: async (never blocking) vs blocking
-    trigger type: time based, file listener, manual
+- reloader with file-watcher
 - validation module with everything @NotNull and everything @Valid per default
 - logging modul
 - refactor: remove Lists, replace with maps + key validator (aka only integers, sequential)

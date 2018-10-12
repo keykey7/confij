@@ -5,7 +5,7 @@ import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.format.ConfigFormat;
 import ch.kk7.confij.format.FormatSettings;
 import ch.kk7.confij.reload.ConfijReloader;
-import ch.kk7.confij.reload.TimedBlockingReloader;
+import ch.kk7.confij.reload.ScheduledReloader;
 import ch.kk7.confij.source.AnySource;
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.defaults.DefaultSource;
@@ -87,7 +87,7 @@ public class ConfijBuilder<T> {
 
 	public ConfijReloader<T> buildReloadable() {
 		reloader = Optional.ofNullable(reloader)
-				.orElseGet(TimedBlockingReloader::new);
+				.orElseGet(ScheduledReloader::new);
 		reloader.initialize(buildPipeline());
 		return reloader;
 	}
