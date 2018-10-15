@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
@@ -89,6 +90,8 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 			Method rawMethod = method.getRawMember();
 			ResolvedType returnClass = method.getReturnType();
 			if (rawMethod.isDefault()) {
+				// TODO: maybe still better to call this every time the proxy is invoked where it has access on all other methods
+				// here other method values might not yet be initialized
 				try {
 					value = DefaultMethodHandler.invokeDefaultMethod(instance(), rawMethod, new Object[]{});
 				} catch (InvocationTargetException | IllegalAccessException e) {
@@ -105,10 +108,7 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 	@Override
 	public Object invoke(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
 		if (Object.class.equals(method.getDeclaringClass())) {
-			if ("toString".equals(method.getName())) {
-				return intfToString();
-			}
-			return method.invoke(this, args);
+			return invokeObjectClass(proxy, method, args);
 		}
 		if (Config4jHandled.class.equals(method.getDeclaringClass())) {
 			return methodToValue;
@@ -121,6 +121,19 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 					methodToValue.keySet());
 		}
 		return methodToValue.get(method);
+	}
+
+	public Object invokeObjectClass(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
+		if ("toString".equals(method.getName())) {
+			return intfToString();
+		}
+		if ("equals".equals(method.getName())) {
+			return intfEquals(proxy, args[0]);
+		}
+		if ("hashCode".equals(method.getName())) {
+			return methodToValue.hashCode();
+		}
+		return method.invoke(this, args);
 	}
 
 	// TODO: it's wrong to check here for empty values. this information should come from the source
@@ -149,7 +162,7 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 	protected String intfToString() {
 		StringBuilder sb = new StringBuilder(type.getErasedType()
 				.getSimpleName()).append("@")
-				.append(Integer.toHexString(hashCode()))
+				.append(Integer.toHexString(hashCode() & 0xffff))
 				.append("{");
 		methodToValue.forEach((k, v) -> sb.append(k.getName())
 				.append("=")
@@ -158,6 +171,17 @@ public class InterfaceInvocationHandler<T> implements InvocationHandler {
 		sb.setLength(sb.length() - 2);
 		sb.append("}");
 		return sb.toString();
+	}
+
+	protected boolean intfEquals(Object proxy, Object o) {
+		if (proxy == o) {
+			return true;
+		}
+		if (!(o instanceof Config4jHandled)) {
+			return false;
+		}
+		Config4jHandled that = (Config4jHandled) o;
+		return Objects.equals(methodToValue, that.methodToValue());
 	}
 
 	@SuppressWarnings("unchecked")
