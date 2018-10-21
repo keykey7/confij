@@ -1,5 +1,9 @@
 package ch.kk7.confij.binding.intf;
 
+import lombok.EqualsAndHashCode;
+import lombok.Value;
+import lombok.experimental.UtilityClass;
+
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
@@ -11,15 +15,11 @@ import java.lang.reflect.Method;
  * invoke default methods on interfaces.
  * inspired by: https://blog.jooq.org/2018/03/28/correct-reflective-access-to-interface-default-methods-in-java-8-9-10/
  */
+@UtilityClass
 public class DefaultMethodHandler {
 	private static final Method privateLookupIn = privateLookupIn();
 
-	private DefaultMethodHandler() {
-		// util thingie
-	}
-
-	public static Object invokeDefaultMethod(Object proxy, Method method,
-			Object[] args) throws InvocationTargetException, IllegalAccessException {
+	public static Object invokeDefaultMethod(Object proxy, Method method, Object[] args) throws DefaultMethodException {
 		if (privateLookupIn == null) {
 			// assuming java8 at this point
 			return invokeDefaultMethodJava8(proxy, method, args);
@@ -28,8 +28,7 @@ public class DefaultMethodHandler {
 		}
 	}
 
-	private static Object invokeDefaultMethodJava8(Object proxy, Method method,
-			Object[] args) throws InvocationTargetException, IllegalAccessException {
+	private static Object invokeDefaultMethodJava8(Object proxy, Method method, Object[] args) throws DefaultMethodException {
 		Class<?> forClass = method.getDeclaringClass();
 		Lookup lookup = lookupJava8(forClass);
 		try {
@@ -38,33 +37,33 @@ public class DefaultMethodHandler {
 					.bindTo(proxy)
 					.invokeWithArguments(args);
 		} catch (Throwable throwable) {
-			throw new InvocationTargetException(throwable);
+			throw new DefaultMethodException(throwable);
 		}
 	}
 
-	private static Object invokeDefaultMethodJava9(Object proxy, Method method, Object[] args) throws InvocationTargetException, IllegalAccessException {
+	private static Object invokeDefaultMethodJava9(Object proxy, Method method, Object[] args) throws DefaultMethodException {
 		// FIXME: this is horrible, cleanup
 		Class<?> forClass = method.getDeclaringClass();
-		Lookup lookup = (Lookup) privateLookupIn.invoke(forClass, MethodHandles.lookup());
 		try {
+			Lookup lookup = (Lookup) privateLookupIn.invoke(forClass, MethodHandles.lookup());
 			return lookup.findSpecial(forClass, method.getName(), MethodType.methodType(method.getReturnType(), new Class[0]), forClass)
 					.bindTo(proxy)
 					.invokeWithArguments(args);
 		} catch (Throwable throwable) {
-			throw new InvocationTargetException(throwable);
+			throw new DefaultMethodException(throwable);
 		}
 	}
 
 	/**
 	 * Java8 only hack to use a lookup of a non-private-accessible interface
 	 */
-	private static Lookup lookupJava8(Class<?> forClass) throws InvocationTargetException, IllegalAccessException {
+	private static Lookup lookupJava8(Class<?> forClass) throws DefaultMethodException {
 		try {
 			Constructor<Lookup> constructor = Lookup.class.getDeclaredConstructor(Class.class);
 			constructor.setAccessible(true);
 			return constructor.newInstance(forClass);
-		} catch (InstantiationException | NoSuchMethodException e) {
-			throw new InvocationTargetException(e);
+		} catch (InstantiationException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+			throw new DefaultMethodException(e);
 		}
 	}
 
@@ -76,5 +75,11 @@ public class DefaultMethodHandler {
 			// TODO: log me somehow: assuming java < 9
 		}
 		return null;
+	}
+
+	@Value
+	@EqualsAndHashCode(callSuper = false)
+	protected static class DefaultMethodException extends Exception {
+		private final Throwable throwable;
 	}
 }

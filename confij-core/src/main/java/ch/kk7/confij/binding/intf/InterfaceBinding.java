@@ -12,16 +12,20 @@ import ch.kk7.confij.source.simple.SimpleConfigMap;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.ResolvedMethod;
 import com.fasterxml.classmate.types.ResolvedInterfaceType;
+import lombok.ToString;
+import lombok.Value;
 
+import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+@ToString
 public class InterfaceBinding<T> implements ConfigBinding<T> {
 	private final Map<String, AttributeInformation> siblingsByName;
-	private final InterfaceInvocationHandler<T> interfaceHandler;
-	private final T publicInstance;
+	private final InterfaceProxyBuilder<T> interfaceBuilder;
 
 	public InterfaceBinding(BindingType bindingType, ConfigBinder configBinder) {
 		ResolvedType baseType = bindingType.getResolvedType();
@@ -29,8 +33,8 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 			throw new IllegalArgumentException("expected type " + baseType + " to be a " + ResolvedInterfaceType.class);
 		}
 		siblingsByName = new HashMap<>();
-		interfaceHandler = new InterfaceInvocationHandler<>((ResolvedInterfaceType) baseType);
-		for (ResolvedMethod method : interfaceHandler.getSupportedMethods()) {
+		interfaceBuilder = new InterfaceProxyBuilder<>((ResolvedInterfaceType) baseType);
+		for (ResolvedMethod method : interfaceBuilder.getAllowedMethods()) {
 			BindingType methodBindingType = bindingType.bindingFor(method.getReturnType(), bindingType.getBindingSettings()
 					.settingsFor(method.getRawMember()));
 			ConfigBinding<?> methodDescription = configBinder.toConfigBinding(methodBindingType);
@@ -38,12 +42,11 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 					.orElse(method.getName());
 			siblingsByName.put(configKey, new AttributeInformation(methodDescription, method));
 		}
-		publicInstance = interfaceHandler.instance();
 	}
 
 	@Override
 	public ConfigFormatMap describe(FormatSettings formatSettings) {
-		FormatSettings settingsForThisClass = formatSettings.settingsFor(interfaceHandler.getType()
+		FormatSettings settingsForThisClass = formatSettings.settingsFor(interfaceBuilder.getType()
 				.getErasedType());
 		// TODO: support a special method like: @UnknownValues Map<String,Object> unknowns;
 		return ConfigFormatMap.fixedKeysMap(settingsForThisClass, siblingsByName.entrySet()
@@ -61,30 +64,38 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 			throw new IllegalStateException("expected a config map, but got: " + config);
 		}
 		Map<String, SimpleConfig> configMap = ((SimpleConfigMap) config).map();
-		interfaceHandler.clear();
+		InterfaceProxyBuilder<T>.ValidatingProxyBuilder builder = interfaceBuilder.builder();
+
 		siblingsByName.forEach((key, siblingDescription) -> {
 			Object siblingValue = siblingDescription.getDescription()
 					.bind(configMap.get(key));
-			interfaceHandler.setMethod(siblingDescription.getMethod(), siblingValue);
+			// TODO: what does it mean when a siblingValue is null/empty for a default method? should it be called or simply return null?
+			// TODO: -> maybe make the behaviour configurable
+			builder.methodToValue(siblingDescription.getMethod(), siblingValue);
 		});
-		return publicInstance;
+		return builder.build();
 	}
 
+	protected boolean isEmpty(Object value) {
+		if (value == null) {
+			return true;
+		}
+		if (value instanceof Collection) {
+			return ((Collection) value).isEmpty();
+		}
+		if (value instanceof Map) {
+			return ((Map) value).isEmpty();
+		}
+		if (value.getClass()
+				.isArray()) {
+			return Array.getLength(value) == 0;
+		}
+		return false;
+	}
+
+	@Value
 	public static class AttributeInformation {
 		private final ConfigBinding<?> description;
 		private final ResolvedMethod method;
-
-		public AttributeInformation(ConfigBinding<?> description, ResolvedMethod method) {
-			this.description = description;
-			this.method = method;
-		}
-
-		public ConfigBinding<?> getDescription() {
-			return description;
-		}
-
-		public ResolvedMethod getMethod() {
-			return method;
-		}
 	}
 }
