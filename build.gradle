@@ -35,9 +35,8 @@ allprojects {
 
 subprojects {
 	apply plugin: 'java-library'
-	apply plugin: 'jacoco'
-	sourceCompatibility = 1.8
-	targetCompatibility = 1.8
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
 
 	dependencies {
 		// TODO: upgrade: https://github.com/google/auto/pull/657
@@ -64,4 +63,30 @@ subprojects {
 wrapper {
 	gradleVersion = '4.10.2'
 	distributionType = Wrapper.DistributionType.ALL
+}
+
+// coverage
+subprojects {
+	apply plugin: 'jacoco'
+}
+
+apply plugin: 'base'
+apply plugin: 'jacoco'
+task jacocoMerge(type: JacocoMerge) {
+	subprojects.each { subproject ->
+		executionData subproject.tasks.withType(Test)
+	}
+	doFirst {
+		executionData = files(executionData.findAll { it.exists() })
+	}
+}
+
+task jacocoRootReport(type: JacocoReport, group: 'verification') {
+	description = 'Generates an aggregate report from all subprojects'
+	dependsOn subprojects.test, jacocoMerge
+
+	additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
+	sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+	classDirectories = files(subprojects.sourceSets.main.output)
+	executionData jacocoMerge.destinationFile
 }
