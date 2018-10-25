@@ -6,7 +6,7 @@ buildscript {
 }
 
 plugins {
-	id 'net.ltgt.apt-idea' version '0.18'
+	id 'net.ltgt.apt-idea' version '0.19'
 	id 'com.github.ben-manes.versions' version '0.20.0'
 }
 
@@ -50,7 +50,7 @@ subprojects {
 		def junitVersion = '5.3.1'
 		testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-		testImplementation('org.junit-pioneer:junit-pioneer:0.1.2') {
+		testImplementation('org.junit-pioneer:junit-pioneer:0.2.2') {
 			exclude group: 'org.junit.jupiter'
 		}
 	}
