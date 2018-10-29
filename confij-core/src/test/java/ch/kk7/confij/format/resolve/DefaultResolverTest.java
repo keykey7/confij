@@ -5,7 +5,7 @@ import ch.kk7.confij.format.ConfigFormat;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatLeaf;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.simple.SimpleConfig;
+import ch.kk7.confij.source.simple.ConfijNode;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 
@@ -23,7 +23,8 @@ class DefaultResolverTest {
 		for (int i = 0; i < x.length; i++) {
 			map.put("x" + (i + 1), x[i]);
 		}
-		SimpleConfig config = SimpleConfig.fromObject(map, format);
+		ConfijNode config = ConfijNode.newRootFor(format)
+				.initializeFromMap(map);
 		return new DefaultResolver().resolve(config, template);
 	}
 

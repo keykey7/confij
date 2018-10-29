@@ -5,7 +5,7 @@ import ch.kk7.confij.format.ConfigFormat.ConfigFormatLeaf;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatList;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.confij.source.Config4jSourceException;
-import ch.kk7.confij.source.simple.SimpleConfig;
+import ch.kk7.confij.source.simple.ConfijNode;
 import com.google.auto.service.AutoService;
 
 import java.io.IOException;
@@ -37,36 +37,38 @@ public class PropertiesFormat implements ResourceFormat {
 	}
 
 	@Override
-	public void override(SimpleConfig simpleConfig, String configAsStr) {
+	public void override(ConfijNode confijNode, String configAsStr) {
 		final Properties properties = new Properties();
 		try (StringReader r = new StringReader(configAsStr)) {
 			properties.load(r);
 		} catch (IOException e) {
 			throw FormatParsingException.invalidFormat("properties", "cannot parse from string: {}", configAsStr);
 		}
-		overrideWithProperties(simpleConfig, properties);
+		overrideWithProperties(confijNode, properties);
 	}
 
 	@SuppressWarnings("unchecked")
-	protected void overrideWithProperties(SimpleConfig simpleConfig, Properties properties) {
+	protected void overrideWithProperties(ConfijNode simpleConfig, Properties properties) {
 		overrideWithFlatMap(simpleConfig, (Map) properties);
 	}
 
-	protected void overrideWithFlatMap(SimpleConfig simpleConfig, Map<String, String> map) {
-		Object deepMap = flatToDeepWithPrefix(simpleConfig.getConfig(), map);
+	protected void overrideWithFlatMap(ConfijNode simpleConfig, Map<String, String> map) {
+		Object deepMap = flatToPrefixedNestedMap(simpleConfig.getConfig(), map);
 		overrideWithDeepMap(simpleConfig, deepMap);
 	}
 
-	protected void overrideWithDeepMap(SimpleConfig simpleConfig, Object deepMap) {
-		SimpleConfig newConfig = SimpleConfig.fromObject(deepMap, simpleConfig.getConfig());
+	protected void overrideWithDeepMap(ConfijNode simpleConfig, Object deepMap) {
+		ConfijNode newConfig = ConfijNode.newRootFor(simpleConfig.getConfig())
+				.initializeFromMap(deepMap);
 		simpleConfig.overrideWith(newConfig);
 	}
 
-	protected Object flatToDeepWithPrefix(ConfigFormat format, Map<String, String> globalMap) {
-		return flatToDeep(format, submapOf(globalMap, globalPrefix));
+	protected Object flatToPrefixedNestedMap(ConfigFormat format, Map<String, String> globalMap) {
+		return flatToNestedMap(format, submapWithoutPrefix(globalMap, globalPrefix));
 	}
 
-	protected Object flatToDeep(ConfigFormat format, Map<String, String> map) {
+	// TODO: requires some refactoring to get rid of instanceof-nightmare
+	protected Object flatToNestedMap(ConfigFormat format, Map<String, String> map) {
 		if (format instanceof ConfigFormatLeaf) {
 			return map.get(VALUE_ITSELF);
 		} else if (format instanceof ConfigFormatList) {
@@ -92,7 +94,7 @@ public class PropertiesFormat implements ResourceFormat {
 				})
 				.distinct()
 				.sorted()
-				.forEach(i -> result.add(i, flatToDeep(format.anyChild(), submapOf(map, "" + i))));
+				.forEach(i -> result.add(i, flatToNestedMap(format.formatForChild("" + i), submapWithoutPrefix(map, "" + i))));
 		return result;
 	}
 
@@ -101,11 +103,10 @@ public class PropertiesFormat implements ResourceFormat {
 				.stream()
 				.map(key -> key.split(Pattern.quote(separator), 2)[0])
 				.distinct()
-				.collect(Collectors.toMap(k -> k, k -> flatToDeep(format.get(k)
-						.orElseThrow(() -> new Config4jSourceException("invalid config key '{}' is not allowed", k)), submapOf(map, k))));
+				.collect(Collectors.toMap(k -> k, k -> flatToNestedMap(format.formatForChild(k), submapWithoutPrefix(map, k))));
 	}
 
-	protected Map<String, String> submapOf(Map<String, String> map, String prefix) {
+	protected Map<String, String> submapWithoutPrefix(Map<String, String> map, String prefix) {
 		if (prefix.isEmpty()) {
 			return map;
 		}

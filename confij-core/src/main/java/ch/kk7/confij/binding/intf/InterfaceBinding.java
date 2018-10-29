@@ -7,8 +7,7 @@ import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.common.AnnotationUtil;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.simple.SimpleConfig;
-import ch.kk7.confij.source.simple.SimpleConfigMap;
+import ch.kk7.confij.source.simple.ConfijNode;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.ResolvedMethod;
 import com.fasterxml.classmate.types.ResolvedInterfaceType;
@@ -59,16 +58,12 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 	}
 
 	@Override
-	public T bind(SimpleConfig config) {
-		if (!(config instanceof SimpleConfigMap)) {
-			throw new IllegalStateException("expected a config map, but got: " + config);
-		}
-		Map<String, SimpleConfig> configMap = ((SimpleConfigMap) config).map();
+	public T bind(ConfijNode config) {
+		Map<String, ConfijNode> childConfigs = config.getChildren();
 		InterfaceProxyBuilder<T>.ValidatingProxyBuilder builder = interfaceBuilder.builder();
-
 		siblingsByName.forEach((key, siblingDescription) -> {
 			Object siblingValue = siblingDescription.getDescription()
-					.bind(configMap.get(key));
+					.bind(childConfigs.get(key));
 			// TODO: what does it mean when a siblingValue is null/empty for a default method? should it be called or simply return null?
 			// TODO: -> maybe make the behaviour configurable
 			builder.methodToValue(siblingDescription.getMethod(), siblingValue);

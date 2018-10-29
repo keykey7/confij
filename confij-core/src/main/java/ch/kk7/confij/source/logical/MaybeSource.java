@@ -1,22 +1,21 @@
 package ch.kk7.confij.source.logical;
 
 import ch.kk7.confij.source.ConfigSource;
-import ch.kk7.confij.source.simple.SimpleConfig;
+import ch.kk7.confij.source.simple.ConfijNode;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@AllArgsConstructor
 public class MaybeSource implements ConfigSource {
+	@NonNull
 	private final ConfigSource maybeSource;
 
-	public MaybeSource(ConfigSource maybeSource) {
-		this.maybeSource = Objects.requireNonNull(maybeSource, "null maybeSource");
-	}
-
 	@Override
-	public void override(SimpleConfig simpleConfig) {
-		SimpleConfig copy = simpleConfig.copy();
+	public void override(ConfijNode simpleConfig) {
+		ConfijNode copy = simpleConfig.deepClone();
 		try {
 			// simulate it first
 			maybeSource.override(copy);

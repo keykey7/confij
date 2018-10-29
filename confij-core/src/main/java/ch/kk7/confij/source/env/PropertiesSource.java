@@ -2,7 +2,7 @@ package ch.kk7.confij.source.env;
 
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.file.format.PropertiesFormat;
-import ch.kk7.confij.source.simple.SimpleConfig;
+import ch.kk7.confij.source.simple.ConfijNode;
 
 import java.util.Properties;
 
@@ -24,7 +24,7 @@ public class PropertiesSource extends PropertiesFormat implements ConfigSource {
 	}
 
 	@Override
-	public void override(SimpleConfig simpleConfig) {
+	public void override(ConfijNode simpleConfig) {
 		overrideWithProperties(simpleConfig, properties);
 	}
 }

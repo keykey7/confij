@@ -4,7 +4,7 @@ import ch.kk7.confij.format.resolve.IVariableResolver;
 import ch.kk7.confij.source.env.EnvvarSource;
 import ch.kk7.confij.source.env.SystemPropertiesSource;
 import ch.kk7.confij.source.file.AnyResourceBuilder;
-import ch.kk7.confij.source.simple.SimpleConfig;
+import ch.kk7.confij.source.simple.ConfijNode;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -18,11 +18,11 @@ public class AnySource implements ConfigSource {
 	private final String pathTemplate;
 	private IVariableResolver resolverOverride;
 
-	private IVariableResolver getResolver(SimpleConfig simpleConfig) {
+	private IVariableResolver getResolver(ConfijNode node) {
 		if (resolverOverride != null) {
 			return resolverOverride;
 		}
-		return simpleConfig.getConfig()
+		return node.getConfig()
 				.getFormatSettings()
 				.getVariableResolver();
 	}
@@ -38,7 +38,7 @@ public class AnySource implements ConfigSource {
 	}
 
 	@Override
-	public void override(SimpleConfig simpleConfig) {
+	public void override(ConfijNode simpleConfig) {
 		String actualPath = getResolver(simpleConfig).resolve(simpleConfig, pathTemplate);
 		URI path = URI.create(actualPath);
 		sourceBuilders.stream()

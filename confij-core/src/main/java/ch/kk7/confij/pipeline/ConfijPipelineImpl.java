@@ -2,37 +2,35 @@ package ch.kk7.confij.pipeline;
 
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.format.ConfigFormat;
-import ch.kk7.confij.validation.IValidator;
 import ch.kk7.confij.source.ConfigSource;
-import ch.kk7.confij.source.simple.SimpleConfig;
+import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.validation.IValidator;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
 import java.util.List;
-import java.util.Objects;
 
+@AllArgsConstructor
 public class ConfijPipelineImpl<T> implements ConfijPipeline<T> {
+	@NonNull
 	private final List<ConfigSource> sources;
+	@NonNull
 	private final ConfigSource defaultSource;
+	@NonNull
 	private final IValidator validator;
+	@NonNull
 	private final ConfigBinding<T> configBinding;
+	@NonNull
 	private final ConfigFormat format;
 
-	public ConfijPipelineImpl(List<ConfigSource> sources, ConfigSource defaultSource, IValidator validator,
-			ConfigBinding<T> configBinding, ConfigFormat format) {
-		this.sources = Objects.requireNonNull(sources);
-		this.defaultSource = Objects.requireNonNull(defaultSource);
-		this.configBinding = Objects.requireNonNull(configBinding);
-		this.format = Objects.requireNonNull(format);
-		this.validator = Objects.requireNonNull(validator);
-	}
-
-	protected SimpleConfig newDefaultConfig() {
-		SimpleConfig defaultsOnly = SimpleConfig.newRootFor(format);
+	protected ConfijNode newDefaultConfig() {
+		ConfijNode defaultsOnly = ConfijNode.newRootFor(format);
 		defaultSource.override(defaultsOnly);
 		return defaultsOnly;
 	}
 
-	protected SimpleConfig readSimpleConfig() {
-		SimpleConfig simpleConfig = newDefaultConfig();
+	protected ConfijNode readSimpleConfig() {
+		ConfijNode simpleConfig = newDefaultConfig();
 		for (ConfigSource source : sources) {
 			source.override(simpleConfig);
 			// always overriding with default source to make sure new
@@ -43,13 +41,13 @@ public class ConfijPipelineImpl<T> implements ConfijPipeline<T> {
 		return simpleConfig;
 	}
 
-	protected T bind(SimpleConfig simpleConfig) {
+	protected T bind(ConfijNode simpleConfig) {
 		return configBinding.bind(simpleConfig);
 	}
 
 	@Override
 	public T build() {
-		SimpleConfig simpleConfig = readSimpleConfig();
+		ConfijNode simpleConfig = readSimpleConfig();
 		T config = bind(simpleConfig);
 		validator.validate(config);
 		return config;

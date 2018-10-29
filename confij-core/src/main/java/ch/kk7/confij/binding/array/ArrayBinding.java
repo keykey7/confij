@@ -3,10 +3,10 @@ package ch.kk7.confij.binding.array;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
+import ch.kk7.confij.binding.collection.CollectionUtil;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatList;
 import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.simple.SimpleConfig;
-import ch.kk7.confij.source.simple.SimpleConfigList;
+import ch.kk7.confij.source.simple.ConfijNode;
 import com.fasterxml.classmate.ResolvedType;
 
 import java.lang.reflect.Array;
@@ -31,15 +31,13 @@ public class ArrayBinding<T> implements ConfigBinding<Object> {
 	 * binds to Object instead of T[] since it also handles primitive arrays
 	 */
 	@Override
-	public Object bind(SimpleConfig config) {
-		if (!(config instanceof SimpleConfigList)) {
-			throw new IllegalStateException("expected a config list, but got: " + config);
-		}
-		List<SimpleConfig> configList = ((SimpleConfigList) config).list();
-		Object result = Array.newInstance(componentType.getErasedType(), configList.size());
+	public Object bind(ConfijNode config) {
+		// TODO: add config to allow null values in array
+		List<ConfijNode> childNodes = CollectionUtil.childrenAsContinuousList(config);
+		Object result = Array.newInstance(componentType.getErasedType(), childNodes.size());
 		int i = 0;
-		for (SimpleConfig configItem : configList) {
-			Array.set(result, i++, componentDescription.bind(configItem));
+		for (ConfijNode childNode : childNodes) {
+			Array.set(result, i++, componentDescription.bind(childNode));
 		}
 		return result;
 	}

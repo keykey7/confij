@@ -1,8 +1,7 @@
 package ch.kk7.confij.format.resolve;
 
 import ch.kk7.confij.common.Config4jException;
-import ch.kk7.confij.source.simple.SimpleConfig;
-import ch.kk7.confij.source.simple.SimpleConfigLeaf;
+import ch.kk7.confij.source.simple.ConfijNode;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -13,17 +12,17 @@ import java.util.Set;
 
 public class DefaultResolver implements IVariableResolver {
 	private char escapeChar = '\\';
-	private final Map<SimpleConfigLeaf, String> resolvedLeaves = new HashMap<>();
-	private final Set<SimpleConfigLeaf> inProgressLeaves = new HashSet<>();
+	private final Map<ConfijNode, String> resolvedLeaves = new HashMap<>();
+	private final Set<ConfijNode> inProgressLeaves = new HashSet<>();
 
 	@Override
-	public String resolve(SimpleConfigLeaf leaf) {
+	public String resolve(ConfijNode leaf) {
 		clearCache();
 		return resolveString(leaf);
 	}
 
-	protected String resolveString(SimpleConfigLeaf leaf) {
-		String value = leaf.get();
+	protected String resolveString(ConfijNode leaf) {
+		String value = leaf.getValue();
 		if (resolvedLeaves.containsKey(leaf)) {
 			return resolvedLeaves.get(leaf);
 		}
@@ -38,17 +37,17 @@ public class DefaultResolver implements IVariableResolver {
 	}
 
 	@Override
-	public String resolve(SimpleConfig baseLeaf, String value) {
+	public String resolve(ConfijNode baseLeaf, String value) {
 		clearCache();
 		return resolveString(baseLeaf, value);
 	}
 
-	protected String resolveVariable(SimpleConfig baseLeaf, String variableName) {
+	protected String resolveVariable(ConfijNode baseLeaf, String variableName) {
 		// allows for recursive variable names like ${x${y}}
 		String pathToLeaf = resolveString(baseLeaf, variableName);
 		return resolveStaticForAbsolutePaths(pathToLeaf).orElseGet(() -> {
 			// variable must represent a path to a leaf now (usually relative)
-			SimpleConfigLeaf leaf = baseLeaf.resolveLeaf(pathToLeaf);
+			ConfijNode leaf = baseLeaf.resolve(pathToLeaf);
 			// further resolve the content of this leaf
 			return resolveString(leaf);
 		});
@@ -76,7 +75,7 @@ public class DefaultResolver implements IVariableResolver {
 		inProgressLeaves.clear();
 	}
 
-	protected String resolveString(SimpleConfig baseLeaf, String value) {
+	protected String resolveString(ConfijNode baseLeaf, String value) {
 		boolean isEscape = false;
 		boolean wasDollar = false;
 		int bracketCount = 0;
@@ -125,7 +124,7 @@ public class DefaultResolver implements IVariableResolver {
 
 	protected String escape(String s) {
 		s = s.replace("" + escapeChar, "" + escapeChar + escapeChar);
-		return s.replaceAll("$\\{", escapeChar + "${");
+		return s.replaceAll("\\$\\{", escapeChar + "${");
 	}
 
 }

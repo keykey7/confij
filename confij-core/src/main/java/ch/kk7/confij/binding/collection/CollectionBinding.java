@@ -5,8 +5,7 @@ import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatList;
 import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.simple.SimpleConfig;
-import ch.kk7.confij.source.simple.SimpleConfigList;
+import ch.kk7.confij.source.simple.ConfijNode;
 
 import java.util.Collection;
 import java.util.List;
@@ -27,14 +26,13 @@ public class CollectionBinding<T> implements ConfigBinding<Collection<T>> {
 	}
 
 	@Override
-	public Collection<T> bind(SimpleConfig config) {
-		if (!(config instanceof SimpleConfigList)) {
-			throw new IllegalStateException("expected a config list, but got: " + config);
-		}
-		List<SimpleConfig> configList = ((SimpleConfigList) config).list();
+	public Collection<T> bind(ConfijNode config) {
+		// we use a map here to allow for sparse array implementations
+		// TODO: add config to enforce continuous indexes
+		List<ConfijNode> childNodes = CollectionUtil.childrenAsContinuousList(config);
 		Collection<T> collection = builder.newInstance();
-		for (SimpleConfig configItem : configList) {
-			T listItem = componentDescription.bind(configItem);
+		for (ConfijNode childNode : childNodes) {
+			T listItem = componentDescription.bind(childNode);
 			collection.add(listItem);
 		}
 		return builder.tryHarden(collection);

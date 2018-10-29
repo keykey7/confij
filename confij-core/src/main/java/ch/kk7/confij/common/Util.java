@@ -2,22 +2,21 @@ package ch.kk7.confij.common;
 
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.types.ResolvedObjectType;
+import lombok.experimental.UtilityClass;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
+import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+@UtilityClass
 public class Util {
 
 	public static final ResolvedType rawObjectType = ResolvedObjectType.create(Object.class, null, null, null);
-
-	private Util() {
-		// util
-	}
 
 	public static <T> Collector<T, ?, T> singletonCollector() {
 		return Collectors.collectingAndThen(
@@ -43,6 +42,10 @@ public class Util {
 		ServiceLoader<T> resourceFormatLoader = ServiceLoader.load(service);
 		return StreamSupport.stream(resourceFormatLoader.spliterator(), false)
 				.collect(Collectors.toList());
+	}
+
+	public static <T> Predicate<T> not(Predicate<T> t) {
+		return t.negate();
 	}
 
 	public static <T> Optional<T> firstOf(Optional<T>... optionals) {

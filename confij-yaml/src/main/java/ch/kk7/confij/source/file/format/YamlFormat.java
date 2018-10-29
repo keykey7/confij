@@ -1,6 +1,6 @@
 package ch.kk7.confij.source.file.format;
 
-import ch.kk7.confij.source.simple.SimpleConfig;
+import ch.kk7.confij.source.simple.ConfijNode;
 import com.google.auto.service.AutoService;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -21,7 +21,7 @@ public class YamlFormat implements ResourceFormat {
 	private final Yaml yaml = new Yaml(new SafeConstructor());
 
 	@Override
-	public void override(SimpleConfig simpleConfig, String content) {
+	public void override(ConfijNode simpleConfig, String content) {
 		final Object root;
 		// TODO: support multiple yaml in one file
 		try {
@@ -30,7 +30,8 @@ public class YamlFormat implements ResourceFormat {
 			throw invalidFormat("YAML", "content cannot be parsed:\n{}", content, e);
 		}
 		Object simpleRoot = simplify(root);
-		SimpleConfig newConfig = SimpleConfig.fromObject(simpleRoot, simpleConfig.getConfig());
+		ConfijNode newConfig = ConfijNode.newRootFor(simpleConfig.getConfig())
+				.initializeFromMap(simpleRoot);
 		simpleConfig.overrideWith(newConfig);
 	}
 
@@ -52,8 +53,7 @@ public class YamlFormat implements ResourceFormat {
 		} else if (yaml instanceof List) {
 			((List<Object>) yaml).replaceAll(this::simplify);
 		} else if (yaml instanceof Date) {
-			yaml = DateTimeFormatter.ISO_OFFSET_DATE_TIME
-					.withZone(ZoneOffset.UTC)
+			yaml = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneOffset.UTC)
 					.format(((Date) yaml).toInstant());
 		} else if (yaml != null) {
 			yaml = Objects.toString(yaml);

@@ -3,7 +3,7 @@ package ch.kk7.confij.source.env;
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.ConfigSourceBuilder;
 import ch.kk7.confij.source.file.format.PropertiesFormat;
-import ch.kk7.confij.source.simple.SimpleConfig;
+import ch.kk7.confij.source.simple.ConfijNode;
 
 import java.net.URI;
 import java.util.Optional;
@@ -18,10 +18,10 @@ public class EnvvarSource extends PropertiesFormat implements ConfigSource, Conf
 	}
 
 	@Override
-	public void override(SimpleConfig simpleConfig) {
+	public void override(ConfijNode simpleConfig) {
 		if (deepMap == null) {
 			// envvars don't change: we can cache them forever
-			deepMap = flatToDeepWithPrefix(simpleConfig.getConfig(), System.getenv());
+			deepMap = flatToPrefixedNestedMap(simpleConfig.getConfig(), System.getenv());
 		}
 		overrideWithDeepMap(simpleConfig, deepMap);
 	}

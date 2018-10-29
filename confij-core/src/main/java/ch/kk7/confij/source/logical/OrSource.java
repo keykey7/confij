@@ -2,7 +2,7 @@ package ch.kk7.confij.source.logical;
 
 import ch.kk7.confij.source.Config4jSourceException;
 import ch.kk7.confij.source.ConfigSource;
-import ch.kk7.confij.source.simple.SimpleConfig;
+import ch.kk7.confij.source.simple.ConfijNode;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,10 +18,10 @@ public class OrSource implements ConfigSource {
 		this.orList = Arrays.asList(or);
 	}
 	@Override
-	public void override(SimpleConfig simpleConfig) {
+	public void override(ConfijNode simpleConfig) {
 		List<Exception> pastExceptions = new ArrayList<>();
 		for (ConfigSource source : orList) {
-			SimpleConfig copy = simpleConfig.copy();
+			ConfijNode copy = simpleConfig.deepClone();
 			try {
 				source.override(copy);
 			} catch (Exception e) {

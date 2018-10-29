@@ -3,7 +3,7 @@ package ch.kk7.confij.source.file;
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.file.format.ResourceFormat;
 import ch.kk7.confij.source.file.resource.Config4jResource;
-import ch.kk7.confij.source.simple.SimpleConfig;
+import ch.kk7.confij.source.simple.ConfijNode;
 
 import java.net.URI;
 import java.util.Objects;
@@ -20,7 +20,7 @@ public class FixedResourceSource implements ConfigSource {
 	}
 
 	@Override
-	public void override(SimpleConfig simpleConfig) {
+	public void override(ConfijNode simpleConfig) {
 		String configAsStr = resource.read(path);
 		format.override(simpleConfig, configAsStr);
 	}

@@ -1,7 +1,7 @@
 package ch.kk7.confij.source;
 
-import ch.kk7.confij.source.simple.SimpleConfig;
+import ch.kk7.confij.source.simple.ConfijNode;
 
 public interface ConfigSource {
-	void override(SimpleConfig simpleConfig);
+	void override(ConfijNode simpleConfig);
 }

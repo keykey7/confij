@@ -1,12 +1,11 @@
 package ch.kk7.confij.format.resolve;
 
-import ch.kk7.confij.source.simple.SimpleConfig;
-import ch.kk7.confij.source.simple.SimpleConfigLeaf;
+import ch.kk7.confij.source.simple.ConfijNode;
 
 public interface IVariableResolver {
-	default String resolve(SimpleConfigLeaf leaf) {
-		return resolve(leaf, leaf.get());
+	default String resolve(ConfijNode leaf) {
+		return resolve(leaf, leaf.getValue());
 	}
 
-	String resolve(SimpleConfig baseLeaf, String value);
+	String resolve(ConfijNode baseLeaf, String value);
 }

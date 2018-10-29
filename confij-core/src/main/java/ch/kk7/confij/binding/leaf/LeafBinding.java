@@ -7,8 +7,7 @@ import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.ConfigBindingFactory;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatLeaf;
 import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.simple.SimpleConfig;
-import ch.kk7.confij.source.simple.SimpleConfigLeaf;
+import ch.kk7.confij.source.simple.ConfijNode;
 
 import java.util.Optional;
 
@@ -25,11 +24,8 @@ public class LeafBinding<T> implements ConfigBinding<T> {
 	}
 
 	@Override
-	public T bind(SimpleConfig config) {
-		if (!(config instanceof SimpleConfigLeaf)) {
-			throw new IllegalStateException("expected a leaf, but got: " + config);
-		}
-		return valueMapper.fromString(((SimpleConfigLeaf) config).get());
+	public T bind(ConfijNode config) {
+		return valueMapper.fromString(config.getValue());
 	}
 
 	public static class ForcedLeafBindingFactory implements ConfigBindingFactory<LeafBinding> {
