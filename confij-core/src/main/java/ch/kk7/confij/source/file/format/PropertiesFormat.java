@@ -1,40 +1,30 @@
 package ch.kk7.confij.source.file.format;
 
 import ch.kk7.confij.format.ConfigFormat;
-import ch.kk7.confij.format.ConfigFormat.ConfigFormatLeaf;
-import ch.kk7.confij.format.ConfigFormat.ConfigFormatList;
-import ch.kk7.confij.format.ConfigFormat.ConfigFormatMap;
-import ch.kk7.confij.source.Config4jSourceException;
 import ch.kk7.confij.source.simple.ConfijNode;
 import com.google.auto.service.AutoService;
+import lombok.NonNull;
+import lombok.Setter;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @AutoService(ResourceFormat.class)
 public class PropertiesFormat implements ResourceFormat {
+	@NonNull
+	@Setter
 	private String separator = ".";
+	@NonNull
+	@Setter
 	private String globalPrefix = "";
-	private static final String VALUE_ITSELF = "";
-
-	public void setSeparator(String separator) {
-		this.separator = Objects.requireNonNull(separator);
-	}
-
-	public void setPrefix(String globalPrefix) {
-		this.globalPrefix = Objects.requireNonNull(globalPrefix);
-	}
 
 	@Override
 	public void override(ConfijNode confijNode, String configAsStr) {
@@ -53,74 +43,64 @@ public class PropertiesFormat implements ResourceFormat {
 	}
 
 	protected void overrideWithFlatMap(ConfijNode simpleConfig, Map<String, String> map) {
-		Object deepMap = flatToPrefixedNestedMap(simpleConfig.getConfig(), map);
+		Object deepMap = flatToNestedMapWithPrefix(simpleConfig.getConfig(), map);
 		overrideWithDeepMap(simpleConfig, deepMap);
 	}
 
-	protected void overrideWithDeepMap(ConfijNode simpleConfig, Object deepMap) {
-		ConfijNode newConfig = ConfijNode.newRootFor(simpleConfig.getConfig())
+	protected void overrideWithDeepMap(ConfijNode node, Object deepMap) {
+		ConfijNode newConfig = ConfijNode.newRootFor(node.getConfig())
 				.initializeFromMap(deepMap);
-		simpleConfig.overrideWith(newConfig);
+		node.overrideWith(newConfig);
 	}
 
-	protected Object flatToPrefixedNestedMap(ConfigFormat format, Map<String, String> globalMap) {
-		return flatToNestedMap(format, submapWithoutPrefix(globalMap, globalPrefix));
-	}
-
-	// TODO: requires some refactoring to get rid of instanceof-nightmare
-	protected Object flatToNestedMap(ConfigFormat format, Map<String, String> map) {
-		if (format instanceof ConfigFormatLeaf) {
-			return map.get(VALUE_ITSELF);
-		} else if (format instanceof ConfigFormatList) {
-			return flatToList((ConfigFormatList) format, map);
-		} else if (format instanceof ConfigFormatMap) {
-			return flatToMap((ConfigFormatMap) format, map);
-		} else {
-			throw new IllegalStateException("cannot handle format " + format);
+	protected Object flatToNestedMapWithPrefix(ConfigFormat format, Map<String, String> globalMap) {
+		if (format.isValueHolder()) {
+			return globalMap.get(globalPrefix);
 		}
+		return flatToNestedMap(format, flatmapPrefixedBy(globalMap, globalPrefix));
 	}
 
-	protected List<Object> flatToList(ConfigFormatList format, Map<String, String> map) {
-		List<Object> result = new LinkedList<>();
-		map.keySet()
-				.stream()
-				.map(key -> key.split(Pattern.quote(separator), 2)[0])
-				.map(numpart -> {
-					try {
-						return Integer.parseInt(numpart);
-					} catch (NumberFormatException e) {
-						throw new Config4jSourceException("invalid config key, expected a number, but found {}", numpart, e);
-					}
-				})
-				.distinct()
-				.sorted()
-				.forEach(i -> result.add(i, flatToNestedMap(format.formatForChild("" + i), submapWithoutPrefix(map, "" + i))));
-		return result;
+	/**
+	 * for each {@code k}:<br>
+	 * - if it is a leaf node: return the value as String (nullable)<br>
+	 * - otherwise: return the branch as Map<String, Object> (nonnull)<br>
+	 */
+	protected Function<String, Object> valueMapper(ConfigFormat parentFormat, Map<String, String> map) {
+		return k -> {
+			ConfigFormat childFormat = parentFormat.formatForChild(k);
+			if (childFormat.isValueHolder()) {
+				return map.get(k);
+			}
+			Map<String, String> childMap = flatmapPrefixedBy(map, k);
+			return flatToNestedMap(childFormat, childMap);
+		};
 	}
 
-	protected Map<String, Object> flatToMap(ConfigFormatMap format, Map<String, String> map) {
+	@NonNull
+	protected Object flatToNestedMap(ConfigFormat format, Map<String, String> map) {
 		return map.keySet()
 				.stream()
-				.map(key -> key.split(Pattern.quote(separator), 2)[0])
-				.distinct()
-				.collect(Collectors.toMap(k -> k, k -> flatToNestedMap(format.formatForChild(k), submapWithoutPrefix(map, k))));
+				.map(key -> key.split(Pattern.quote(separator), 2)[0]) // extract all prefixes
+				.distinct() // handle each prefix only once
+				.collect(Collectors.toMap(k -> k, valueMapper(format, map)));
 	}
 
-	protected Map<String, String> submapWithoutPrefix(Map<String, String> map, String prefix) {
+	@NonNull
+	protected Map<String, String> flatmapPrefixedBy(@NonNull Map<String, String> map, @NonNull String prefix) {
 		if (prefix.isEmpty()) {
 			return map;
 		}
 		String prefixAndSep = prefix + separator;
-		Map<String, String> result = map.entrySet()
+		if (map.containsKey(prefix)) {
+			throw new IllegalArgumentException(
+					"invalid key '" + prefix + "' in map " + map + ". Expected are only keys like '" + prefixAndSep + "*'");
+		}
+		return map.entrySet()
 				.stream()
 				.filter(e -> e.getKey()
 						.startsWith(prefixAndSep))
 				.collect(Collectors.toMap(e -> e.getKey()
 						.substring(prefixAndSep.length()), Entry::getValue, (x, y) -> x, HashMap::new));
-		// Note: a (stupid) key "<prefix>." is overridden here by key "<prefix>"
-		Optional.ofNullable(map.get(prefix))
-				.ifPresent(v -> result.put(VALUE_ITSELF, v));
-		return result;
 	}
 
 	@Override

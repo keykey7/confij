@@ -2,6 +2,7 @@ package ch.kk7.confij.source.file.format;
 
 import ch.kk7.confij.source.simple.ConfijNode;
 import com.google.auto.service.AutoService;
+import lombok.NonNull;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
@@ -9,10 +10,10 @@ import java.net.URI;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
-import java.util.Objects;
 
 import static ch.kk7.confij.source.file.format.FormatParsingException.invalidFormat;
 
@@ -22,43 +23,62 @@ public class YamlFormat implements ResourceFormat {
 
 	@Override
 	public void override(ConfijNode simpleConfig, String content) {
-		final Object root;
-		// TODO: support multiple yaml in one file
+		final Iterable<Object> yamlIterable;
 		try {
-			root = yaml.load(content);
+			yamlIterable = yaml.loadAll(content);
 		} catch (Exception e) {
 			throw invalidFormat("YAML", "content cannot be parsed:\n{}", content, e);
 		}
-		Object simpleRoot = simplify(root);
-		ConfijNode newConfig = ConfijNode.newRootFor(simpleConfig.getConfig())
-				.initializeFromMap(simpleRoot);
-		simpleConfig.overrideWith(newConfig);
+		yamlIterable.forEach(root -> {
+			Object simpleRoot = simplify(root);
+			ConfijNode newConfig = ConfijNode.newRootFor(simpleConfig.getConfig())
+					.initializeFromMap(simpleRoot);
+			simpleConfig.overrideWith(newConfig);
+		});
 	}
 
 	@SuppressWarnings("unchecked")
 	private Object simplify(Object yaml) {
-		if (yaml instanceof Map) {
-			// simplify keys
-			Map<Object, Object> objMap = (Map<Object, Object>) yaml;
-			new HashSet<>(objMap.keySet()).forEach(key -> {
-				String keyStr = Objects.toString(key);
-				if (!keyStr.equals(key)) {
-					if (objMap.containsKey(keyStr)) {
-						throw new IllegalArgumentException("by stringifying map keys we got a key conflict with: " + keyStr);
-					}
-					objMap.put(keyStr, objMap.remove(key));
-				}
-			});
-			objMap.replaceAll((key, value) -> simplify(value));
-		} else if (yaml instanceof List) {
-			((List<Object>) yaml).replaceAll(this::simplify);
-		} else if (yaml instanceof Date) {
-			yaml = DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneOffset.UTC)
-					.format(((Date) yaml).toInstant());
-		} else if (yaml != null) {
-			yaml = Objects.toString(yaml);
+		if (yaml == null) {
+			return null;
 		}
-		return yaml;
+		if (yaml instanceof Map) {
+			return simplifyMap((Map<Object, Object>) yaml);
+		}
+		if (yaml instanceof List) {
+			return simplifyList((List<Object>) yaml);
+		}
+		if (yaml instanceof Date) {
+			return DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneOffset.UTC)
+					.format(((Date) yaml).toInstant());
+		}
+		// TODO: dangerous in case of unexpected types
+		return String.valueOf(yaml);
+	}
+
+	@NonNull
+	protected Map<String, Object> simplifyMap(@NonNull Map<Object, Object> yaml) {
+		Map<String, Object> result = new LinkedHashMap<>(yaml.size());
+		yaml.forEach((k, v) -> {
+			String keyStr = String.valueOf(k);
+			if (result.containsKey(keyStr)) {
+				throw new IllegalArgumentException("by stringifying map keys we got a key conflict with: " + keyStr);
+			}
+			result.put(keyStr, simplify(v));
+		});
+		return result;
+	}
+
+	@NonNull
+	protected Map<String, Object> simplifyList(@NonNull List<Object> yaml) {
+		Map<String, Object> result = new LinkedHashMap<>(yaml.size());
+		ListIterator<Object> iterator = yaml.listIterator();
+		while (iterator.hasNext()) {
+			int index = iterator.nextIndex();
+			Object simpleValue = simplify(iterator.next());
+			result.put(String.valueOf(index), simpleValue);
+		}
+		return result;
 	}
 
 	@Override

@@ -12,8 +12,6 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 @ToString(onlyExplicitlyIncluded = true, doNotUseGetters = true)
@@ -157,21 +155,14 @@ public class ConfijNode {
 		}
 	}
 
-	public ConfijNode initializeFromMap(Object config) {
-		if (config instanceof String || config == null) {
-			setValue((String) config);
-		} else if (config instanceof List) {
-			ListIterator<?> iterator = ((List<?>) config).listIterator();
-			while (iterator.hasNext()) {
-				int index = iterator.nextIndex();
-				String indexStr = String.valueOf(index);
-				addChild(indexStr).initializeFromMap(iterator.next());
-			}
-		} else if (config instanceof Map) {
+	public ConfijNode initializeFromMap(Object mapOrString) {
+		if (mapOrString instanceof String || mapOrString == null) {
+			setValue((String) mapOrString);
+		} else if (mapOrString instanceof Map) {
 			//noinspection unchecked
-			((Map<String, ?>) config).forEach((k, v) -> addChild(k).initializeFromMap(v));
+			((Map<String, Object>) mapOrString).forEach((k, v) -> addChild(k).initializeFromMap(v));
 		} else {
-			throw new Config4jException("initializeFromMap for unknown type " + config);
+			throw new Config4jException("initializeFromMap for unknown type " + mapOrString.getClass());
 		}
 		return this;
 	}

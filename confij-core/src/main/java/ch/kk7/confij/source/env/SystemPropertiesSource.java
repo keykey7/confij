@@ -16,7 +16,7 @@ public class SystemPropertiesSource extends PropertiesSource implements ConfigSo
 	public Optional<SystemPropertiesSource> fromURI(URI path) {
 		if (SCHEME.equals(path.getScheme())) {
 			SystemPropertiesSource source = new SystemPropertiesSource();
-			source.setPrefix(path.getSchemeSpecificPart());
+			source.setGlobalPrefix(path.getSchemeSpecificPart());
 			return Optional.of(source);
 		}
 		return Optional.empty();
