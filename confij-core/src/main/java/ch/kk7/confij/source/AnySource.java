@@ -18,6 +18,11 @@ public class AnySource implements ConfigSource {
 	private final String pathTemplate;
 	private IVariableResolver resolverOverride;
 
+	public AnySource(String pathTemplate) {
+		this.pathTemplate = Objects.requireNonNull(pathTemplate);
+		sourceBuilders = new ArrayList<>(Arrays.asList(new EnvvarSource(), new SystemPropertiesSource(), new AnyResourceBuilder()));
+	}
+
 	private IVariableResolver getResolver(ConfijNode node) {
 		if (resolverOverride != null) {
 			return resolverOverride;
@@ -25,11 +30,6 @@ public class AnySource implements ConfigSource {
 		return node.getConfig()
 				.getFormatSettings()
 				.getVariableResolver();
-	}
-
-	public AnySource(String pathTemplate) {
-		this.pathTemplate = Objects.requireNonNull(pathTemplate);
-		sourceBuilders = new ArrayList<>(Arrays.asList(new EnvvarSource(), new SystemPropertiesSource(), new AnyResourceBuilder()));
 	}
 
 	public AnySource setResolver(IVariableResolver resolver) {

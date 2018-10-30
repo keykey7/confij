@@ -89,4 +89,8 @@ task jacocoRootReport(type: JacocoReport, group: 'verification') {
 	sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
 	classDirectories = files(subprojects.sourceSets.main.output)
 	executionData jacocoMerge.destinationFile
+
+	doLast {
+		logger.lifecycle("report at: " + reports.html.entryPoint.toURI())
+	}
 }

@@ -11,8 +11,9 @@ import ch.kk7.confij.source.simple.ConfijNode;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.ResolvedMethod;
 import com.fasterxml.classmate.types.ResolvedInterfaceType;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.ToString;
-import lombok.Value;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -88,7 +89,8 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 		return false;
 	}
 
-	@Value
+	@AllArgsConstructor
+	@Getter
 	public static class AttributeInformation {
 		private final ConfigBinding<?> description;
 		private final ResolvedMethod method;

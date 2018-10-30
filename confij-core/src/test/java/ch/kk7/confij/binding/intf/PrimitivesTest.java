@@ -78,9 +78,10 @@ public class PrimitivesTest extends AbstractProxyBuilderTest<WithPrimitives> {
 	public void randomInt() {
 		int rand = ThreadLocalRandom.current()
 				.nextInt(Integer.MAX_VALUE - 1) + 1;
-		assertThat(whatever().withInt(rand)
-				.instance()
-				.anInt()).isEqualTo(rand);
+		WithPrimitives withPrimitives = whatever().withInt(rand)
+				.instance();
+		assertThat(withPrimitives.anInt()).isEqualTo(rand);
+		assertThat(withPrimitives.toString()).contains("" + rand);
 	}
 
 	@Test
