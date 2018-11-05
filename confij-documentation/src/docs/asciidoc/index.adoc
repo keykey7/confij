@@ -1,0 +1,31 @@
+= ConfiJ Documentation
+:sectnums:
+:toc: left
+:toclevels: 2
+:source-highlighter: prettify
+:source-language: java
+:icons: font
+:src: ../../test/java/ch/kk7/confij/docs
+:home: ../../test/home
+
+ConfiJ is a type-safe Java configuration library.
+
+== Getting Started
+
+Define your configuration interface
+[source]
+----
+include::{src}/Docs.java[tag=simple_interface,indent=0]
+----
+
+Matching your configuration file
+----
+include::{home}/server.properties[]
+----
+
+And load an instance of your configuration as easy as
+[source]
+----
+include::{src}/Docs.java[tag=simple_builder,indent=0]
+----
+

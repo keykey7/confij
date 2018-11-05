@@ -8,6 +8,7 @@ buildscript {
 plugins {
 	id 'net.ltgt.apt-idea' version '0.19'
 	id 'com.github.ben-manes.versions' version '0.20.0'
+	id 'org.asciidoctor.convert' version '1.5.9.1' apply false
 }
 
 allprojects {
