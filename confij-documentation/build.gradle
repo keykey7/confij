@@ -8,6 +8,7 @@ dependencies {
 
 asciidoctor {
 	attributes 'revnumber': project.version,
+			'group': project.group,
 			'reproducible': 'true',
 			'attribute-missing': 'warn'
 	sources {

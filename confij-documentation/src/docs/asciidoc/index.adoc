@@ -5,27 +5,13 @@
 :source-highlighter: prettify
 :source-language: java
 :icons: font
-:src: ../../test/java/ch/kk7/confij/docs
-:home: ../../test/home
+:doctype: book
 
 ConfiJ is a type-safe Java configuration library.
+It enforces a contract on the configuration close to the code as Java-Types.
 
-== Getting Started
+include::setup.adoc[]
 
-Define your configuration interface
-[source]
-----
-include::{src}/Docs.java[tag=simple_interface,indent=0]
-----
+include::binding.adoc[]
 
-Matching your configuration file
-----
-include::{home}/server.properties[]
-----
-
-And load an instance of your configuration as easy as
-[source]
-----
-include::{src}/Docs.java[tag=simple_builder,indent=0]
-----
-
+include::source.adoc[]

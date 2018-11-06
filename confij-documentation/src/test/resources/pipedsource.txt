@@ -1,0 +1,6 @@
+ServerConfig {
+    externalUrl=https://example.com:8042/think,
+    line=3,
+    name=deepthough,
+    timeout=PT30S
+}

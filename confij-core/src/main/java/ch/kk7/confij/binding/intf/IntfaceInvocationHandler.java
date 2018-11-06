@@ -63,9 +63,7 @@ public class IntfaceInvocationHandler implements InvocationHandler {
 	}
 
 	protected String intfToString() {
-		StringBuilder sb = new StringBuilder(className).append("@")
-				.append(Integer.toHexString(hashCode() & 0xffff))
-				.append("{");
+		StringBuilder sb = new StringBuilder(className).append("{");
 		methodToValues.forEach((k, v) -> sb.append(k.getName())
 				.append("=")
 				.append(v)

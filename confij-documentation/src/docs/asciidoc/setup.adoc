@@ -1,0 +1,31 @@
+= Getting Started
+:src: ../../test/java/ch/kk7/confij/docs/Setup.java
+:home: ../../test/home
+
+== Repository
+ConfiJ maven artifacts are available on Bintray/JCenter.
+A Gradle setup looks like:
+[source,groovy,subs=attributes]
+----
+repositories {
+   jcenter()
+}
+dependencies {
+    compile '{group}:confij-core:{revnumber}'
+}
+----
+
+== Quick Start
+[source]
+----
+include::{src}[tag=simple_interface,indent=0]
+include::{src}[tag=simple_builder,indent=0]
+----
+<1> Define your configuration type, in this case as a Java-interface
+<2> Load from various source, in this case a properties file
+<3> Bind the source to a configuration instance of matching type
+----
+include::{home}/server.properties[]
+----
+
+ConfiJ will make sure that no unknown keys are present and bind all configuration strings to their configuration types.

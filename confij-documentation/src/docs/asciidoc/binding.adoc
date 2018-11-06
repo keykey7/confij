@@ -1,0 +1,28 @@
+= Binding
+:src: ../../test/java/ch/kk7/confij/docs/Binding.java
+:home: ../../test/home
+
+The binding defines the contract of the configuration as well as the mapping
+from string value to the actual configuration type.
+Each configuration is organized in a tree-structure and generally immutable.
+
+== Nested Configuration
+
+=== Interfaces and Generics
+
+=== Map Types
+
+=== Collection and Array Types
+
+=== Bean Types
+WARNING: Bean types are not supported yet. Please contribute.
+
+== Leaf Types
+
+=== Primitives
+
+=== Built-in Bindings
+
+=== Custom Bindings
+- for the whole configuration
+- per type

@@ -15,10 +15,12 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
@@ -103,7 +105,7 @@ public class InterfaceProxyBuilder<T> {
 						missingMandatoryMethods);
 			}
 			// input methods are valid at this point
-			Map<Method, Object> fixedMethodToValue = new HashMap<>();
+			Map<Method, Object> fixedMethodToValue = new TreeMap<>(Comparator.comparing(Method::getName));
 			methodToValues.forEach((method, value) -> {
 				ResolvedType returnClass = method.getReturnType();
 				if (value == null && returnClass.isPrimitive()) {

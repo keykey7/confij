@@ -12,3 +12,5 @@
 - logging modul
 - documentation
 - injection support: guice, spring, J2EE
+- @Default with Object instead of String
+- VariableReplacement within @Default("${replaceMe}")

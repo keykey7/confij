@@ -17,7 +17,7 @@ import lombok.ToString;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -32,7 +32,7 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 		if (!(baseType instanceof ResolvedInterfaceType)) {
 			throw new IllegalArgumentException("expected type " + baseType + " to be a " + ResolvedInterfaceType.class);
 		}
-		siblingsByName = new HashMap<>();
+		siblingsByName = new LinkedHashMap<>();
 		interfaceBuilder = new InterfaceProxyBuilder<>((ResolvedInterfaceType) baseType);
 		for (ResolvedMethod method : interfaceBuilder.getAllowedMethods()) {
 			BindingType methodBindingType = bindingType.bindingFor(method.getReturnType(), bindingType.getBindingSettings()
@@ -67,7 +67,12 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 					.bind(childConfigs.get(key));
 			// TODO: what does it mean when a siblingValue is null/empty for a default method? should it be called or simply return null?
 			// TODO: -> maybe make the behaviour configurable
-			builder.methodToValue(siblingDescription.getMethod(), siblingValue);
+			ResolvedMethod method = siblingDescription.getMethod();
+			if (method.getRawMember()
+					.isDefault() && isEmpty(siblingValue)) {
+				return;
+			}
+			builder.methodToValue(method, siblingValue);
 		});
 		return builder.build();
 	}
