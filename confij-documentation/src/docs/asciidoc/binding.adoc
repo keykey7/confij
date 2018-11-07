@@ -6,23 +6,70 @@ The binding defines the contract of the configuration as well as the mapping
 from string value to the actual configuration type.
 Each configuration is organized in a tree-structure and generally immutable.
 
-== Nested Configuration
+== Value Mapping
 
-=== Interfaces and Generics
+String values in configurations are transparently mapped to Objects or pimitives.
+[source]
+----
+include::{src}[tag=builtinMapping,indent=0]
+----
+[source,yaml]
+----
+# mapping.yaml
+include::{home}/mapped.yml[]
+----
+<1> mapping to primitives or java.lang objects
+<2> configuration keys can be changed if the attribute name doesn't fit
+<3> arrays are usually mapped from lists (see <<nested-configuration,Nested>>)
+<4> or the default behaviour can be changed with a custom `ValueMapping`.
 
-=== Map Types
+=== Default Value Mapping
 
-=== Collection and Array Types
+The default mapping behaviour attemts to map from string to target type in the following order:
 
-=== Bean Types
-WARNING: Bean types are not supported yet. Please contribute.
+. if the attribute is annotated with a custom `@ValueMapper` or a `@ValueMapperFactory` enforce that one
+. primitives types (null values are mapping to their empty types)
+. explicit mappings, for example:
+.. java.nio.file.Path
+.. java.io.File
+.. java.time.Duration
+.. java.time.Period
+.. ...
+. Enums
+. classes with a static method named
+.. valueOf(String)
+.. fromString(String)
+. classes with a constructor taking a single String as input argument
 
-== Leaf Types
-
-=== Primitives
-
-=== Built-in Bindings
-
-=== Custom Bindings
+== Custom Value Mapping
 - for the whole configuration
 - per type
+
+== Nested Configuration [[nested-configuration]]
+
+[source]
+----
+include::{src}[tag=nested,indent=0]
+----
+
+Configurations can themselves contain child configurations recursively.
+Since every configuration is organized in a tree-structure, we call them branches.
+Typical branches contain, but are not limited to:
+
+- nested interfaces (also with generics)
+- Collection of interfaces, Objects (leafs), other Collections,...
+- Array types of Objects, primitives, other Arrays,...
+- Map types where keys are Strings and values are again anything
+
+[source]
+----
+include::{src}[tag=nestedList,indent=0]
+
+include::{src}[tag=nestedBuild,indent=0]
+----
+
+If the standard `Collection` interfaces are used ConfiJ will use an immutable representation of it.
+But any instance can be used as long as it has an empty constructor (but at the loss of immutability).
+Same holds for `Map<String,?>` types.
+
+WARNING: Java Bean types are not supported yet. Please contribute.

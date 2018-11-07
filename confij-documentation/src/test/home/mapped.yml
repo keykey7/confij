@@ -1,0 +1,6 @@
+aString: a value
+pi: 3.141
+int: 42
+intArray: [1, 2, 3]
+base64: AQIDBA==
+duration: 7nanoseconds
