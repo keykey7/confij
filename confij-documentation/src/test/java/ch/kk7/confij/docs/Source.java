@@ -4,13 +4,14 @@ import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.pipeline.ConfijBuilder;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class Source extends DocTestBase {
-
 	// tag::interface[]
 	interface ServerConfig {
 		String name();
@@ -20,7 +21,8 @@ public class Source extends DocTestBase {
 		@Default("1")
 		int line();
 
-		@Default("30s") // <1>
+		@Default("30s")
+			// <1>
 		Duration timeout();
 	}
 	// end::interface[]
@@ -64,5 +66,48 @@ public class Source extends DocTestBase {
 		assertThat(defaults.aNumber()).isEqualTo(23);
 		assertThat(defaults.aListOfBooleans()).containsExactly(true, false);
 		assertThat(defaults.aNumberPlus1()).isEqualTo(24);
+	}
+
+	// tag::nestedinterface[]
+	interface Config {
+		String key();
+		Nested nest(); // <1>
+		List<Nested> listOfNest(); // <2>
+		Map<String, Nested> mapOfNest(); // <3>
+	}
+
+	interface Nested {
+		int x();
+		int y();
+	}
+	// end::nestedinterface[]
+
+	@Test
+	public void nestedPropertiesFile() {
+		Config config = ConfijBuilder.of(Config.class)
+				.withSource("nested.properties")
+				.build();
+		assertThat(config.key()).isEqualTo("value");
+		assertThat(config.nest().x()).isEqualTo(0);
+		assertThat(config.nest().y()).isEqualTo(1);
+		assertThat(config.listOfNest()).hasSize(3);
+		assertThat(config.mapOfNest()).containsOnlyKeys("mykey", "myotherkey")
+				.hasEntrySatisfying("myotherkey", nested -> assertThat(nested.y()).isEqualTo(0));
+	}
+
+	@Test
+	public void powerOfTheAnySource() {
+		System.setProperty("some.prefix.key", "fromSysprops");
+		// tag::anysource[]
+		ConfijBuilder.of(Config.class)
+				.withSource("nested.properties") // properties file in current working directory
+				.withSource(new File("nested.properties").getAbsolutePath()) // equivalent
+				.withSource("file:nested.properties") // equivalent
+				.withSource("classpath:nested${key}.yaml") // a YAML file on the classpath root
+				.withSource("${key}:nestedvalue.yaml") // ...with variable replacements
+				.withSource("sys:some.prefix") // from system properties
+				.withSource("env:some_prefix") // from environment variables
+				.build();
+		// end::anysource[]
 	}
 }

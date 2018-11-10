@@ -9,7 +9,7 @@ Each consecutive source overrides attributes of the previous ones.
 Typically this is usefull to load a set of default values first,
 then continue with application specifics and environment specific values
 getting more and more detailed.
-Source types can be freely mixed:
+Source types can be freely mixed, meaning you can load from classpath, then from a remote file, then from envionment variables and so on.
 
 [source]
 ----
@@ -17,7 +17,7 @@ include::{src}[tag=interface,indent=0]
 
 include::{src}[tag=pipedsource,indent=0]
 ----
-<1> <<format-default,Default values>> are always loaded first (before each new source).
+<1> <<format-default,Default values>> are always loaded first.
 <2> then override with a file from the classpath root.
 [source]
 include::{resources}/generic.properties[]
@@ -34,15 +34,12 @@ include::{resources}/pipedsource.txt[]
 ----
 
 Validation generally only applies to the final configuration.
+It is allowed to have incomplete configurations while there are still more configuration sources to load.
 In the example above, `name` was undefined until round 3.
 
-Variable substitution will take into account all values loaded until now.
+== Default Values [[format-default]]
 
-== Supported Formats
-
-=== Default Values [[format-default]]
-
-Configuration default can be defined directly in your configuration interface.
+Configuration default can be defined directly in your configuration interface using the `@Default` annotation.
 For more complex scenarios where the default value is not easily stingifyable,
 use a `default` method.
 [source]
@@ -50,29 +47,85 @@ use a `default` method.
 include::{src}[tag=defaults,indent=0]
 ----
 
-=== YAML
-[NOTE]
-====
-YAML format requires the `{group}.confij-yaml` maven artifact.
-====
+== File Sources
 
-=== Properties File
+Many configuration sources can be loaded from different locations like files, URL's, a git-repository or alike.
+Source location and source format can be combined freely.
 
-=== Environment
+=== The AnySource
+
+The `AnySource` simply takes a URI-string and determines resouce location and type based on it.
+It is the recommended form unless you require special settings.
+
+[source]
+----
+include::{src}[tag=anysource,indent=0]
+----
+
+<<variables,Variable substitutions>> are supported anywhere in the template string.
+They simply take into account the previously loaded configuration keys.
+Replacement keys are always absolute (relative to the configuration root).
+
+=== Resource Locations
+
+- File
+- URL
+- classpath
+
+==== Custom Resources
+
+- implement XY
+- add a service loader
+
+=== Source Formats
+
+==== YAML
+
+NOTE: YAML format requires the `{group}:confij-yaml` maven artifact.
+
+YAML is a recommended configuration source format.
+Since it maps nicely on a tree-structure it works well together with ConfiJ.
+Collection types can be represented as lists or as maps with numerical keys.
+
+[source,yaml]
+----
+include::{home}/sample.yaml[]
+----
+
+The YAML source file can contain multi-docs, they are loaded in order.
+Internally all values are reduced to Maps of Maps or Strings.
+
+==== Properties File
+
+Java properties files are part of the `{group}:confij-core` due to not having any 3rd party dependencies,
+but are otherwise not recommended, since it is a flat key-value format.
+
+[source]
+----
+include::{src}[tag=nestedinterface,indent=0]
+----
+----
+include::{home}/nested.properties[]
+----
+
+<1> Per default, nested configurations are separated with a dot form each other.
+<2> Collection types simply require numerical keys (starting at 0).
+<3> Map types can use any (excluding the delimiter).
+
+== Other Sources
+
+=== Environment Variables
 
 === System Properties
 
-== Resource Types
-
-=== Classpath
-
-=== File
-
-=== URL
-
-== Variable Substitutions
+== Variable Substitutions [[variables]]
 
 === built-in
+
+- relative to node
+- can do absolute
+- can do recursive
+- even allowed in source paths
 
 === Groovy
 NOTE: Not yet implemented.

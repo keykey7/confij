@@ -1,0 +1,19 @@
+# from the testfile.yaml
+listOfStrings:
+  - String
+  - String on
+    a single line
+  - "Double quotation marks\t"
+mapOfIntegers: &ref
+  canonical:   12345
+  decimal:     +12_345
+  sexagesimal: 3:25:45
+  octal:       030071
+  hexadecimal: 0x3039
+mapOfIntegersClone: *ref
+aSparseList:
+  0: null
+  1000: big
+date: 2001-12-14t21:59:43.10-05:00
+true: true
+false: off

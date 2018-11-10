@@ -1,7 +1,7 @@
 = ConfiJ Documentation
 :sectnums:
 :toc: left
-:toclevels: 2
+:toclevels: 3
 :source-highlighter: prettify
 :source-language: java
 :icons: font

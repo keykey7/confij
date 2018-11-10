@@ -20,6 +20,7 @@ public class AnySource implements ConfigSource {
 
 	public AnySource(String pathTemplate) {
 		this.pathTemplate = Objects.requireNonNull(pathTemplate);
+		// TODO: make static and allow service loader (with priorities)
 		sourceBuilders = new ArrayList<>(Arrays.asList(new EnvvarSource(), new SystemPropertiesSource(), new AnyResourceBuilder()));
 	}
 
