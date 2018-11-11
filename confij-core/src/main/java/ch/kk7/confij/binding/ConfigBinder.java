@@ -30,8 +30,8 @@ public class ConfigBinder {
 	}
 
 	@SuppressWarnings("unchecked")
-	public ConfigBinding<?> toRootConfigBinding(Type forType) {
-		return toConfigBinding(BindingType.newBindingType(forType));
+	public ConfigBinding<?> toRootConfigBinding(Type forType, BindingSettings bindingSettings) {
+		return toConfigBinding(BindingType.newBindingType(forType, bindingSettings));
 	}
 
 	public ConfigBinding<?> toConfigBinding(BindingType bindingType) {

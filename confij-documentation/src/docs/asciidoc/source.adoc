@@ -13,9 +13,9 @@ Source types can be freely mixed, meaning you can load from classpath, then from
 
 [source]
 ----
-include::{src}[tag=interface,indent=0]
+include::{src}[tag=interface]
 
-include::{src}[tag=pipedsource,indent=0]
+include::{src}[tag=pipedsource]
 ----
 <1> <<format-default,Default values>> are always loaded first.
 <2> then override with a file from the classpath root.
@@ -42,29 +42,30 @@ In the example above, `name` was undefined until round 3.
 Configuration default can be defined directly in your configuration interface using the `@Default` annotation.
 For more complex scenarios where the default value is not easily stingifyable,
 use a `default` method.
+
 [source]
 ----
-include::{src}[tag=defaults,indent=0]
+include::{src}[tag=defaults]
 ----
 
-== File Sources
-
-Many configuration sources can be loaded from different locations like files, URL's, a git-repository or alike.
-Source location and source format can be combined freely.
-
-=== The AnySource
+== The AnySource
 
 The `AnySource` simply takes a URI-string and determines resouce location and type based on it.
 It is the recommended form unless you require special settings.
 
 [source]
 ----
-include::{src}[tag=anysource,indent=0]
+include::{src}[tag=anysource]
 ----
 
 <<variables,Variable substitutions>> are supported anywhere in the template string.
 They simply take into account the previously loaded configuration keys.
 Replacement keys are always absolute (relative to the configuration root).
+
+== File Sources
+
+Many configuration sources can be loaded from different locations like files, URL's, a git-repository or alike.
+Source location and source format can be combined freely.
 
 === Resource Locations
 
@@ -100,15 +101,19 @@ Internally all values are reduced to Maps of Maps or Strings.
 Java properties files are part of the `{group}:confij-core` due to not having any 3rd party dependencies,
 but are otherwise not recommended, since it is a flat key-value format.
 
+
+.Hibernate Validator CDI portable extension Maven dependency
+====
 [source]
 ----
-include::{src}[tag=nestedinterface,indent=0]
+include::{src}[tag=nestedinterface]
 ----
 ----
 include::{home}/nested.properties[]
 ----
+====
 
-<1> Per default, nested configurations are separated with a dot form each other.
+<1> Per default, nested configuration keys are separated with a dot form each other.
 <2> Collection types simply require numerical keys (starting at 0).
 <3> Map types can use any (excluding the delimiter).
 

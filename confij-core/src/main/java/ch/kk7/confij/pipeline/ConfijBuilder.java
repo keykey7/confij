@@ -1,5 +1,6 @@
 package ch.kk7.confij.pipeline;
 
+import ch.kk7.confij.binding.BindingSettings;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.format.ConfigFormat;
@@ -12,23 +13,24 @@ import ch.kk7.confij.source.defaults.DefaultSource;
 import ch.kk7.confij.validation.IValidator;
 import ch.kk7.confij.validation.ServiceLoaderValidator;
 import com.fasterxml.classmate.GenericType;
+import lombok.NonNull;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ConfijBuilder<T> {
 	private final Type forType;
-	private List<ConfigSource> sources = new ArrayList<>();
+	private final List<ConfigSource> sources = new ArrayList<>();
 	private IValidator validator = null;
 	private FormatSettings formatSettings = FormatSettings.newDefaultSettings();
+	private BindingSettings bindingSettings = BindingSettings.newDefaultSettings();
 	private ConfijReloader<T> reloader = null;
 
-	protected ConfijBuilder(Type forType) {
+	protected ConfijBuilder(@NonNull Type forType) {
 		this.forType = forType;
 	}
 
@@ -43,7 +45,7 @@ public class ConfijBuilder<T> {
 	public ConfijBuilder<T> withSource(String... sourceStr) {
 		Stream.of(sourceStr)
 				.map(AnySource::new)
-				.forEachOrdered(s -> sources.add(s));
+				.forEachOrdered(sources::add);
 		return this;
 	}
 
@@ -52,8 +54,8 @@ public class ConfijBuilder<T> {
 		return this;
 	}
 
-	public ConfijBuilder<T> withValidator(IValidator validator) {
-		this.validator = Objects.requireNonNull(validator, "validator");
+	public ConfijBuilder<T> withValidator(@NonNull IValidator validator) {
+		this.validator = validator;
 		return this;
 	}
 
@@ -61,13 +63,18 @@ public class ConfijBuilder<T> {
 		return withValidator(IValidator.NOOP);
 	}
 
-	public ConfijBuilder<T> withFormatSettings(FormatSettings formatSettings) {
-		this.formatSettings = Objects.requireNonNull(formatSettings, "formatSettings");
+	public ConfijBuilder<T> withFormatSettings(@NonNull FormatSettings formatSettings) {
+		this.formatSettings = formatSettings;
 		return this;
 	}
 
-	public ConfijBuilder<T> withReloader(ConfijReloader<T> reloader) {
-		this.reloader = Objects.requireNonNull(reloader, "reloader");
+	public ConfijBuilder<T> withBindingSettings(@NonNull BindingSettings bindingSettings) {
+		this.bindingSettings = bindingSettings;
+		return this;
+	}
+
+	public ConfijBuilder<T> withReloader(@NonNull ConfijReloader<T> reloader) {
+		this.reloader = reloader;
 		return this;
 	}
 
@@ -76,7 +83,7 @@ public class ConfijBuilder<T> {
 				.orElseGet(ServiceLoaderValidator::new);
 		ConfigBinder configBinder = new ConfigBinder();
 		@SuppressWarnings("unchecked")
-		ConfigBinding<T> configBinding = (ConfigBinding<T>) configBinder.toRootConfigBinding(forType);
+		ConfigBinding<T> configBinding = (ConfigBinding<T>) configBinder.toRootConfigBinding(forType, bindingSettings);
 		ConfigFormat configFormat = configBinding.describe(formatSettings);
 		return new ConfijPipelineImpl<>(sources, new DefaultSource(), validator, configBinding, configFormat);
 	}

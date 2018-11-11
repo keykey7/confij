@@ -8,6 +8,7 @@ import ch.kk7.confij.format.resolve.DefaultResolver;
 import ch.kk7.confij.format.resolve.IVariableResolver;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -62,8 +63,11 @@ public class FormatSettings {
 		public <T> T getInstance(Class<T> clazz) {
 			return (T) instances.computeIfAbsent(clazz, k -> {
 				try {
-					return k.getConstructor()
-							.newInstance();
+					Constructor<?> constructor = k.getDeclaredConstructor();
+					if (!constructor.isAccessible()) {
+						constructor.setAccessible(true);
+					}
+					return constructor.newInstance();
 				} catch (Exception e) {
 					throw new Config4jException("unable to instantiate: " + k, e);
 				}

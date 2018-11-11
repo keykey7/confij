@@ -2,6 +2,7 @@ package ch.kk7.confij.binding;
 
 import ch.kk7.confij.annotation.ValueMapper;
 import ch.kk7.confij.annotation.ValueMapperFactory;
+import ch.kk7.confij.binding.leaf.IValueMapper;
 import ch.kk7.confij.binding.leaf.IValueMapperFactory;
 import ch.kk7.confij.binding.leaf.mapper.EnumMapper;
 import ch.kk7.confij.binding.leaf.mapper.ExplicitMapperFactory;
@@ -19,6 +20,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * considered when parsing the configuration types.
+ */
 public class BindingSettings {
 	private final IValueMapperFactory forcedMapperFactory;
 	private final List<IValueMapperFactory> mapperFactories;
@@ -35,6 +39,29 @@ public class BindingSettings {
 				new EnumMapper.EnumMapperFactory(), new StaticFunctionMapper.StaticFunctionMapperFactory(),
 				new SoloConstructorMapper.SoloConstructorMapperFactory());
 		return new BindingSettings(null, mapperFactories, new LazyClassToImplCache());
+	}
+
+	public BindingSettings withValueMapperFactories(List<IValueMapperFactory> mapperFactories) {
+		return new BindingSettings(forcedMapperFactory, mapperFactories, implCache);
+	}
+
+	public BindingSettings addValueMapperFactory(IValueMapperFactory valueMapperFactory) {
+		// always add at the beginning
+		List<IValueMapperFactory> factories = new ArrayList<>();
+		factories.add(valueMapperFactory);
+		factories.addAll(mapperFactories);
+		return withValueMapperFactories(factories);
+	}
+
+	public <T> BindingSettings addValueMapper(IValueMapper<T> valueMapper, Class<T> forClass) {
+		return addValueMapperFactory(bindingType -> {
+			if (bindingType.getResolvedType()
+					.getErasedType()
+					.equals(forClass)) {
+				return Optional.of(valueMapper);
+			}
+			return Optional.empty();
+		});
 	}
 
 	public Optional<IValueMapperFactory> getForcedMapperFactory() {

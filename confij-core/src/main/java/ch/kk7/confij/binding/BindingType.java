@@ -17,8 +17,12 @@ public class BindingType {
 	}
 
 	public static BindingType newBindingType(Type forType) {
+		return newBindingType(forType, BindingSettings.newDefaultSettings());
+	}
+
+	public static BindingType newBindingType(Type forType, BindingSettings bindingSettings) {
 		TypeResolver typeResolver = new TypeResolver();
-		return new BindingType(typeResolver.resolve(forType), BindingSettings.newDefaultSettings(), typeResolver);
+		return new BindingType(typeResolver.resolve(forType), bindingSettings, typeResolver);
 	}
 
 	public BindingType bindingFor(ResolvedType resolvedType) {

@@ -1,11 +1,15 @@
 package ch.kk7.confij.docs;
 
 import ch.kk7.confij.annotation.Key;
+import ch.kk7.confij.annotation.ValueMapper;
+import ch.kk7.confij.binding.BindingSettings;
+import ch.kk7.confij.binding.leaf.IValueMapper;
 import ch.kk7.confij.binding.leaf.mapper.Base64Mapper.Base64;
 import ch.kk7.confij.pipeline.ConfijBuilder;
 import ch.kk7.confij.source.env.PropertiesSource;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
@@ -70,7 +74,6 @@ public class Binding extends DocTestBase {
 	}
 	// end::nestedList[]
 
-
 	@Test
 	public void nested() {
 		// tag::nestedBuild[]
@@ -87,4 +90,66 @@ public class Binding extends DocTestBase {
 				.keepAlive()).isEqualByComparingTo(Duration.ofSeconds(30));
 		assertThat(dbConfig.additionalParameters()).contains(entry("somekey", "somevalue"));
 	}
+
+	// tag::custom-value-mapping-interface[]
+	static class ColorDecoder implements IValueMapper<Color> {
+		@Override
+		public Color fromString(String string) {
+			return Color.decode(string);
+		}
+	}
+
+	interface Favourites {
+		@ValueMapper(ColorDecoder.class)
+		Color favouriteColor();
+	}
+	// end::custom-value-mapping-interface[]
+
+	@Test
+	public void customValueMappingWithAnnotation() {
+		Favourites favourites = ConfijBuilder.of(Favourites.class)
+				.withSource(new PropertiesSource().with("favouriteColor", "#000000"))
+				.build();
+		assertThat(favourites.favouriteColor()).isEqualTo(Color.BLACK);
+	}
+
+	interface EmptyColorHolder {
+		Color black();
+		Color green();
+	}
+
+	@Test
+	public void customValueMappingWithBuilder() {
+		// tag::custom-value-mapping[]
+		BindingSettings bindingSettings = BindingSettings.newDefaultSettings()
+				.addValueMapper(Color::decode, java.awt.Color.class);
+		EmptyColorHolder colorHolder = ConfijBuilder.of(EmptyColorHolder.class)
+				.withBindingSettings(bindingSettings)
+				// end::custom-value-mapping[]
+				.withSource(new PropertiesSource().with("black", "#000000")
+						.with("green", "#00FF00"))
+				.build();
+		assertThat(colorHolder.black()).isEqualTo(Color.BLACK);
+		assertThat(colorHolder.green()).isEqualTo(Color.GREEN);
+	}
+
+	// tag::custom-value-mapping-builtin[]
+	interface BuiltInMappers {
+		@ch.kk7.confij.binding.leaf.mapper.Base64Mapper.Base64
+		byte[] base64Arr();
+		@Base64
+		List<Byte> base64List();
+	}
+	// end::custom-value-mapping-builtin[]
+
+	@Test
+	public void testBuiltinCustomMappings() {
+		BuiltInMappers builtInMappers = ConfijBuilder.of(BuiltInMappers.class)
+				.withSource(new PropertiesSource().with("base64Arr", "AQIDBA==")
+						.with("base64List", "AQIDBA=="))
+				.build();
+		assertThat(builtInMappers.base64Arr()).containsExactly(1, 2, 3, 4);
+		assertThat(builtInMappers.base64List()).containsExactly((byte) 1, (byte) 2, (byte) 3, (byte) 4);
+	}
+
 }

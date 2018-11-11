@@ -1,11 +1,16 @@
-= ConfiJ Documentation
+= ConfiJ {revnumber} - Reference Guide
+:doctype: book
+:icons: font
+:sectanchors:
 :sectnums:
+:source-highlighter: prettify
+:source-indent: 0
+:source-language: java
 :toc: left
 :toclevels: 3
-:source-highlighter: prettify
-:source-language: java
-:icons: font
-:doctype: book
+:xrefstyle: full
+:data-uri:
+:nofooter:
 
 ConfiJ is a type-safe Java configuration library.
 It enforces a contract on the configuration close to the code as Java-Types.

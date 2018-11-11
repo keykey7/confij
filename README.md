@@ -15,3 +15,4 @@
 - @Default with Object instead of String
 - VariableReplacement within @Default("${replaceMe}")
 - add priorities to serviceloader
+- convert StaticFunctionMapper and alike to normal ValueMapperFactories to allow using them in annotations

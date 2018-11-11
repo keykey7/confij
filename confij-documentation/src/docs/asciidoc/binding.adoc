@@ -8,19 +8,23 @@ Each configuration is organized in a tree-structure and generally immutable.
 
 == Value Mapping
 
-String values in configurations are transparently mapped to Objects or pimitives.
+When values are read from a configuration files they are first available as Strings.
+They are then transparently mapped to Objects or pimitives the match the defined type.
+
+.Value Mapping to known types in a flat configuration
+====
 [source]
 ----
-include::{src}[tag=builtinMapping,indent=0]
+include::{src}[tag=builtinMapping]
 ----
-[source,yaml]
+[source, yaml]
 ----
-# mapping.yaml
 include::{home}/mapped.yml[]
 ----
+====
 <1> mapping to primitives or java.lang objects
 <2> configuration keys can be changed if the attribute name doesn't fit
-<3> arrays are usually mapped from lists (see <<nested-configuration,Nested>>)
+<3> arrays are usually mapped from lists (see <<nested-configuration>>)
 <4> or the default behaviour can be changed with a custom `ValueMapping`.
 
 === Default Value Mapping
@@ -28,28 +32,76 @@ include::{home}/mapped.yml[]
 The default mapping behaviour attemts to map from string to target type in the following order:
 
 . if the attribute is annotated with a custom `@ValueMapper` or a `@ValueMapperFactory` enforce that one
-. primitives types (null values are mapping to their empty types)
+  (see <<custom-value-mapping>>)
+. primitives types, where `null` values are mapped to their empty types:
+  a non-existent `int` becomes 0.
+  booleans either have to be lowercase `true` or `false`,
+  except for source languages enforcing another definition (like yaml).
 . explicit mappings, for example:
-.. java.nio.file.Path
-.. java.io.File
-.. java.time.Duration
-.. java.time.Period
-.. ...
-. Enums
-. classes with a static method named
-.. valueOf(String)
-.. fromString(String)
+
+  java.nio.file.Path
+  java.io.File
+  java.time.Duration
+  java.time.Period
+  ...
+
+. all Enum-types based on the Enum's name
+. classes with a static method named `valueOf(String)` or `fromString(String)`
 . classes with a constructor taking a single String as input argument
 
-== Custom Value Mapping
-- for the whole configuration
-- per type
+TIP: Arrays/Collections are not considered leafs. In order to map a comma separated
+configuration string to a `string[]` you have to annotate it with `@CsvSeparated`.
+
+////
+FIXME: @CsvSeparated already supported?
+////
+
+== Custom Value Mapping [[custom-value-mapping]]
+
+If the default mapping does not fit or the target type is unknown, you generally have
+two options: programmatic the ConfiJBuilder or with an annotation on the affected attribute.
+
+If a custom mapping holds for all types in the whole configuration,
+it's easiest to set it in the builder when creating the configuration instance.
+
+.Global support to map RGB codes like "#0F0F0F" to Color
+====
+[source]
+----
+include::{src}[tag=custom-value-mapping]
+----
+====
+
+If a custom mapping should only be applied to specific attributes,
+annotate them with `@ValueMapper(Class)`.
+The mapper must have an accessible empty constructor.
+For more complex scenarios, where the target type is not known at compile time,
+a `ValueMapperFactory` can be used.
+
+.Annotation based support to map RGB codes like "#0F0F0F" to Color
+====
+[source]
+----
+include::{src}[tag=custom-value-mapping-interface]
+----
+====
+
+There are some built-in mappers:
+
+.Using built-in value mappers
+====
+[source]
+----
+include::{src}[tag=custom-value-mapping-builtin]
+----
+====
+
 
 == Nested Configuration [[nested-configuration]]
 
 [source]
 ----
-include::{src}[tag=nested,indent=0]
+include::{src}[tag=nested]
 ----
 
 Configurations can themselves contain child configurations recursively.
@@ -63,9 +115,9 @@ Typical branches contain, but are not limited to:
 
 [source]
 ----
-include::{src}[tag=nestedList,indent=0]
+include::{src}[tag=nestedList]
 
-include::{src}[tag=nestedBuild,indent=0]
+include::{src}[tag=nestedBuild]
 ----
 
 If the standard `Collection` interfaces are used ConfiJ will use an immutable representation of it.
