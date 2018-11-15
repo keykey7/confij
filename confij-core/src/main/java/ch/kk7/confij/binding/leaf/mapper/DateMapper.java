@@ -13,6 +13,8 @@ import java.lang.annotation.Target;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Locale.Category;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -22,7 +24,15 @@ public class DateMapper extends AbstractClassValueMapper<Date> {
 	@Target({ElementType.METHOD, ElementType.TYPE})
 	@ValueMapper(DateMapper.class)
 	public @interface Type {
+		/**
+		 * @return A pattern for {@link DateTimeFormatter#ofPattern(String, Locale)}
+		 */
 		String value() default "yyyy-MM-dd'T'HH:mm:ss.SXXX";
+
+		/**
+		 * @return A locale string for {@link DateTimeFormatter#ofPattern(String, Locale)}
+		 */
+		String lang() default "";
 	}
 
 	@Type
@@ -47,12 +57,14 @@ public class DateMapper extends AbstractClassValueMapper<Date> {
 
 	@Override
 	public ValueMapperInstance<Date> newInstance(BindingType bindingType) {
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(bindingType.getBindingSettings()
+		Type type = bindingType.getBindingSettings()
 				.getFactoryConfigFor(DateMapper.class)
 				.filter(Type.class::isInstance)
 				.map(Type.class::cast)
-				.orElse(AnnonHolder.class.getAnnotation(Type.class))
-				.value());
+				.orElse(AnnonHolder.class.getAnnotation(Type.class));
+		final Locale formatLang = type.lang()
+				.isEmpty() ? Locale.getDefault(Category.FORMAT) : Locale.forLanguageTag(type.lang());
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(type.value(), formatLang);
 		return new DateMapperInstance(dateTimeFormatter);
 	}
 }
