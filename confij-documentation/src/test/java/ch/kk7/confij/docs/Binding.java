@@ -3,7 +3,9 @@ package ch.kk7.confij.docs;
 import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.annotation.ValueMapper;
 import ch.kk7.confij.binding.BindingSettings;
-import ch.kk7.confij.binding.leaf.IValueMapper;
+import ch.kk7.confij.binding.BindingType;
+import ch.kk7.confij.binding.leaf.ValueMapperFactory;
+import ch.kk7.confij.binding.leaf.ValueMapperInstance;
 import ch.kk7.confij.binding.leaf.mapper.Base64Mapper.Base64;
 import ch.kk7.confij.pipeline.ConfijBuilder;
 import ch.kk7.confij.source.env.PropertiesSource;
@@ -14,6 +16,7 @@ import java.net.URL;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class Binding extends DocTestBase {
 
@@ -92,10 +95,10 @@ public class Binding extends DocTestBase {
 	}
 
 	// tag::custom-value-mapping-interface[]
-	static class ColorDecoder implements IValueMapper<Color> {
+	static class ColorDecoder implements ValueMapperFactory {
 		@Override
-		public Color fromString(String string) {
-			return Color.decode(string);
+		public Optional<ValueMapperInstance<?>> maybeForType(BindingType bindingType) {
+			return Optional.of(Color::decode);
 		}
 	}
 
@@ -135,7 +138,7 @@ public class Binding extends DocTestBase {
 
 	// tag::custom-value-mapping-builtin[]
 	interface BuiltInMappers {
-		@ch.kk7.confij.binding.leaf.mapper.Base64Mapper.Base64
+		@Base64
 		byte[] base64Arr();
 		@Base64
 		List<Byte> base64List();

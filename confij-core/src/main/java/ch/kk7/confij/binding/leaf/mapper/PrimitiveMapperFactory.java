@@ -1,17 +1,17 @@
 package ch.kk7.confij.binding.leaf.mapper;
 
 import ch.kk7.confij.binding.BindingType;
-import ch.kk7.confij.binding.leaf.IValueMapper;
-import ch.kk7.confij.binding.leaf.IValueMapper.NullableValueMapper;
-import ch.kk7.confij.binding.leaf.IValueMapperFactory;
+import ch.kk7.confij.binding.leaf.ValueMapperInstance;
+import ch.kk7.confij.binding.leaf.ValueMapperInstance.NullableValueMapperInstance;
+import ch.kk7.confij.binding.leaf.ValueMapperFactory;
 import com.fasterxml.classmate.ResolvedType;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class PrimitiveMapperFactory implements IValueMapperFactory {
-	private final Map<Class<?>, IValueMapper<?>> mappings;
+public class PrimitiveMapperFactory implements ValueMapperFactory {
+	private final Map<Class<?>, ValueMapperInstance<?>> mappings;
 
 	public PrimitiveMapperFactory() {
 		this.mappings = new HashMap<>();
@@ -26,7 +26,7 @@ public class PrimitiveMapperFactory implements IValueMapperFactory {
 	}
 
 	@Override
-	public Optional<IValueMapper<?>> maybeForType(BindingType bindingType) {
+	public Optional<ValueMapperInstance<?>> maybeForType(BindingType bindingType) {
 		ResolvedType type = bindingType.getResolvedType();
 		if (!type.isPrimitive()) {
 			return Optional.empty();
@@ -35,7 +35,7 @@ public class PrimitiveMapperFactory implements IValueMapperFactory {
 
 	}
 
-	protected <T> void withMapping(Class<T> forClass, NullableValueMapper<T> mapping) {
+	protected <T> void withMapping(Class<T> forClass, NullableValueMapperInstance<T> mapping) {
 		mappings.put(forClass, mapping);
 	}
 

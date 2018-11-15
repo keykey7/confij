@@ -1,11 +1,11 @@
 package ch.kk7.confij.binding.leaf;
 
 @FunctionalInterface
-public interface IValueMapper<T> {
+public interface ValueMapperInstance<T> {
 	T fromString(String string);
 
 	@FunctionalInterface
-	interface NullableValueMapper<T> extends IValueMapper<T> {
+	interface NullableValueMapperInstance<T> extends ValueMapperInstance<T> {
 		@Override
 		default T fromString(String string) {
 			if (string == null) {

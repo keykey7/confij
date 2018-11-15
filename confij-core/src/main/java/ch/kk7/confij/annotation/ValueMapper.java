@@ -1,6 +1,6 @@
 package ch.kk7.confij.annotation;
 
-import ch.kk7.confij.binding.leaf.IValueMapper;
+import ch.kk7.confij.binding.leaf.ValueMapperFactory;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -13,5 +13,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface ValueMapper {
-	Class<? extends IValueMapper> value();
+	Class<? extends ValueMapperFactory> value();
+
+	@Deprecated
+	boolean force() default true;
 }

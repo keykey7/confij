@@ -43,6 +43,6 @@ public class ConfigBinder {
 				.orElseThrow(() -> new Config4jException(
 						"Unable to bind to type '{}'. This type cannot be handled by any of the factories. " +
 								"Either replace this type definition or add a custom {} to {}.", bindingType.getResolvedType(),
-						ConfigBindingFactory.class.getName(), ConfigBinder.class));
+						ConfigBindingFactory.class.getName(), ConfigBinder.class)); // FIXME: wrong text
 	}
 }

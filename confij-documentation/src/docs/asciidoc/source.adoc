@@ -11,12 +11,15 @@ then continue with application specifics and environment specific values
 getting more and more detailed.
 Source types can be freely mixed, meaning you can load from classpath, then from a remote file, then from envionment variables and so on.
 
+.Merge multiple configuration files across all formats
+====
 [source]
 ----
 include::{src}[tag=interface]
 
 include::{src}[tag=pipedsource]
 ----
+====
 <1> <<format-default,Default values>> are always loaded first.
 <2> then override with a file from the classpath root.
 [source]
@@ -43,10 +46,13 @@ Configuration default can be defined directly in your configuration interface us
 For more complex scenarios where the default value is not easily stingifyable,
 use a `default` method.
 
+.Default configuration values as annotations
+====
 [source]
 ----
 include::{src}[tag=defaults]
 ----
+====
 
 == The AnySource
 
@@ -58,8 +64,8 @@ It is the recommended form unless you require special settings.
 include::{src}[tag=anysource]
 ----
 
-<<variables,Variable substitutions>> are supported anywhere in the template string.
-They simply take into account the previously loaded configuration keys.
+Variable substitutions are supported anywhere in the template string (see <<variables>>).
+They take into account the previously loaded configuration keys.
 Replacement keys are always absolute (relative to the configuration root).
 
 == File Sources
@@ -90,7 +96,7 @@ Collection types can be represented as lists or as maps with numerical keys.
 
 [source,yaml]
 ----
-include::{home}/sample.yaml[]
+include::{home}/complex.yaml[]
 ----
 
 The YAML source file can contain multi-docs, they are loaded in order.

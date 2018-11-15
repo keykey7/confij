@@ -73,5 +73,9 @@ public class FormatSettings {
 				}
 			});
 		}
+
+		public <T> T getInstance(Class<? extends T> clazz, Class<T> asClass) {
+			return asClass.cast(getInstance(clazz));
+		}
 	}
 }

@@ -12,9 +12,9 @@ import ch.kk7.confij.source.simple.ConfijNode;
 import java.util.Optional;
 
 public class LeafBinding<T> implements ConfigBinding<T> {
-	private final IValueMapper<T> valueMapper;
+	private final ValueMapperInstance<T> valueMapper;
 
-	public LeafBinding(IValueMapper<T> valueMapper) {
+	public LeafBinding(ValueMapperInstance<T> valueMapper) {
 		this.valueMapper = valueMapper;
 	}
 

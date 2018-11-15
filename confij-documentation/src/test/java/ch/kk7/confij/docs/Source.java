@@ -1,6 +1,7 @@
 package ch.kk7.confij.docs;
 
 import ch.kk7.confij.annotation.Default;
+import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.pipeline.ConfijBuilder;
 import org.junit.jupiter.api.Test;
 
@@ -8,6 +9,8 @@ import java.io.File;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -109,5 +112,23 @@ public class Source extends DocTestBase {
 				.withSource("env:some_prefix") // from environment variables
 				.build();
 		// end::anysource[]
+	}
+
+	interface ComlexYaml {
+		List<String> listOfStrings();
+		Map<String, Integer> mapOfIntegers();
+		Map<String, Integer> mapOfIntegersClone();
+		LinkedList<String> anotherList();
+		Date date();
+		@Key("true") boolean isTrue();
+		@Key("false") boolean isFalse();
+	}
+
+	@Test
+	public void complexYaml() {
+		ComlexYaml yaml = ConfijBuilder.of(ComlexYaml.class)
+				.withSource("complex.yaml")
+				.build();
+		assertThat(yaml.listOfStrings()).containsExactly("String", "String on a single line", "Double quotation marks\t");
 	}
 }

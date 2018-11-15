@@ -1,105 +1,111 @@
 package ch.kk7.confij.binding;
 
 import ch.kk7.confij.annotation.ValueMapper;
-import ch.kk7.confij.annotation.ValueMapperFactory;
-import ch.kk7.confij.binding.leaf.IValueMapper;
-import ch.kk7.confij.binding.leaf.IValueMapperFactory;
+import ch.kk7.confij.binding.leaf.ValueMapperFactory;
+import ch.kk7.confij.binding.leaf.ValueMapperInstance;
+import ch.kk7.confij.binding.leaf.mapper.DateMapper;
+import ch.kk7.confij.binding.leaf.mapper.DurationMapper;
 import ch.kk7.confij.binding.leaf.mapper.EnumMapper;
-import ch.kk7.confij.binding.leaf.mapper.ExplicitMapperFactory;
+import ch.kk7.confij.binding.leaf.mapper.ExplicitMapper;
+import ch.kk7.confij.binding.leaf.mapper.PeriodMapper;
 import ch.kk7.confij.binding.leaf.mapper.PrimitiveMapperFactory;
 import ch.kk7.confij.binding.leaf.mapper.SoloConstructorMapper;
 import ch.kk7.confij.binding.leaf.mapper.StaticFunctionMapper;
 import ch.kk7.confij.common.AnnotationUtil;
+import ch.kk7.confij.common.AnnotationUtil.AnnonResponse;
 import ch.kk7.confij.format.FormatSettings.LazyClassToImplCache;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 import java.util.Optional;
 
 /**
  * considered when parsing the configuration types.
  */
+@AllArgsConstructor
 public class BindingSettings {
-	private final IValueMapperFactory forcedMapperFactory;
-	private final List<IValueMapperFactory> mapperFactories;
+	private final ValueMapperFactory forcedMapperFactory;
+	@NonNull
+	private final List<ValueMapperFactory> mapperFactories;
+	@NonNull
+	private final Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs;
+	@NonNull
 	private final LazyClassToImplCache implCache;
 
-	protected BindingSettings(IValueMapperFactory forcedMapperFactory, List<IValueMapperFactory> mapperFactories, LazyClassToImplCache implCache) {
-		this.forcedMapperFactory = forcedMapperFactory;
-		this.mapperFactories = Collections.unmodifiableList(mapperFactories);
-		this.implCache = Objects.requireNonNull(implCache);
-	}
-
 	public static BindingSettings newDefaultSettings() {
-		List<IValueMapperFactory> mapperFactories = Arrays.asList(new PrimitiveMapperFactory(), new ExplicitMapperFactory(),
-				new EnumMapper.EnumMapperFactory(), new StaticFunctionMapper.StaticFunctionMapperFactory(),
-				new SoloConstructorMapper.SoloConstructorMapperFactory());
-		return new BindingSettings(null, mapperFactories, new LazyClassToImplCache());
+		List<ValueMapperFactory> mapperFactories = Arrays.asList(
+				ExplicitMapper.forString(),
+				new PrimitiveMapperFactory(),
+				ExplicitMapper.forFile(),
+				ExplicitMapper.forPath(),
+				new EnumMapper(),
+				new DurationMapper(),
+				new PeriodMapper(),
+				new DateMapper(),
+				new StaticFunctionMapper(),
+				new SoloConstructorMapper());
+		return new BindingSettings(null, Collections.unmodifiableList(mapperFactories), Collections.emptyMap(), new LazyClassToImplCache());
 	}
 
-	public BindingSettings withValueMapperFactories(List<IValueMapperFactory> mapperFactories) {
-		return new BindingSettings(forcedMapperFactory, mapperFactories, implCache);
+	public BindingSettings withValueMapperFactories(List<ValueMapperFactory> mapperFactories) {
+		return new BindingSettings(forcedMapperFactory, Collections.unmodifiableList(mapperFactories), factoryConfigs, implCache);
 	}
 
-	public BindingSettings addValueMapperFactory(IValueMapperFactory valueMapperFactory) {
+	public BindingSettings addValueMapperFactory(ValueMapperFactory valueMapperFactory) {
 		// always add at the beginning
-		List<IValueMapperFactory> factories = new ArrayList<>();
+		List<ValueMapperFactory> factories = new ArrayList<>();
 		factories.add(valueMapperFactory);
 		factories.addAll(mapperFactories);
 		return withValueMapperFactories(factories);
 	}
 
-	public <T> BindingSettings addValueMapper(IValueMapper<T> valueMapper, Class<T> forClass) {
-		return addValueMapperFactory(bindingType -> {
-			if (bindingType.getResolvedType()
-					.getErasedType()
-					.equals(forClass)) {
-				return Optional.of(valueMapper);
-			}
-			return Optional.empty();
-		});
+	public <T> BindingSettings addValueMapper(ValueMapperInstance<T> valueMapper, Class<T> forClass) {
+		return addValueMapperFactory(ValueMapperFactory.forClass(valueMapper, forClass));
 	}
 
-	public Optional<IValueMapperFactory> getForcedMapperFactory() {
+	public Optional<ValueMapperFactory> getForcedMapperFactory() {
 		return Optional.ofNullable(forcedMapperFactory);
 	}
 
-	public List<IValueMapperFactory> getMapperFactories() {
+	public Optional<Annotation> getFactoryConfigFor(Class<? extends ValueMapperFactory> forClass) {
+		return Optional.ofNullable(factoryConfigs.get(forClass));
+	}
+
+	@NonNull
+	public List<ValueMapperFactory> getMapperFactories() {
 		return mapperFactories;
 	}
 
 	public BindingSettings settingsFor(AnnotatedElement element) {
-		List<IValueMapperFactory> mapperFactories = new ArrayList<>(this.mapperFactories);
-
-		// handle value mapping of the next type
-		final IValueMapperFactory forcedMapper = AnnotationUtil.findAnnotation(element, ValueMapper.class).map(ValueMapper::value)
-				.map(implCache::getInstance) // TODO: a new instance would be safer...
-				.map(x -> (IValueMapperFactory) bindingType -> Optional.of(x))
-				.orElse(null);
+		List<ValueMapperFactory> mapperFactories = this.mapperFactories;
+		Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs = this.factoryConfigs;
 
 		// handle value mapping factories
-		Optional<ValueMapperFactory> annon = AnnotationUtil.findAnnotation(element, ValueMapperFactory.class);
-		IValueMapperFactory forcedMapperFactory = annon.filter(ValueMapperFactory::force)
-				.map(ValueMapperFactory::value)
-				.map(implCache::getInstance)
-				.map(x -> {
-					if (forcedMapper != null) {
-						throw new BindingException("invalid annotation with mutually exclusive {} and {}", ValueMapper.class, ValueMapperFactory.class);
-					}
-					return (IValueMapperFactory) x;
-				})
-				.orElse(forcedMapper);
-
-		// handle value optional mapping factories
-		annon.filter(valueMapperFactory -> !valueMapperFactory.force())
-				.map(ValueMapperFactory::value)
-				.map(implCache::getInstance)
-				.ifPresent(mapperFactory -> mapperFactories.add(0, mapperFactory));
-
-		return new BindingSettings(forcedMapperFactory, mapperFactories, implCache);
+		ValueMapperFactory forcedMapperFactory = null;
+		Optional<AnnonResponse<ValueMapper>> declaration = AnnotationUtil.findAnnotationAndDeclaration(element, ValueMapper.class);
+		if (declaration.isPresent()) {
+			AnnonResponse<ValueMapper> response = declaration.get();
+			ValueMapper valueMapper = response.getAnnotationType();
+			Class<? extends ValueMapperFactory> clazz = valueMapper.value();
+			ValueMapperFactory mapperClass = implCache.getInstance(clazz, ValueMapperFactory.class);
+			if (valueMapper.force()) {
+				forcedMapperFactory = mapperClass;
+			} else {
+				mapperFactories = new ArrayList<>();
+				mapperFactories.add(mapperClass);
+				mapperFactories.addAll(this.mapperFactories);
+			}
+			factoryConfigs = new HashMap<>(this.factoryConfigs);
+			factoryConfigs.put(clazz, response.getDeclaredAnnotation());
+		}
+		return new BindingSettings(forcedMapperFactory, mapperFactories, factoryConfigs, implCache);
 	}
 }

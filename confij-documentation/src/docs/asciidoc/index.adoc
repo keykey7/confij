@@ -12,7 +12,7 @@
 :data-uri:
 :nofooter:
 
-ConfiJ is a type-safe Java configuration library.
+ConfiJ is a type-safe, zero-dependency Java configuration library.
 It enforces a contract on the configuration close to the code as Java-Types.
 
 include::setup.adoc[]
