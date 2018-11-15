@@ -49,6 +49,7 @@ public class YamlFormat implements ResourceFormat {
 			return simplifyList((List<Object>) yaml);
 		}
 		if (yaml instanceof Date) {
+			// note: we loose TimeZone information here. snakeyaml doesn't support OffsetDateTime
 			return DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneOffset.UTC)
 					.format(((Date) yaml).toInstant());
 		}

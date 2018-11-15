@@ -3,7 +3,7 @@ package ch.kk7.confij.binding;
 import ch.kk7.confij.annotation.ValueMapper;
 import ch.kk7.confij.binding.leaf.ValueMapperFactory;
 import ch.kk7.confij.binding.leaf.ValueMapperInstance;
-import ch.kk7.confij.binding.leaf.mapper.DateMapper;
+import ch.kk7.confij.binding.leaf.mapper.DateTimeMapper;
 import ch.kk7.confij.binding.leaf.mapper.DurationMapper;
 import ch.kk7.confij.binding.leaf.mapper.EnumMapper;
 import ch.kk7.confij.binding.leaf.mapper.ExplicitMapper;
@@ -49,7 +49,7 @@ public class BindingSettings {
 				new EnumMapper(),
 				new DurationMapper(),
 				new PeriodMapper(),
-				new DateMapper(),
+				new DateTimeMapper(),
 				new StaticFunctionMapper(),
 				new SoloConstructorMapper());
 		return new BindingSettings(null, Collections.unmodifiableList(mapperFactories), Collections.emptyMap(), new LazyClassToImplCache());

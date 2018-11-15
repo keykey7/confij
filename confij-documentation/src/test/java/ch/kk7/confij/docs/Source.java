@@ -8,8 +8,9 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.net.URL;
 import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -114,15 +115,17 @@ public class Source extends DocTestBase {
 		// end::anysource[]
 	}
 
+	// tag::yaml-interface[]
 	interface ComlexYaml {
 		List<String> listOfStrings();
 		Map<String, Integer> mapOfIntegers();
 		Map<String, Integer> mapOfIntegersClone();
 		LinkedList<String> anotherList();
-		Date date();
+		OffsetDateTime date();
 		@Key("true") boolean isTrue();
 		@Key("false") boolean isFalse();
 	}
+	// end::yaml-interface[]
 
 	@Test
 	public void complexYaml() {
@@ -130,5 +133,15 @@ public class Source extends DocTestBase {
 				.withSource("complex.yaml")
 				.build();
 		assertThat(yaml.listOfStrings()).containsExactly("String", "String on a single line", "Double quotation marks\t");
+		assertThat(yaml.mapOfIntegers()).allSatisfy((s, i) -> assertThat(i).isEqualTo(12345));
+		assertThat(yaml.mapOfIntegersClone()).isEqualTo(yaml.mapOfIntegers());
+		assertThat(yaml.anotherList()).containsExactly(null, "big");
+		// TODO: this is only a limitation of the yaml lib used. not really intentional behaviour
+		assertThat(yaml.date()).isEqualTo(OffsetDateTime.parse("2001-12-14t21:59:43.10-05:00")
+				.atZoneSameInstant(ZoneOffset.UTC.normalized())
+				.toOffsetDateTime());
+		assertThat(yaml.isTrue()).isTrue();
+		assertThat(yaml.isFalse()).isFalse();
+
 	}
 }
