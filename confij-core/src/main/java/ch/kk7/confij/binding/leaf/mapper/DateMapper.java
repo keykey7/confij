@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,11 +17,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Locale.Category;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 public class DateMapper extends AbstractClassValueMapper<Date> {
 	@Inherited
-	@Retention(RUNTIME)
+	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.TYPE})
 	@ValueMapper(DateMapper.class)
 	public @interface Type {

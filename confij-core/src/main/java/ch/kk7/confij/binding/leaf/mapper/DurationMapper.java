@@ -9,15 +9,14 @@ import ch.kk7.confij.binding.leaf.ValueMapperInstance.NullableValueMapperInstanc
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
 public class DurationMapper extends AbstractClassValueMapper<Duration> {
 	@Inherited
-	@Retention(RUNTIME)
+	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.TYPE})
 	@ValueMapper(DurationMapper.class)
 	public @interface Type {
