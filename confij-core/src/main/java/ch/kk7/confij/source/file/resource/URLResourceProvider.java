@@ -1,5 +1,7 @@
 package ch.kk7.confij.source.file.resource;
 
+import com.google.auto.service.AutoService;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -10,7 +12,8 @@ import java.util.Scanner;
 
 import static ch.kk7.confij.source.file.resource.ResourceFetchingException.unableToFetch;
 
-public class URLResource extends AbstractResource {
+@AutoService(ConfijResourceProvider.class)
+public class URLResourceProvider extends AbstractResourceProvider {
 	@Override
 	public String read(URI path) {
 		try {

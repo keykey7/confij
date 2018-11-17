@@ -1,14 +1,10 @@
 package ch.kk7.confij.source;
 
+import ch.kk7.confij.common.ServiceLoaderUtil;
 import ch.kk7.confij.format.resolve.IVariableResolver;
-import ch.kk7.confij.source.env.EnvvarSource;
-import ch.kk7.confij.source.env.SystemPropertiesSource;
-import ch.kk7.confij.source.file.AnyResourceBuilder;
-import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.source.tree.ConfijNode;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -20,8 +16,7 @@ public class AnySource implements ConfigSource {
 
 	public AnySource(String pathTemplate) {
 		this.pathTemplate = Objects.requireNonNull(pathTemplate);
-		// TODO: make static and allow service loader (with priorities)
-		sourceBuilders = new ArrayList<>(Arrays.asList(new EnvvarSource(), new SystemPropertiesSource(), new AnyResourceBuilder()));
+		sourceBuilders = ServiceLoaderUtil.instancesOf(ConfigSourceBuilder.class);
 	}
 
 	private IVariableResolver getResolver(ConfijNode node) {

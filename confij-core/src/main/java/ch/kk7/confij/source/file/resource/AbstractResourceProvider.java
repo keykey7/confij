@@ -4,7 +4,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-public abstract class AbstractResource implements Config4jResource {
+public abstract class AbstractResourceProvider implements ConfijResourceProvider {
 	private Charset charset = StandardCharsets.UTF_8;
 
 	public Charset getCharset() {

@@ -1,6 +1,6 @@
 package ch.kk7.confij.format.resolve;
 
-import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.source.tree.ConfijNode;
 
 public interface IVariableResolver {
 	default String resolve(ConfijNode leaf) {

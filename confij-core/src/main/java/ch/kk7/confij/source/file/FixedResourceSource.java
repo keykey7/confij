@@ -1,23 +1,22 @@
 package ch.kk7.confij.source.file;
 
 import ch.kk7.confij.source.ConfigSource;
-import ch.kk7.confij.source.file.format.ResourceFormat;
-import ch.kk7.confij.source.file.resource.Config4jResource;
-import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.source.file.format.ConfijSourceFormat;
+import ch.kk7.confij.source.file.resource.ConfijResourceProvider;
+import ch.kk7.confij.source.tree.ConfijNode;
+import lombok.NonNull;
+import lombok.Value;
 
 import java.net.URI;
-import java.util.Objects;
 
+@Value
 public class FixedResourceSource implements ConfigSource {
+	@NonNull
 	private final URI path;
-	private final Config4jResource resource;
-	private final ResourceFormat format;
-
-	public FixedResourceSource(URI path, Config4jResource resource, ResourceFormat format) {
-		this.path = Objects.requireNonNull(path);
-		this.resource = Objects.requireNonNull(resource);
-		this.format = Objects.requireNonNull(format);
-	}
+	@NonNull
+	private final ConfijResourceProvider resource;
+	@NonNull
+	private final ConfijSourceFormat format;
 
 	@Override
 	public void override(ConfijNode simpleConfig) {

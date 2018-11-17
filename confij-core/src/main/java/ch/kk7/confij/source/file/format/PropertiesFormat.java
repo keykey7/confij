@@ -1,7 +1,7 @@
 package ch.kk7.confij.source.file.format;
 
 import ch.kk7.confij.format.ConfigFormat;
-import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.source.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import lombok.NonNull;
 import lombok.Setter;
@@ -17,8 +17,8 @@ import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-@AutoService(ResourceFormat.class)
-public class PropertiesFormat implements ResourceFormat {
+@AutoService(ConfijSourceFormat.class)
+public class PropertiesFormat implements ConfijSourceFormat {
 	@NonNull
 	@Setter
 	private String separator = ".";

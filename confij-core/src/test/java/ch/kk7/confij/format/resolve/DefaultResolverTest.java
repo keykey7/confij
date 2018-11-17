@@ -5,7 +5,7 @@ import ch.kk7.confij.format.ConfigFormat;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatLeaf;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.source.tree.ConfijNode;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 

@@ -1,4 +1,4 @@
-package ch.kk7.confij.source.simple;
+package ch.kk7.confij.source.tree;
 
 import ch.kk7.confij.common.Config4jException;
 

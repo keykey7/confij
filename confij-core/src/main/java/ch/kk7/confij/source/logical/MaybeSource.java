@@ -1,7 +1,7 @@
 package ch.kk7.confij.source.logical;
 
 import ch.kk7.confij.source.ConfigSource;
-import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.source.tree.ConfijNode;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 

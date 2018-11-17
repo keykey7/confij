@@ -7,7 +7,7 @@ import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.common.AnnotationUtil;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.source.tree.ConfijNode;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.ResolvedMethod;
 import com.fasterxml.classmate.types.ResolvedInterfaceType;

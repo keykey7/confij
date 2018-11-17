@@ -1,6 +1,6 @@
 package ch.kk7.confij.binding.collection;
 
-import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.source.tree.ConfijNode;
 import lombok.experimental.UtilityClass;
 
 import java.util.AbstractMap;

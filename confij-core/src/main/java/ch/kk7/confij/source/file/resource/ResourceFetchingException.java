@@ -15,12 +15,12 @@ public class ResourceFetchingException extends Config4jSourceException {
 		return new ResourceFetchingException("unable to read configuration from '" + path + "', " + detail, args);
 	}
 
-	public static ResourceFetchingException unsupported(URI path, Collection<Config4jResource> supportedResources) {
+	public static ResourceFetchingException unsupported(URI path, Collection<ConfijResourceProvider> supportedResources) {
 		return new ResourceFetchingException("cannot read from resource '" +
 				path +
 				"', as none of the resource handlers supports this: " +
 				supportedResources.stream()
-						.map(Config4jResource::getClass)
+						.map(ConfijResourceProvider::getClass)
 						.map(Class::getName)
 						.collect(Collectors.joining(", ")));
 	}

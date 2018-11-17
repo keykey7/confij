@@ -1,35 +1,28 @@
 package ch.kk7.confij.source.file;
 
+import ch.kk7.confij.common.ServiceLoaderUtil;
 import ch.kk7.confij.source.ConfigSourceBuilder;
-import ch.kk7.confij.source.file.format.ResourceFormat;
-import ch.kk7.confij.source.file.resource.ClasspathResource;
-import ch.kk7.confij.source.file.resource.Config4jResource;
-import ch.kk7.confij.source.file.resource.FileResource;
-import ch.kk7.confij.source.file.resource.URLResource;
+import ch.kk7.confij.source.file.format.ConfijSourceFormat;
+import ch.kk7.confij.source.file.resource.ConfijResourceProvider;
+import com.google.auto.service.AutoService;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static ch.kk7.confij.common.Util.serviceLoaderOf;
-
+@AutoService(ConfigSourceBuilder.class)
 public class AnyResourceBuilder implements ConfigSourceBuilder {
-	private final List<Config4jResource> supportedResources;
-	private final List<ResourceFormat> supportedFormats;
+	private final List<ConfijResourceProvider> supportedResources;
+	private final List<ConfijSourceFormat> supportedFormats;
 
 	public AnyResourceBuilder() {
-		supportedResources = new ArrayList<>(Arrays.asList(new ClasspathResource(), new FileResource(), new URLResource()));
-		supportedFormats = serviceLoaderOf(ResourceFormat.class);
-		if (supportedFormats.isEmpty()) {
-			throw new IllegalStateException("Failed to load any ResourceFormat. Check your AnnotationProcessor.");
-		}
+		supportedResources = ServiceLoaderUtil.instancesOf(ConfijResourceProvider.class);
+		supportedFormats = ServiceLoaderUtil.instancesOf(ConfijSourceFormat.class);
 	}
 
 	@Override
 	public Optional<FixedResourceSource> fromURI(URI path) {
-		Optional<Config4jResource> resource = supportedResources.stream()
+		Optional<ConfijResourceProvider> resource = supportedResources.stream()
 				.filter(r -> r.canHandle(path))
 				.findFirst();
 		if (!resource.isPresent()) {

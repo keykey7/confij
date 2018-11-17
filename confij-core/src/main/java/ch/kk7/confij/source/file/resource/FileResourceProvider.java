@@ -1,5 +1,7 @@
 package ch.kk7.confij.source.file.resource;
 
+import com.google.auto.service.AutoService;
+
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -7,7 +9,8 @@ import java.nio.file.Paths;
 
 import static ch.kk7.confij.source.file.resource.ResourceFetchingException.unableToFetch;
 
-public class FileResource extends URLResource {
+@AutoService(ConfijResourceProvider.class)
+public class FileResourceProvider extends URLResourceProvider {
 	public static final String SCHEME = "file";
 
 	@Override

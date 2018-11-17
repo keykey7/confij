@@ -4,14 +4,11 @@ import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.types.ResolvedObjectType;
 import lombok.experimental.UtilityClass;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.ServiceLoader;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @UtilityClass
 public class Util {
@@ -28,20 +25,6 @@ public class Util {
 					return list.get(0);
 				}
 		);
-	}
-
-	public static <T, C> T assertClass(C instance, Class<T> clazz) {
-		if (!clazz.isAssignableFrom(instance.getClass())) {
-			throw new Config4jException("expected {} to be of {}", instance, clazz);
-		}
-		//noinspection unchecked
-		return (T) instance;
-	}
-
-	public static <T> List<T> serviceLoaderOf(Class<T> service) {
-		ServiceLoader<T> resourceFormatLoader = ServiceLoader.load(service);
-		return StreamSupport.stream(resourceFormatLoader.spliterator(), false)
-				.collect(Collectors.toList());
 	}
 
 	public static <T> Predicate<T> not(Predicate<T> t) {

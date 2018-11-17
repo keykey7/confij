@@ -1,7 +1,7 @@
 package ch.kk7.confij.format.resolve;
 
 import ch.kk7.confij.common.Config4jException;
-import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.source.tree.ConfijNode;
 
 import java.net.URI;
 import java.util.HashMap;

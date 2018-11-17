@@ -6,7 +6,7 @@ import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.collection.CollectionUtil;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatList;
 import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.source.tree.ConfijNode;
 import com.fasterxml.classmate.ResolvedType;
 
 import java.lang.reflect.Array;

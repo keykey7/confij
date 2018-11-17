@@ -1,9 +1,12 @@
 package ch.kk7.confij.source.file.resource;
 
+import com.google.auto.service.AutoService;
+
 import java.net.URI;
 import java.net.URL;
 
-public class ClasspathResource extends URLResource {
+@AutoService(ConfijResourceProvider.class)
+public class ClasspathResourceProvider extends URLResourceProvider {
 	public static final String SCHEME = "classpath";
 
 	@Override

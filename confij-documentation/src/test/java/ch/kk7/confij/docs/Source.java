@@ -2,10 +2,15 @@ package ch.kk7.confij.docs;
 
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.annotation.Key;
+import ch.kk7.confij.common.ServiceLoaderPriority;
+import ch.kk7.confij.common.ServiceLoaderUtil;
 import ch.kk7.confij.pipeline.ConfijBuilder;
+import ch.kk7.confij.source.file.resource.ConfijResourceProvider;
+import com.google.auto.service.AutoService;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.time.Duration;
 import java.time.OffsetDateTime;
@@ -142,6 +147,52 @@ public class Source extends DocTestBase {
 				.toOffsetDateTime());
 		assertThat(yaml.isTrue()).isTrue();
 		assertThat(yaml.isFalse()).isFalse();
+	}
 
+	@AutoService(ConfijResourceProvider.class)
+	// tag::resourceprovider-service-ignored[]
+	public static class AnUnimportantFooProvider extends FooProvider implements ServiceLoaderPriority {
+		@Override
+		public String read(URI path) {
+			throw new RuntimeException("less important than " + FooProvider.class);
+		}
+
+		@Override
+		public int getPriority() {
+			return ServiceLoaderPriority.DEFAULT_PRIORITY - 1000;
+		}
+	}
+	// end::resourceprovider-service-ignored[]
+
+	@AutoService(ConfijResourceProvider.class)
+	// tag::resourceprovider-service[]
+	// +file: META-INF/services/ch.kk7.confij.source.file.resource.ConfijResourceProvider
+	public static class FooProvider implements ConfijResourceProvider {
+		@Override
+		public String read(URI path) {
+			return "foo=bar";
+		}
+
+		@Override
+		public boolean canHandle(URI path) {
+			return "foo".equals(path.getScheme());
+		}
+	}
+
+	interface Foo {
+		String foo();
+	}
+	// end::resourceprovider-service[]
+
+	@Test
+	public void customResourceProvider() {
+		// tag::resourceprovider[]
+		Foo foo = ConfijBuilder.of(Foo.class)
+				.withSource("foo:fuuuuu.properties")
+				.build();
+		// end::resourceprovider[]
+		assertThat(foo.foo()).isEqualTo("bar");
+		assertThat(ServiceLoaderUtil.instancesOf(ConfijResourceProvider.class)).anySatisfy(
+				x -> assertThat(x).isInstanceOf(AnUnimportantFooProvider.class));
 	}
 }

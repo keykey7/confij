@@ -56,7 +56,7 @@ public class MapBuilder {
 				.findAny()
 				.orElseThrow(() -> new BindingException("Attempted to bind to a Map of type {}. " +
 						"However this class doesn't provide a no-arg constructor. " +
-						"It's preferable to use a simple Map interface " +
+						"It's preferable to use a tree Map interface " +
 						"instead of concrete Map classes.", type));
 		return () -> {
 			try {

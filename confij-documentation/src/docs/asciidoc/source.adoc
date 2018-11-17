@@ -76,7 +76,7 @@ The configuration format (yaml, json,...) is detected based on the ending.
 
 == Sources and Formats
 
-=== Resource Locations [[resource-locations]]
+=== Resource Providers [[resource-locations]]
 
 Configuration sources that can load from a file can usually load from other input streams as well.
 For those, the source location and source format can be combined freely.
@@ -85,14 +85,36 @@ For those, the source location and source format can be combined freely.
 
 - `file:` - is the default scheme and loads from the local Filesystem
 - `classpath:` - load from classpath on the default classloader
-////
-FIXME: continue
-////
+- `http:` or any other registered URL format
 
-==== Custom Resource Locations
+Register custom resource providers using the <<serviceloader>>.
 
-- implement XY
-- add a service loader
+==== ConfiJ's ServiceLoader [[serviceloader]]
+
+ConfiJ allows to utilize Java's https://docs.oracle.com/javase/8/docs/api/?java/util/ServiceLoader.html[ServiceLoader]
+mechanism to register additional services like source formats or validators.
+All you have to do is to add the file with the service-interface name to META-INF/services.
+In this service file you list the fully qualified classnames of your constraint validator classes (one per line).
+
+.Custom Resource Provider as ServiceLoader
+====
+[source]
+----
+include::{src}[tag=resourceprovider-service]
+
+include::{src}[tag=resourceprovider]
+----
+====
+
+To change the priority of a service loader instance implement the `ServiceLoaderPriority`.
+
+.Custom Resource Provider as ServiceLoader with lowered priority
+====
+[source]
+----
+include::{src}[tag=resourceprovider-service-ignored]
+----
+====
 
 === YAML
 

@@ -1,6 +1,6 @@
 package ch.kk7.confij.source.file.format;
 
-import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.source.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import lombok.NonNull;
 import org.yaml.snakeyaml.Yaml;
@@ -17,8 +17,8 @@ import java.util.Map;
 
 import static ch.kk7.confij.source.file.format.FormatParsingException.invalidFormat;
 
-@AutoService(ResourceFormat.class)
-public class YamlFormat implements ResourceFormat {
+@AutoService(ConfijSourceFormat.class)
+public class YamlFormat implements ConfijSourceFormat {
 	private final Yaml yaml = new Yaml(new SafeConstructor());
 
 	@Override

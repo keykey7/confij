@@ -79,7 +79,7 @@ public class CollectionBuilder {
 				.findAny()
 				.orElseThrow(() -> new BindingException("Attempted to bind to a Collection of type {}. " +
 						"However this class doesn't provide a no-arg constructor. " +
-						"It's preferable to use simple Set or List interfaces " +
+						"It's preferable to use tree Set or List interfaces " +
 						"instead of concrete Collection classes.", type));
 		return () -> {
 			try {

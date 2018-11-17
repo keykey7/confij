@@ -3,7 +3,7 @@ package ch.kk7.confij.pipeline;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.format.ConfigFormat;
 import ch.kk7.confij.source.ConfigSource;
-import ch.kk7.confij.source.simple.ConfijNode;
+import ch.kk7.confij.source.tree.ConfijNode;
 import ch.kk7.confij.validation.IValidator;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
