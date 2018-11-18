@@ -21,4 +21,4 @@ include::binding.adoc[]
 
 include::source.adoc[]
 
-include::variables.adoc[]
+include::templates.adoc[]

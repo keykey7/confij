@@ -2,34 +2,30 @@ package ch.kk7.confij.format;
 
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.common.AnnotationUtil;
-import ch.kk7.confij.common.ConfijException;
+import ch.kk7.confij.common.LazyClassToImplCache;
 import ch.kk7.confij.format.resolve.DefaultResolver;
 import ch.kk7.confij.format.resolve.VariableResolver;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NonNull;
 import lombok.ToString;
+import lombok.experimental.Wither;
 
 import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 @ToString
+@AllArgsConstructor
+@Wither(AccessLevel.PROTECTED)
 public class FormatSettings {
+	@Getter
 	private final String defaultValue;
+	@NonNull
 	private final Class<? extends VariableResolver> variableResolverClass;
+	@NonNull
+	@Wither(AccessLevel.NONE)
 	private final LazyClassToImplCache implCache;
-
-	protected FormatSettings(String defaultValue, Class<? extends VariableResolver> variableResolverClass,
-			LazyClassToImplCache implCache) {
-		this.defaultValue = defaultValue;
-		this.variableResolverClass = Objects.requireNonNull(variableResolverClass);
-		this.implCache = Objects.requireNonNull(implCache);
-	}
-
-	public String getDefaultValue() {
-		return defaultValue;
-	}
 
 	public VariableResolver getVariableResolver() {
 		return implCache.getInstance(variableResolverClass);
@@ -39,45 +35,25 @@ public class FormatSettings {
 		return new FormatSettings( null, DefaultResolver.class, new LazyClassToImplCache());
 	}
 
-	public FormatSettings settingsFor(AnnotatedElement element) {
-		// handle default config values
-		String defaultValue = AnnotationUtil.findAnnotation(element, Default.class)
-				.map(Default::value)
-				.orElse(null); // not inheriting the old default value on purpose here
-
-		// handle variable resolver
+	protected FormatSettings withVariableResolverFor(AnnotatedElement element) {
 		Optional<Class<? extends VariableResolver>> variableResolverClassOpt = AnnotationUtil.findAnnotation(element,
 				ch.kk7.confij.annotation.VariableResolver.class)
 				.map(ch.kk7.confij.annotation.VariableResolver::value);
-		Class<? extends VariableResolver> variableResolverClass = variableResolverClassOpt.orElse(this.variableResolverClass);
-		if (variableResolverClass == null) {
-			throw new FormatException("An element annotated with {} has an invalid null resolver class", ch.kk7.confij.annotation.VariableResolver.class);
-		}
-
-		return new FormatSettings(defaultValue, variableResolverClass, implCache);
+		return withVariableResolver(variableResolverClassOpt.orElse(this.variableResolverClass));
 	}
 
-	@ToString
-	public static class LazyClassToImplCache {
-		private final Map<Class<?>, Object> instances = new HashMap<>();
+	public <T extends VariableResolver> FormatSettings withVariableResolver(Class<T> variableResolverClass) {
+		return withVariableResolverClass(variableResolverClass);
+	}
 
-		@SuppressWarnings("unchecked")
-		public <T> T getInstance(Class<T> clazz) {
-			return (T) instances.computeIfAbsent(clazz, k -> {
-				try {
-					Constructor<?> constructor = k.getDeclaredConstructor();
-					if (!constructor.isAccessible()) {
-						constructor.setAccessible(true);
-					}
-					return constructor.newInstance();
-				} catch (Exception e) {
-					throw new ConfijException("unable to instantiate: " + k, e);
-				}
-			});
-		}
+	protected FormatSettings withDefaultValueFor(AnnotatedElement element) {
+		// not inheriting the old default value on purpose here
+		return withDefaultValue(AnnotationUtil.findAnnotation(element, Default.class)
+				.map(Default::value)
+				.orElse(null));
+	}
 
-		public <T> T getInstance(Class<? extends T> clazz, Class<T> asClass) {
-			return asClass.cast(getInstance(clazz));
-		}
+	public FormatSettings settingsFor(AnnotatedElement element) {
+		return withDefaultValueFor(element).withVariableResolverFor(element);
 	}
 }

@@ -1,15 +1,16 @@
 package ch.kk7.confij.docs;
 
 import ch.kk7.confij.annotation.Default;
+import ch.kk7.confij.annotation.VariableResolver;
+import ch.kk7.confij.format.FormatSettings;
 import ch.kk7.confij.format.resolve.NoopResolver.NoopVariableResolver;
 import ch.kk7.confij.pipeline.ConfijBuilder;
 import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.tree.ConfijNode;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.regex.Pattern;
-
-public class Variables implements WithAssertions {
+public class Templates implements WithAssertions {
 
 	// tag::simple[]
 	interface Salutation {
@@ -80,18 +81,48 @@ public class Variables implements WithAssertions {
 		assertThat(recursive.victim()).isEqualTo("Poor Alice!");
 	}
 
+	// tag::noop[]
+	interface Noop {
+		@NoopVariableResolver
+		String canContainDollar();
+	}
+	// end::noop[]
+
 	@Test
-	public void asd() {
-		assertThat(".asd.x".split(Pattern.quote("."))).hasSize(3);
+	public void noop() {
+		assertThat(ConfijBuilder.of(Noop.class)
+				.withSource(new PropertiesSource().with("canContainDollar", "${variable}"))
+				.build().canContainDollar()).isEqualTo("${variable}");
 	}
 
+	// tag::customresolver[]
+	static class FooResolver implements ch.kk7.confij.format.resolve.VariableResolver {
+		@Override
+		public String resolveValue(ConfijNode baseLeaf, String valueToResolve) {
+			return "foo";
+		}
+	}
 
-	interface CustomResolvers {
-		@Default("${a}${b}")
+	interface CustomResolver {
+		@Default("everything becomes foo")
+		@VariableResolver(FooResolver.class)
 		String everyVariableIsFoo();
+	}
+	// end::customresolver[]
 
-		@Default("${variable}")
-		@NoopVariableResolver
-		String variableLooksLike();
+	@Test
+	public void fooResolver() {
+		assertThat(ConfijBuilder.of(CustomResolver.class)
+				.build()
+				.everyVariableIsFoo()).isEqualTo("foo");
+	}
+
+	@Test
+	public void globalFooResolver() {
+		assertThat(ConfijBuilder.of(Salutation.class)
+				.withFormatSettings(FormatSettings.newDefaultSettings()
+						.withVariableResolver(FooResolver.class))
+				.build()
+				.name()).isEqualTo("foo");
 	}
 }

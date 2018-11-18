@@ -1,5 +1,5 @@
-= Variable Substitution [[variables]]
-:src: ../../test/java/ch/kk7/confij/docs/Variables.java
+= Templating [[variables]]
+:src: ../../test/java/ch/kk7/confij/docs/Templates.java
 :resources: ../../test/resources
 :home: ../../test/home
 
@@ -9,10 +9,10 @@ Therefore it is possible for an unfinished configuration to contain undefined re
 
 Additionally some source paths are subject to templating (see <<anysource>>).
 
-== built-in Variable Substitution
+== built-in Templating
 
 Any property can contain placeholders wrapped in `${ }`.
-These variables can reference other properties.
+These referenced properties can themselves reference other properties.
 
 .Simple Variable replacement
 ====
@@ -32,7 +32,9 @@ yields: hello → Cya
 ----
 ====
 
-=== Nested Variables
+To disable templating support, see <<templates-custom>>.
+
+=== Nested Properties
 
 Variables are always relative to the node that defines them.
 
@@ -54,7 +56,7 @@ include::{src}[tag=relative]
 <2> To reference a property relative to the root configuration, prefix it with a dot.
     In this example `Letter` is the root.
 
-=== Recursive Variables
+=== Recursive Properties
 
 Variables themselves can be built out of other variables.
 
@@ -66,11 +68,26 @@ include::{src}[tag=recursive]
 ----
 ====
 
-== Noop Variable Substitution
+== Custom Templating [[templates-custom]]
 
-- relative to node
-- can do absolute
-- can do recursive
-- even allowed in source paths
+It is possible register a custom templating functionality globally or per property.
+One use case is to disable templating per propertiy.
 
-TIP: To implement your own
+.Disable templating per property using an annotation
+====
+[source]
+----
+include::{src}[tag=noop]
+----
+====
+
+Implementing a custom templating engine and registering it on a property per annotation.
+The custom resolver must have an empty constructor.
+
+.Custom sample templating
+====
+[source]
+----
+include::{src}[tag=customresolver]
+----
+====

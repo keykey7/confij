@@ -13,7 +13,7 @@ import ch.kk7.confij.binding.values.SoloConstructorMapper;
 import ch.kk7.confij.binding.values.StaticFunctionMapper;
 import ch.kk7.confij.common.AnnotationUtil;
 import ch.kk7.confij.common.AnnotationUtil.AnnonResponse;
-import ch.kk7.confij.format.FormatSettings.LazyClassToImplCache;
+import ch.kk7.confij.common.LazyClassToImplCache;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
