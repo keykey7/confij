@@ -13,44 +13,36 @@ import lombok.ToString;
 import lombok.experimental.Wither;
 
 import java.lang.reflect.AnnotatedElement;
-import java.util.Optional;
 
 @ToString
 @AllArgsConstructor
-@Wither(AccessLevel.PROTECTED)
+@Wither
 public class FormatSettings {
 	@Getter
 	private final String defaultValue;
 	@NonNull
-	private final Class<? extends VariableResolver> variableResolverClass;
+	@Getter
+	private final VariableResolver variableResolver;
 	@NonNull
 	@Wither(AccessLevel.NONE)
 	private final LazyClassToImplCache implCache;
 
-	public VariableResolver getVariableResolver() {
-		return implCache.getInstance(variableResolverClass);
-	}
-
 	public static FormatSettings newDefaultSettings() {
-		return new FormatSettings( null, DefaultResolver.class, new LazyClassToImplCache());
+		LazyClassToImplCache implCache = new LazyClassToImplCache();
+		return new FormatSettings( null, implCache.getInstance(DefaultResolver.class), implCache);
 	}
 
 	protected FormatSettings withVariableResolverFor(AnnotatedElement element) {
-		Optional<Class<? extends VariableResolver>> variableResolverClassOpt = AnnotationUtil.findAnnotation(element,
-				ch.kk7.confij.annotation.VariableResolver.class)
-				.map(ch.kk7.confij.annotation.VariableResolver::value);
-		return withVariableResolver(variableResolverClassOpt.orElse(this.variableResolverClass));
-	}
-
-	public <T extends VariableResolver> FormatSettings withVariableResolver(Class<T> variableResolverClass) {
-		return withVariableResolverClass(variableResolverClass);
+		return withVariableResolver(AnnotationUtil.findAnnotation(element, ch.kk7.confij.annotation.VariableResolver.class)
+				.map(ch.kk7.confij.annotation.VariableResolver::value)
+				.map(x -> implCache.getInstance(x, VariableResolver.class))
+				.orElse(variableResolver));
 	}
 
 	protected FormatSettings withDefaultValueFor(AnnotatedElement element) {
-		// not inheriting the old default value on purpose here
 		return withDefaultValue(AnnotationUtil.findAnnotation(element, Default.class)
 				.map(Default::value)
-				.orElse(null));
+				.orElse(defaultValue));
 	}
 
 	public FormatSettings settingsFor(AnnotatedElement element) {

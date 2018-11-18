@@ -2,7 +2,6 @@ package ch.kk7.confij.docs;
 
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.annotation.VariableResolver;
-import ch.kk7.confij.format.FormatSettings;
 import ch.kk7.confij.format.resolve.NoopResolver.NoopVariableResolver;
 import ch.kk7.confij.pipeline.ConfijBuilder;
 import ch.kk7.confij.source.env.PropertiesSource;
@@ -88,9 +87,30 @@ public class Templates implements WithAssertions {
 	}
 	// end::noop[]
 
+	// tag::global-noop[]
+	@NoopVariableResolver
+	interface GlobalNoop {
+		String canContainDollar();
+	}
+	// end::global-noop[]
+
+	interface BuilderNoop {
+		String canContainDollar();
+	}
+
 	@Test
 	public void noop() {
 		assertThat(ConfijBuilder.of(Noop.class)
+				.withSource(new PropertiesSource().with("canContainDollar", "${variable}"))
+				.build().canContainDollar()).isEqualTo("${variable}");
+		assertThat(ConfijBuilder.of(GlobalNoop.class)
+				.withSource(new PropertiesSource().with("canContainDollar", "${variable}"))
+				.build().canContainDollar()).isEqualTo("${variable}");
+
+		assertThat(
+				// tag::builder-noop[]
+		ConfijBuilder.of(BuilderNoop.class).withoutTemplating()
+				// end::builder-noop[]
 				.withSource(new PropertiesSource().with("canContainDollar", "${variable}"))
 				.build().canContainDollar()).isEqualTo("${variable}");
 	}
@@ -119,10 +139,9 @@ public class Templates implements WithAssertions {
 
 	@Test
 	public void globalFooResolver() {
-		assertThat(ConfijBuilder.of(Salutation.class)
-				.withFormatSettings(FormatSettings.newDefaultSettings()
-						.withVariableResolver(FooResolver.class))
+		assertThat(ConfijBuilder.of(BuilderNoop.class)
+				.withTemplating(new FooResolver())
 				.build()
-				.name()).isEqualTo("foo");
+				.canContainDollar()).isEqualTo("foo");
 	}
 }

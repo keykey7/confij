@@ -10,8 +10,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import java.util.Set;
 
-@AutoService(IValidator.class)
-public class JSR303Validator implements IValidator {
+@AutoService(ConfijValidator.class)
+public class JSR303Validator implements ConfijValidator {
 	private final Validator validator;
 
 	public JSR303Validator() {

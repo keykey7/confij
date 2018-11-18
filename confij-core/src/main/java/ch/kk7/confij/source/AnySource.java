@@ -21,11 +21,11 @@ public class AnySource implements ConfigSource {
 		sourceBuilders = ServiceLoaderUtil.instancesOf(ConfigSourceBuilder.class);
 	}
 
-	private VariableResolver getResolver(ConfijNode node) {
+	private VariableResolver getResolver(ConfijNode rootNode) {
 		if (resolverOverride != null) {
 			return resolverOverride;
 		}
-		return node.getConfig()
+		return rootNode.getConfig()
 				.getFormatSettings()
 				.getVariableResolver();
 	}

@@ -5,11 +5,11 @@ import java.util.List;
 import static ch.kk7.confij.common.ServiceLoaderUtil.maybeNewOf;
 
 // NOT detectable by serviceLoader himself
-public class ServiceLoaderValidator implements IValidator {
-	private final List<IValidator> validators;
+public class ServiceLoaderValidator implements ConfijValidator {
+	private final List<ConfijValidator> validators;
 
 	public ServiceLoaderValidator() {
-		validators = maybeNewOf(IValidator.class);
+		validators = maybeNewOf(ConfijValidator.class);
 	}
 
 	@Override

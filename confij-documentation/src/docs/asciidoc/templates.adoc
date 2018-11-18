@@ -81,8 +81,24 @@ include::{src}[tag=noop]
 ----
 ====
 
-Implementing a custom templating engine and registering it on a property per annotation.
-The custom resolver must have an empty constructor.
+.Disable templating for interface and all its children
+====
+[source]
+----
+include::{src}[tag=global-noop]
+----
+====
+
+.Disable templating programmatically at initialization
+====
+[source]
+----
+include::{src}[tag=builder-noop]
+----
+====
+
+A custom templating engine can be registered in the same ways.
+Every custom resolver must provide an empty constructor.
 
 .Custom sample templating
 ====

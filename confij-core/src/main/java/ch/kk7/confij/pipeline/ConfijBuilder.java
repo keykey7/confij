@@ -5,12 +5,14 @@ import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.format.ConfigFormat;
 import ch.kk7.confij.format.FormatSettings;
+import ch.kk7.confij.format.resolve.NoopResolver;
+import ch.kk7.confij.format.resolve.VariableResolver;
 import ch.kk7.confij.pipeline.reload.ConfijReloader;
 import ch.kk7.confij.pipeline.reload.ScheduledReloader;
 import ch.kk7.confij.source.AnySource;
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.defaults.DefaultSource;
-import ch.kk7.confij.validation.IValidator;
+import ch.kk7.confij.validation.ConfijValidator;
 import ch.kk7.confij.validation.ServiceLoaderValidator;
 import com.fasterxml.classmate.GenericType;
 import lombok.NonNull;
@@ -25,8 +27,10 @@ import java.util.stream.Stream;
 public class ConfijBuilder<T> {
 	private final Type forType;
 	private final List<ConfigSource> sources = new ArrayList<>();
-	private IValidator validator = null;
+	private ConfijValidator validator = null;
+	@NonNull
 	private FormatSettings formatSettings = FormatSettings.newDefaultSettings();
+	@NonNull
 	private BindingSettings bindingSettings = BindingSettings.newDefaultSettings();
 	private ConfijReloader<T> reloader = null;
 
@@ -54,21 +58,30 @@ public class ConfijBuilder<T> {
 		return this;
 	}
 
-	public ConfijBuilder<T> withValidator(@NonNull IValidator validator) {
+	public ConfijBuilder<T> withValidator(@NonNull ConfijValidator validator) {
 		this.validator = validator;
 		return this;
 	}
 
 	public ConfijBuilder<T> withoutValidator() {
-		return withValidator(IValidator.NOOP);
+		return withValidator(ConfijValidator.NOOP);
 	}
 
-	public ConfijBuilder<T> withFormatSettings(@NonNull FormatSettings formatSettings) {
+	public ConfijBuilder<T> withFormatSettings(FormatSettings formatSettings) {
 		this.formatSettings = formatSettings;
 		return this;
 	}
 
-	public ConfijBuilder<T> withBindingSettings(@NonNull BindingSettings bindingSettings) {
+	public ConfijBuilder<T> withTemplating(@NonNull VariableResolver variableResolver) {
+		formatSettings = formatSettings.withVariableResolver(variableResolver);
+		return this;
+	}
+
+	public ConfijBuilder<T> withoutTemplating() {
+		return withTemplating(new NoopResolver());
+	}
+
+	public ConfijBuilder<T> withBindingSettings(BindingSettings bindingSettings) {
 		this.bindingSettings = bindingSettings;
 		return this;
 	}
