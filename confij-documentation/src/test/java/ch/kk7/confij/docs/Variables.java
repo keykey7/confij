@@ -33,7 +33,7 @@ public class Variables implements WithAssertions {
 		assertThat(salutation.hello()).isEqualTo("Cya");
 	}
 
-	// tag::relative[]
+	// tag::relative-interface[]
 	interface Letter {
 		Salutation saluation();
 
@@ -50,7 +50,7 @@ public class Variables implements WithAssertions {
 		@Default("Sincierly\n${sender}")
 		String regards();
 	}
-	// end::relative[]
+	// end::relative-interface[]
 
 	@Test
 	public void relative() {
@@ -59,6 +59,25 @@ public class Variables implements WithAssertions {
 		assertThat(letter.regards().sender()).isEqualTo("John's friend");
 		assertThat(letter.body()).isEqualTo("I dearly miss you, John!");
 		// end::relative[]
+	}
+
+	// tag::recursive[]
+	interface Recursive {
+		@Default("Alice")
+		String party1();
+		@Default("Bob")
+		String party2();
+		@Default("1")
+		int victimsId();
+		@Default("Poor ${party${victimsId}}!")
+		String victim();
+	}
+	// end::recursive[]
+
+	@Test
+	public void recursive() {
+		Recursive recursive = ConfijBuilder.of(Recursive.class).build();
+		assertThat(recursive.victim()).isEqualTo("Poor Alice!");
 	}
 
 	@Test

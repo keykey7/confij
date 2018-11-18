@@ -12,7 +12,8 @@ In these cases all references variables must already be defined.
 
 == built-in Variable Substitution
 
-Any variable can contain placeholders wrapped in `${ }`.
+Any property can contain placeholders wrapped in `${ }`.
+These variables can reference other properties.
 
 .Simple Variable replacement
 ====
@@ -32,15 +33,39 @@ yields: hello → Cya
 ----
 ====
 
-Variable names are always relative to where they are defined.
-.Simple Variable replacement
+=== Nested Variables
+
+Variables are always relative to the node that defines them.
+
+.Referencing nested properties
 ====
+[source]
+----
+include::{src}[tag=relative-interface]
+----
 [source]
 ----
 include::{src}[tag=relative]
 ----
 ====
 
+<1> Variables can reference nested properties. Default segment separator is a dot.
+    Note that the reference is still relative to where `body` is defined.
+
+<2> To reference a property relative to the root configuration, prefix it with a dot.
+    In this example `Letter` is the root.
+
+=== Recursive Variables
+
+Variables themselves can be built out of other variables.
+
+.Recursive Variable replacement
+====
+[source]
+----
+include::{src}[tag=recursive]
+----
+====
 
 == Noop Variable Substitution
 
