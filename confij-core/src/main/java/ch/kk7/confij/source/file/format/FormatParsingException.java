@@ -1,8 +1,8 @@
 package ch.kk7.confij.source.file.format;
 
-import ch.kk7.confij.source.Config4jSourceException;
+import ch.kk7.confij.source.ConfijSourceException;
 
-public class FormatParsingException extends Config4jSourceException {
+public class FormatParsingException extends ConfijSourceException {
 	private FormatParsingException(String s, Object... args) {
 		super(s, args);
 	}

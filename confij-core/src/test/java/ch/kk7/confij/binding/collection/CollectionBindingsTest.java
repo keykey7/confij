@@ -2,7 +2,7 @@ package ch.kk7.confij.binding.collection;
 
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
-import ch.kk7.confij.common.Config4jException;
+import ch.kk7.confij.common.ConfijException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -86,6 +86,6 @@ class CollectionBindingsTest {
 	@ParameterizedTest
 	@MethodSource("invalidCollectionTypes")
 	public void invalidSets(BindingType type) {
-		assertThrows(Config4jException.class, () -> collectionFactory.maybeCreate(type, configBinder));
+		assertThrows(ConfijException.class, () -> collectionFactory.maybeCreate(type, configBinder));
 	}
 }

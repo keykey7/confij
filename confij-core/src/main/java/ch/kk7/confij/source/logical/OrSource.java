@@ -1,6 +1,6 @@
 package ch.kk7.confij.source.logical;
 
-import ch.kk7.confij.source.Config4jSourceException;
+import ch.kk7.confij.source.ConfijSourceException;
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.tree.ConfijNode;
 import lombok.NonNull;
@@ -35,7 +35,7 @@ public class OrSource implements ConfigSource {
 			rootNode.overrideWith(copy);
 			return;
 		}
-		Config4jSourceException e = new Config4jSourceException("failed to read any of the sources: {}", this);
+		ConfijSourceException e = new ConfijSourceException("failed to read any of the sources: {}", this);
 		pastExceptions.forEach(e::addSuppressed);
 		throw e;
 	}

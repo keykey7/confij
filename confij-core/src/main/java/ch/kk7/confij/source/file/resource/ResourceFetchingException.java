@@ -1,12 +1,12 @@
 package ch.kk7.confij.source.file.resource;
 
-import ch.kk7.confij.source.Config4jSourceException;
+import ch.kk7.confij.source.ConfijSourceException;
 
 import java.net.URI;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class ResourceFetchingException extends Config4jSourceException {
+public class ResourceFetchingException extends ConfijSourceException {
 	private ResourceFetchingException(String s, Object... args) {
 		super(s, args);
 	}

@@ -1,6 +1,6 @@
 package ch.kk7.confij.format.resolve;
 
-import ch.kk7.confij.common.Config4jException;
+import ch.kk7.confij.common.ConfijException;
 import ch.kk7.confij.format.ConfigFormat;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatLeaf;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatMap;
@@ -63,7 +63,7 @@ class DefaultResolverTest implements WithAssertions {
 
 	@Test
 	public void resolveEmbeddedCircular() {
-		assertThatThrownBy(() -> resolve("hello ${x1}", "${x1}")).isInstanceOf(Config4jException.class);
+		assertThatThrownBy(() -> resolve("hello ${x1}", "${x1}")).isInstanceOf(ConfijException.class);
 	}
 
 	@Test
@@ -78,7 +78,7 @@ class DefaultResolverTest implements WithAssertions {
 
 	@Test
 	public void resolveNestedCircular() {
-		assertThatThrownBy(() -> resolve("hello ${x1}", "1${x2}", "2${x3}", "3${x1}")).isInstanceOf(Config4jException.class);
+		assertThatThrownBy(() -> resolve("hello ${x1}", "1${x2}", "2${x3}", "3${x1}")).isInstanceOf(ConfijException.class);
 	}
 
 	@Test
@@ -88,12 +88,12 @@ class DefaultResolverTest implements WithAssertions {
 
 	@Test
 	public void emptyVariable() {
-		assertThatThrownBy(() -> resolve("hello ${}", "1")).isInstanceOf(Config4jException.class);
+		assertThatThrownBy(() -> resolve("hello ${}", "1")).isInstanceOf(ConfijException.class);
 	}
 
 	@Test
 	public void nonexistentVariable() {
-		assertThatThrownBy(() -> resolve("hello ${x1}")).isInstanceOf(Config4jException.class);
+		assertThatThrownBy(() -> resolve("hello ${x1}")).isInstanceOf(ConfijException.class);
 	}
 
 	@Test
@@ -118,7 +118,7 @@ class DefaultResolverTest implements WithAssertions {
 
 	@Test
 	public void noNullReferences() {
-		assertThatThrownBy(() -> resolve("${x1}", (String) null)).isInstanceOf(Config4jException.class);
+		assertThatThrownBy(() -> resolve("${x1}", (String) null)).isInstanceOf(ConfijException.class);
 	}
 
 	@Test

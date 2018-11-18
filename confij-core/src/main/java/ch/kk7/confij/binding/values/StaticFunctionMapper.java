@@ -3,7 +3,7 @@ package ch.kk7.confij.binding.values;
 import ch.kk7.confij.annotation.ValueMapper;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.values.ValueMapperInstance.NullableValueMapperInstance;
-import ch.kk7.confij.common.Config4jException;
+import ch.kk7.confij.common.ConfijException;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.RawMethod;
 
@@ -44,7 +44,7 @@ public class StaticFunctionMapper implements ValueMapperFactory {
 				//noinspection unchecked
 				return (T) method.invoke(null, string);
 			} catch (IllegalAccessException | InvocationTargetException e) {
-				throw new Config4jException("unable to instanitate obj using static method " + method, e);
+				throw new ConfijException("unable to instanitate obj using static method " + method, e);
 			}
 		}
 	}

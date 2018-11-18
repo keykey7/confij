@@ -1,11 +1,10 @@
 package ch.kk7.confij.format;
 
 import ch.kk7.confij.annotation.Default;
-import ch.kk7.confij.annotation.VariableResolver;
 import ch.kk7.confij.common.AnnotationUtil;
-import ch.kk7.confij.common.Config4jException;
+import ch.kk7.confij.common.ConfijException;
 import ch.kk7.confij.format.resolve.DefaultResolver;
-import ch.kk7.confij.format.resolve.IVariableResolver;
+import ch.kk7.confij.format.resolve.VariableResolver;
 import lombok.ToString;
 
 import java.lang.reflect.AnnotatedElement;
@@ -18,10 +17,10 @@ import java.util.Optional;
 @ToString
 public class FormatSettings {
 	private final String defaultValue;
-	private final Class<? extends IVariableResolver> variableResolverClass;
+	private final Class<? extends VariableResolver> variableResolverClass;
 	private final LazyClassToImplCache implCache;
 
-	protected FormatSettings(String defaultValue, Class<? extends IVariableResolver> variableResolverClass,
+	protected FormatSettings(String defaultValue, Class<? extends VariableResolver> variableResolverClass,
 			LazyClassToImplCache implCache) {
 		this.defaultValue = defaultValue;
 		this.variableResolverClass = Objects.requireNonNull(variableResolverClass);
@@ -32,7 +31,7 @@ public class FormatSettings {
 		return defaultValue;
 	}
 
-	public IVariableResolver getVariableResolver() {
+	public VariableResolver getVariableResolver() {
 		return implCache.getInstance(variableResolverClass);
 	}
 
@@ -47,12 +46,12 @@ public class FormatSettings {
 				.orElse(null); // not inheriting the old default value on purpose here
 
 		// handle variable resolver
-		Optional<Class<? extends IVariableResolver>> variableResolverClassOpt = AnnotationUtil.findAnnotation(element,
-				VariableResolver.class)
-				.map(VariableResolver::value);
-		Class<? extends IVariableResolver> variableResolverClass = variableResolverClassOpt.orElse(this.variableResolverClass);
+		Optional<Class<? extends VariableResolver>> variableResolverClassOpt = AnnotationUtil.findAnnotation(element,
+				ch.kk7.confij.annotation.VariableResolver.class)
+				.map(ch.kk7.confij.annotation.VariableResolver::value);
+		Class<? extends VariableResolver> variableResolverClass = variableResolverClassOpt.orElse(this.variableResolverClass);
 		if (variableResolverClass == null) {
-			throw new FormatException("An element annotated with {} has an invalid null resolver class", VariableResolver.class);
+			throw new FormatException("An element annotated with {} has an invalid null resolver class", ch.kk7.confij.annotation.VariableResolver.class);
 		}
 
 		return new FormatSettings(defaultValue, variableResolverClass, implCache);
@@ -72,7 +71,7 @@ public class FormatSettings {
 					}
 					return constructor.newInstance();
 				} catch (Exception e) {
-					throw new Config4jException("unable to instantiate: " + k, e);
+					throw new ConfijException("unable to instantiate: " + k, e);
 				}
 			});
 		}

@@ -3,18 +3,18 @@ package ch.kk7.confij.common;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Config4jException extends RuntimeException {
+public class ConfijException extends RuntimeException {
 	private static final Pattern CFG_PATTERN = Pattern.compile("\\{}");
 
-	public Config4jException(String s) {
+	public ConfijException(String s) {
 		super(s);
 	}
 
-	public Config4jException(String s, Throwable throwable) {
+	public ConfijException(String s, Throwable throwable) {
 		super(s, throwable);
 	}
 
-	public Config4jException(String s, Object... args) {
+	public ConfijException(String s, Object... args) {
 		super(format(s, args), maybeThrowable(s, args));
 	}
 

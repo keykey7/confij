@@ -1,6 +1,6 @@
 package ch.kk7.confij.format.resolve;
 
-import ch.kk7.confij.common.Config4jException;
+import ch.kk7.confij.common.ConfijException;
 import ch.kk7.confij.source.tree.ConfijNode;
 import lombok.ToString;
 
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 // TODO: make ThreadSafe
 @ToString
-public class DefaultResolver implements IVariableResolver {
+public class DefaultResolver implements VariableResolver {
 	private char escapeChar = '\\';
 	private String pathSeparator = ".";
 	private final Map<ConfijNode, String> resolvedLeaves = new HashMap<>();
@@ -34,13 +34,13 @@ public class DefaultResolver implements IVariableResolver {
 	protected String resolveLeafInternal(ConfijNode leaf) {
 		String value = leaf.getValue();
 		if (value == null) {
-			throw new Config4jException("referenced property {} is null", leaf);
+			throw new ConfijException("referenced property {} is null", leaf);
 		}
 		if (resolvedLeaves.containsKey(leaf)) {
 			return resolvedLeaves.get(leaf);
 		}
 		if (inProgressLeaves.contains(leaf)) {
-			throw new Config4jException("circular dependency: cannot resolve leaf value. Call stack: {}", inProgressLeaves);
+			throw new ConfijException("circular dependency: cannot resolve leaf value. Call stack: {}", inProgressLeaves);
 		}
 		inProgressLeaves.add(leaf);
 		String resolvedValue = resolveValueInternal(leaf, value);

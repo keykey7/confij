@@ -1,6 +1,6 @@
 package ch.kk7.confij.source.tree;
 
-import ch.kk7.confij.common.Config4jException;
+import ch.kk7.confij.common.ConfijException;
 import ch.kk7.confij.format.ConfigFormat;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -159,7 +159,7 @@ public class ConfijNode {
 			//noinspection unchecked
 			((Map<String, Object>) mapOrString).forEach((k, v) -> addChild(k).initializeFromMap(v));
 		} else {
-			throw new Config4jException("initializeFromMap for unknown type " + mapOrString.getClass());
+			throw new ConfijException("initializeFromMap for unknown type " + mapOrString.getClass());
 		}
 		return this;
 	}

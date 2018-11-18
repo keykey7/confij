@@ -3,7 +3,7 @@ package ch.kk7.confij.binding.values;
 import ch.kk7.confij.annotation.ValueMapper;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.values.ValueMapperInstance.NullableValueMapperInstance;
-import ch.kk7.confij.common.Config4jException;
+import ch.kk7.confij.common.ConfijException;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.RawConstructor;
 import lombok.NonNull;
@@ -36,7 +36,7 @@ public class SoloConstructorMapper implements ValueMapperFactory {
 			try {
 				return constructor.newInstance(string);
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-				throw new Config4jException("unable to instanitate object using constructor " + constructor, e);
+				throw new ConfijException("unable to instanitate object using constructor " + constructor, e);
 			}
 		}
 	}

@@ -2,7 +2,7 @@ package ch.kk7.confij.binding.intf;
 
 import ch.kk7.confij.binding.BindingException;
 import ch.kk7.confij.binding.intf.DefaultMethodHandler.DefaultMethodException;
-import ch.kk7.confij.binding.intf.InterfaceProxyBuilder.Config4jHandled;
+import ch.kk7.confij.binding.intf.InterfaceProxyBuilder.ConfijHandled;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
 
@@ -23,8 +23,8 @@ public class IntfaceInvocationHandler implements InvocationHandler {
 		if (Object.class.equals(method.getDeclaringClass())) {
 			return invokeObjectClass(proxy, method, args);
 		}
-		if (Config4jHandled.class.equals(method.getDeclaringClass())) {
-			return invokeConfig4JHandled(proxy, method, args);
+		if (ConfijHandled.class.equals(method.getDeclaringClass())) {
+			return invokeConfijHandled(proxy, method, args);
 		}
 		if (methodToValues.containsKey(method)) {
 			return methodToValues.get(method);
@@ -49,7 +49,7 @@ public class IntfaceInvocationHandler implements InvocationHandler {
 		return method.invoke(this, args);
 	}
 
-	protected Object invokeConfig4JHandled(Object proxy, Method method, Object[] args) throws Throwable {
+	protected Object invokeConfijHandled(Object proxy, Method method, Object[] args) throws Throwable {
 		// there is only 1
 		return methodToValues;
 	}
@@ -77,10 +77,10 @@ public class IntfaceInvocationHandler implements InvocationHandler {
 		if (proxy == o) {
 			return true;
 		}
-		if (!(o instanceof Config4jHandled)) {
+		if (!(o instanceof InterfaceProxyBuilder.ConfijHandled)) {
 			return false;
 		}
-		Config4jHandled that = (Config4jHandled) o;
+		ConfijHandled that = (ConfijHandled) o;
 		return Objects.equals(methodToValues, that.methodToValue());
 	}
 }

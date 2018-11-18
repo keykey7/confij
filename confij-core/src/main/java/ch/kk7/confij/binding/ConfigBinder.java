@@ -3,10 +3,10 @@ package ch.kk7.confij.binding;
 import ch.kk7.confij.binding.array.ArrayBindingFactory;
 import ch.kk7.confij.binding.collection.CollectionBindingFactory;
 import ch.kk7.confij.binding.intf.InterfaceBindingFactory;
-import ch.kk7.confij.binding.leaf.LeafBinding.ForcedLeafBindingFactory;
-import ch.kk7.confij.binding.leaf.LeafBinding.LeafBindingFactory;
+import ch.kk7.confij.binding.leaf.ForcedLeafBindingFactory;
+import ch.kk7.confij.binding.leaf.LeafBindingFactory;
 import ch.kk7.confij.binding.map.MapBindingFactory;
-import ch.kk7.confij.common.Config4jException;
+import ch.kk7.confij.common.ConfijException;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class ConfigBinder {
 				.filter(Optional::isPresent)
 				.map(Optional::get)
 				.findFirst()
-				.orElseThrow(() -> new Config4jException(
+				.orElseThrow(() -> new ConfijException(
 						"Unable to bind to type '{}'. This type cannot be handled by any of the factories. " +
 								"Either replace this type definition or add a custom {} to {}.", bindingType.getResolvedType(),
 						ConfigBindingFactory.class.getName(), ConfigBinder.class)); // FIXME: wrong text

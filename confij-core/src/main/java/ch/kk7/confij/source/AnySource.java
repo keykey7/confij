@@ -1,7 +1,7 @@
 package ch.kk7.confij.source;
 
 import ch.kk7.confij.common.ServiceLoaderUtil;
-import ch.kk7.confij.format.resolve.IVariableResolver;
+import ch.kk7.confij.format.resolve.VariableResolver;
 import ch.kk7.confij.source.tree.ConfijNode;
 import lombok.ToString;
 
@@ -14,14 +14,14 @@ import java.util.Optional;
 public class AnySource implements ConfigSource {
 	private final List<ConfigSourceBuilder> sourceBuilders;
 	private final String pathTemplate;
-	private IVariableResolver resolverOverride;
+	private VariableResolver resolverOverride;
 
 	public AnySource(String pathTemplate) {
 		this.pathTemplate = Objects.requireNonNull(pathTemplate);
 		sourceBuilders = ServiceLoaderUtil.instancesOf(ConfigSourceBuilder.class);
 	}
 
-	private IVariableResolver getResolver(ConfijNode node) {
+	private VariableResolver getResolver(ConfijNode node) {
 		if (resolverOverride != null) {
 			return resolverOverride;
 		}
@@ -30,7 +30,7 @@ public class AnySource implements ConfigSource {
 				.getVariableResolver();
 	}
 
-	public AnySource setResolver(IVariableResolver resolver) {
+	public AnySource setResolver(VariableResolver resolver) {
 		resolverOverride = resolver;
 		return this;
 	}
@@ -46,7 +46,7 @@ public class AnySource implements ConfigSource {
 				.findFirst()
 				.orElseThrow(() -> {
 					String addon = pathTemplate.equals(actualPath) ? "" : " (resolved from '" + pathTemplate + "')";
-					return new Config4jSourceException("failed to load source data from '{}'{}", path, addon);
+					return new ConfijSourceException("failed to load source data from '{}'{}", path, addon);
 				})
 				.override(rootNode);
 	}

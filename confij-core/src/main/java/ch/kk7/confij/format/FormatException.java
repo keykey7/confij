@@ -1,8 +1,8 @@
 package ch.kk7.confij.format;
 
-import ch.kk7.confij.common.Config4jException;
+import ch.kk7.confij.common.ConfijException;
 
-public class FormatException extends Config4jException {
+public class FormatException extends ConfijException {
 	public FormatException(String s, Object... args) {
 		super(s, args);
 	}

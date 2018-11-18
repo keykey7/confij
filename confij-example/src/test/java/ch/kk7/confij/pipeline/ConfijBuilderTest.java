@@ -1,6 +1,6 @@
 package ch.kk7.confij.pipeline;
 
-import ch.kk7.confij.source.Config4jSourceException;
+import ch.kk7.confij.source.ConfijSourceException;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +50,7 @@ class ConfijBuilderTest {
 	public void unknownScheme() {
 		ConfijBuilder builder = ConfijBuilder.of(MyConfig.class)
 				.withSource("unknown:whatever");
-		assertThrows(Config4jSourceException.class, builder::build);
+		assertThrows(ConfijSourceException.class, builder::build);
 	}
 
 	@Test

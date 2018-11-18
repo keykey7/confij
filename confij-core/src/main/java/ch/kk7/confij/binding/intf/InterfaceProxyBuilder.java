@@ -1,7 +1,7 @@
 package ch.kk7.confij.binding.intf;
 
 import ch.kk7.confij.binding.BindingException;
-import ch.kk7.confij.common.Config4jException;
+import ch.kk7.confij.common.ConfijException;
 import ch.kk7.confij.common.Util;
 import com.fasterxml.classmate.MemberResolver;
 import com.fasterxml.classmate.ResolvedType;
@@ -35,7 +35,7 @@ public class InterfaceProxyBuilder<T> {
 	private final Set<ResolvedMethod> allowedMethods;
 	private final Set<ResolvedMethod> mandatoryMethods;
 
-	public interface Config4jHandled {
+	public interface ConfijHandled {
 		Map<Method, Object> methodToValue();
 	}
 
@@ -63,7 +63,7 @@ public class InterfaceProxyBuilder<T> {
 				if (rawMethod.isDefault()) {
 					return false;
 				}
-				throw new Config4jException("expected no-arg methods only, but found " + method);
+				throw new ConfijException("expected no-arg methods only, but found " + method);
 			}
 			if (mandatoryOnly && rawMethod.isDefault()) {
 				return false;
@@ -117,7 +117,7 @@ public class InterfaceProxyBuilder<T> {
 			Class forInterface = type.getErasedType();
 			IntfaceInvocationHandler invocationHandler = new IntfaceInvocationHandler(forInterface.getSimpleName(), fixedMethodToValue);
 			//noinspection unchecked
-			return (T) Proxy.newProxyInstance(forInterface.getClassLoader(), new Class[]{forInterface, Config4jHandled.class},
+			return (T) Proxy.newProxyInstance(forInterface.getClassLoader(), new Class[]{forInterface, ConfijHandled.class},
 					invocationHandler);
 		}
 	}

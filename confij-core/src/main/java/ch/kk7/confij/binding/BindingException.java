@@ -1,8 +1,8 @@
 package ch.kk7.confij.binding;
 
-import ch.kk7.confij.common.Config4jException;
+import ch.kk7.confij.common.ConfijException;
 
-public class BindingException extends Config4jException {
+public class BindingException extends ConfijException {
 	public BindingException(String s) {
 		super(s);
 	}
