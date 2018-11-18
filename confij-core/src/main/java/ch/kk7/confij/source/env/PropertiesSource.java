@@ -24,7 +24,7 @@ public class PropertiesSource extends PropertiesFormat implements ConfigSource {
 	}
 
 	@Override
-	public void override(ConfijNode simpleConfig) {
-		overrideWithProperties(simpleConfig, properties);
+	public void override(ConfijNode rootNode) {
+		overrideWithProperties(rootNode, properties);
 	}
 }

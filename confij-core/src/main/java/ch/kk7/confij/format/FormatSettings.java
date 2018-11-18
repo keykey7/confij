@@ -6,6 +6,7 @@ import ch.kk7.confij.common.AnnotationUtil;
 import ch.kk7.confij.common.Config4jException;
 import ch.kk7.confij.format.resolve.DefaultResolver;
 import ch.kk7.confij.format.resolve.IVariableResolver;
+import lombok.ToString;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+@ToString
 public class FormatSettings {
 	private final String defaultValue;
 	private final Class<? extends IVariableResolver> variableResolverClass;
@@ -56,6 +58,7 @@ public class FormatSettings {
 		return new FormatSettings(defaultValue, variableResolverClass, implCache);
 	}
 
+	@ToString
 	public static class LazyClassToImplCache {
 		private final Map<Class<?>, Object> instances = new HashMap<>();
 

@@ -19,8 +19,8 @@ public class FixedResourceSource implements ConfigSource {
 	private final ConfijSourceFormat format;
 
 	@Override
-	public void override(ConfijNode simpleConfig) {
+	public void override(ConfijNode rootNode) {
 		String configAsStr = resource.read(path);
-		format.override(simpleConfig, configAsStr);
+		format.override(rootNode, configAsStr);
 	}
 }

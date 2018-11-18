@@ -47,7 +47,7 @@ public class ConfijNode {
 		this.uri = uri;
 	}
 
-	protected static String uriEncode(String key) {
+	public static String uriEncode(String key) {
 		try {
 			return URLEncoder.encode(key, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
@@ -78,10 +78,7 @@ public class ConfijNode {
 		return clone;
 	}
 
-	public String resolveValue(String targetUriStr) {
-		return resolve(URI.create(uriEncode(targetUriStr))).getValue();
-	}
-
+	@Deprecated
 	@NonNull
 	public ConfijNode resolve(String targetStr) {
 		return resolve(uri.resolve(uriEncode(targetStr)));
@@ -89,17 +86,18 @@ public class ConfijNode {
 
 	@NonNull
 	public ConfijNode resolve(URI target) {
-		URI relativeTarget = uri.relativize(target);
-		if (relativeTarget.equals(target)) {
+		URI absolute = uri.resolve(target);
+		URI relativeTarget = uri.relativize(absolute);
+		if (relativeTarget.equals(absolute)) {
 			// only happens when called initially with an absolute URI, which is in another subtree than this node
 			String rootScheme = root.uri.getScheme();
 			String targetScheme = relativeTarget.getScheme();
 			if (!rootScheme.equals(targetScheme)) {
 				throw new SimpleConfigException("unknown scheme '{}', expected is '{}'", targetScheme, rootScheme);
 			}
-			return root.resolve(target);
+			return root.resolve(absolute);
 		}
-		String targetPath = relativeTarget.getPath();
+		String targetPath = relativeTarget.getRawPath();
 		if ("".equals(targetPath)) {
 			return this;
 		}
@@ -108,10 +106,9 @@ public class ConfijNode {
 		if (child == null) {
 			throw new SimpleConfigException("invalid path {}: node {} doesn't have a child named '{}'", target, uri, firstPart);
 		}
-		return child.resolve(target);
+		return child.resolve(absolute);
 	}
 
-	@ToString.Include
 	protected boolean isRootNode() {
 		return root == this;
 	}

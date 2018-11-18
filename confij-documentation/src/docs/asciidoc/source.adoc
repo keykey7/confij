@@ -87,9 +87,63 @@ For those, the source location and source format can be combined freely.
 - `classpath:` - load from classpath on the default classloader
 - `http:` or any other registered URL format
 
-Register custom resource providers using the <<serviceloader>>.
+Register custom resource providers using a <<serviceloader>> for `ch.kk7.confij.source.file.resource.ConfijResourceProvider`.
 
-==== ConfiJ's ServiceLoader [[serviceloader]]
+=== YAML Format
+
+NOTE: YAML format requires the `{group}:confij-yaml` maven artifact.
+
+YAML is a recommended configuration source format since it maps nicely on a tree-structure.
+Collection types can be represented as lists or as maps with numerical keys.
+
+YAML can be loaded from all the <<resource-locations>>.
+The `AnySource` expects a case-insensitive file ending of `.yaml` or `.yml`.
+
+.Load from multiple sources of dynamic type and location
+====
+[source]
+----
+include::{src}[tag=yaml-interface]
+----
+[source,yaml]
+----
+include::{home}/complex.yaml[]
+----
+====
+
+If the YAML source file contain multi-docs, they are loaded in order.
+Internally all values are reduced to Maps of Maps or Strings.
+
+=== Properties Format
+
+Java properties files are part of the `{group}:confij-core` due to not having any 3rd party dependencies,
+but are otherwise not recommended, since it is a flat key-value format.
+
+Properties files can be loaded from all the <<resource-locations>>.
+The `AnySource` expects a case-insensitive file ending of `.properties`.
+
+.Nested configuration loading from properties file
+====
+[source]
+----
+include::{src}[tag=nestedinterface]
+----
+----
+include::{home}/nested.properties[]
+----
+====
+
+<1> Per default, nested configuration keys are separated with a dot form each other.
+<2> Collection types simply require numerical keys (starting at 0).
+<3> Map types can use any key excluding the delimiter.
+
+=== Environment Variables Format
+
+=== System Properties Format
+
+=== Logical Sources
+
+== ConfiJ's ServiceLoaders [[serviceloader]]
 
 ConfiJ allows to utilize Java's https://docs.oracle.com/javase/8/docs/api/?java/util/ServiceLoader.html[ServiceLoader]
 mechanism to register additional services like source formats or validators.
@@ -115,69 +169,3 @@ To change the priority of a service loader instance implement the `ServiceLoader
 include::{src}[tag=resourceprovider-service-ignored]
 ----
 ====
-
-=== YAML
-
-NOTE: YAML format requires the `{group}:confij-yaml` maven artifact.
-
-YAML is a recommended configuration source format since it maps nicely on a tree-structure.
-Collection types can be represented as lists or as maps with numerical keys.
-
-YAML can be loaded from all the <<resource-locations>>.
-The `AnySource` expects a case-insensitive file ending of `.yaml` or `.yml`.
-
-.Load from multiple sources of dynamic type and location
-====
-[source]
-----
-include::{src}[tag=yaml-interface]
-----
-[source,yaml]
-----
-include::{home}/complex.yaml[]
-----
-====
-
-If the YAML source file contain multi-docs, they are loaded in order.
-Internally all values are reduced to Maps of Maps or Strings.
-
-=== Properties File
-
-Java properties files are part of the `{group}:confij-core` due to not having any 3rd party dependencies,
-but are otherwise not recommended, since it is a flat key-value format.
-
-Properties files can be loaded from all the <<resource-locations>>.
-The `AnySource` expects a case-insensitive file ending of `.properties`.
-
-.Nested configuration loading from properties file
-====
-[source]
-----
-include::{src}[tag=nestedinterface]
-----
-----
-include::{home}/nested.properties[]
-----
-====
-
-<1> Per default, nested configuration keys are separated with a dot form each other.
-<2> Collection types simply require numerical keys (starting at 0).
-<3> Map types can use any key excluding the delimiter.
-
-=== Environment Variables
-
-=== System Properties
-
-=== Logical Sources
-
-== Variable Substitutions [[variables]]
-
-=== built-in
-
-- relative to node
-- can do absolute
-- can do recursive
-- even allowed in source paths
-
-=== Groovy
-NOTE: Not yet implemented.

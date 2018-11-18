@@ -1,0 +1,52 @@
+= Variable Substitution [[variables]]
+:src: ../../test/java/ch/kk7/confij/docs/Variables.java
+:resources: ../../test/resources
+:home: ../../test/home
+
+All configuration values might contain placeholders referencing other values.
+Placeholders are only resolved after all sources were loaded.
+Therefore it is possible for an unfinished configuration to contain undefined references.
+
+Additionally some source paths are subject to templating.
+In these cases all references variables must already be defined.
+
+== built-in Variable Substitution
+
+Any variable can contain placeholders wrapped in `${ }`.
+
+.Simple Variable replacement
+====
+[source]
+----
+include::{src}[tag=simple]
+----
+----
+given:  name=
+yields: hello → Hi John
+
+given:  name=Bob
+yields: hello → Hi Bob
+
+given:  hello=Cya
+yields: hello → Cya
+----
+====
+
+Variable names are always relative to where they are defined.
+.Simple Variable replacement
+====
+[source]
+----
+include::{src}[tag=relative]
+----
+====
+
+
+== Noop Variable Substitution
+
+- relative to node
+- can do absolute
+- can do recursive
+- even allowed in source paths
+
+TIP: To implement your own

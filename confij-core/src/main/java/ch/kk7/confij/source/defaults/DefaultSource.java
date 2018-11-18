@@ -12,12 +12,12 @@ import java.util.Set;
  */
 public class DefaultSource implements ConfigSource {
 	@Override
-	public void override(ConfijNode confijNode) {
-		if (confijNode.getConfig()
+	public void override(ConfijNode rootNode) {
+		if (rootNode.getConfig()
 				.isValueHolder()) {
-			overrideLeaf(confijNode);
+			overrideLeaf(rootNode);
 		} else {
-			overrideBranch(confijNode);
+			overrideBranch(rootNode);
 		}
 	}
 

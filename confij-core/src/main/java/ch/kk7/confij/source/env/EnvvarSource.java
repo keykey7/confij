@@ -20,12 +20,12 @@ public class EnvvarSource extends PropertiesFormat implements ConfigSource, Conf
 	}
 
 	@Override
-	public void override(ConfijNode simpleConfig) {
+	public void override(ConfijNode rootNode) {
 		if (deepMap == null) {
 			// envvars don't change: we can cache them forever
-			deepMap = flatToNestedMapWithPrefix(simpleConfig.getConfig(), System.getenv());
+			deepMap = flatToNestedMapWithPrefix(rootNode.getConfig(), System.getenv());
 		}
-		overrideWithDeepMap(simpleConfig, deepMap);
+		overrideWithDeepMap(rootNode, deepMap);
 	}
 
 	@Override

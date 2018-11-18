@@ -3,12 +3,14 @@ package ch.kk7.confij.source;
 import ch.kk7.confij.common.ServiceLoaderUtil;
 import ch.kk7.confij.format.resolve.IVariableResolver;
 import ch.kk7.confij.source.tree.ConfijNode;
+import lombok.ToString;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@ToString
 public class AnySource implements ConfigSource {
 	private final List<ConfigSourceBuilder> sourceBuilders;
 	private final String pathTemplate;
@@ -34,8 +36,8 @@ public class AnySource implements ConfigSource {
 	}
 
 	@Override
-	public void override(ConfijNode simpleConfig) {
-		String actualPath = getResolver(simpleConfig).resolve(simpleConfig, pathTemplate);
+	public void override(ConfijNode rootNode) {
+		String actualPath = getResolver(rootNode).resolveValue(rootNode, pathTemplate);
 		URI path = URI.create(actualPath);
 		sourceBuilders.stream()
 				.map(sb -> sb.fromURI(path))
@@ -46,6 +48,6 @@ public class AnySource implements ConfigSource {
 					String addon = pathTemplate.equals(actualPath) ? "" : " (resolved from '" + pathTemplate + "')";
 					return new Config4jSourceException("failed to load source data from '{}'{}", path, addon);
 				})
-				.override(simpleConfig);
+				.override(rootNode);
 	}
 }

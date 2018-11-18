@@ -25,7 +25,7 @@ class DefaultResolverTest {
 		}
 		ConfijNode config = ConfijNode.newRootFor(format)
 				.initializeFromMap(map);
-		return new DefaultResolver().resolve(config, template);
+		return new DefaultResolver().resolveValue(config, template);
 	}
 
 	private static AbstractStringAssert<?> assertThat(String template, String... x) {

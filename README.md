@@ -16,3 +16,4 @@
 - VariableReplacement within @Default("${replaceMe}")
 - add priorities to serviceloader
 - convert StaticFunctionMapper and alike to normal ValueMapperFactories to allow using them in annotations
+- VariableResolvers should always use the VariableResolvers of referenced leaves

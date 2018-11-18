@@ -2,20 +2,20 @@ package ch.kk7.confij.source.logical;
 
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.tree.ConfijNode;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.Value;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@AllArgsConstructor
+@Value
 public class MaybeSource implements ConfigSource {
 	@NonNull
 	private final ConfigSource maybeSource;
 
 	@Override
-	public void override(ConfijNode simpleConfig) {
-		ConfijNode copy = simpleConfig.deepClone();
+	public void override(ConfijNode rootNode) {
+		ConfijNode copy = rootNode.deepClone();
 		try {
 			// simulate it first
 			maybeSource.override(copy);
@@ -23,11 +23,6 @@ public class MaybeSource implements ConfigSource {
 			// poor mans logging, but cannot just drop it either
 			Logger.getLogger(MaybeSource.class.getName()).log(Level.INFO, "failed reading optional source " + maybeSource, e);
 		}
-		simpleConfig.overrideWith(copy);
-	}
-
-	@Override
-	public String toString() {
-		return "Maybe{" + maybeSource + '}';
+		rootNode.overrideWith(copy);
 	}
 }

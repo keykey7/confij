@@ -2,10 +2,11 @@ package ch.kk7.confij.format.resolve;
 
 import ch.kk7.confij.source.tree.ConfijNode;
 
+@FunctionalInterface
 public interface IVariableResolver {
-	default String resolve(ConfijNode leaf) {
-		return resolve(leaf, leaf.getValue());
-	}
+	String resolveValue(ConfijNode baseLeaf, String valueToResolve);
 
-	String resolve(ConfijNode baseLeaf, String value);
+	default String resolveLeaf(ConfijNode leaf) {
+		return resolveValue(leaf, leaf.getValue());
+	}
 }

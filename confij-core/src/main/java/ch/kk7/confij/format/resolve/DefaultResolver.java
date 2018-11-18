@@ -2,54 +2,73 @@ package ch.kk7.confij.format.resolve;
 
 import ch.kk7.confij.common.Config4jException;
 import ch.kk7.confij.source.tree.ConfijNode;
+import lombok.Data;
 
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+// TODO: make ThreadSafe
+@Data
 public class DefaultResolver implements IVariableResolver {
 	private char escapeChar = '\\';
+	private String pathSeparator = ".";
 	private final Map<ConfijNode, String> resolvedLeaves = new HashMap<>();
 	private final Set<ConfijNode> inProgressLeaves = new HashSet<>();
 
 	@Override
-	public String resolve(ConfijNode leaf) {
+	public String resolveLeaf(ConfijNode leaf) {
+		String value = leaf.getValue();
+		if (value == null) {
+			return null;
+		}
 		clearCache();
-		return resolveString(leaf);
+		return resolveLeafInternal(leaf);
 	}
 
-	protected String resolveString(ConfijNode leaf) {
+	protected String resolveLeafInternal(ConfijNode leaf) {
 		String value = leaf.getValue();
 		if (resolvedLeaves.containsKey(leaf)) {
 			return resolvedLeaves.get(leaf);
 		}
 		if (inProgressLeaves.contains(leaf)) {
-			throw new Config4jException("circular dependency: cannot resolveString leaf value");
+			throw new Config4jException("circular dependency: cannot resolveLeafInternal leaf value");
 		}
 		inProgressLeaves.add(leaf);
-		String resolvedValue = resolveString(leaf, value);
+		String resolvedValue = resolveValueInternal(leaf, value);
 		inProgressLeaves.remove(leaf);
 		resolvedLeaves.put(leaf, resolvedValue);
 		return resolvedValue;
 	}
 
 	@Override
-	public String resolve(ConfijNode baseLeaf, String value) {
+	public String resolveValue(ConfijNode baseNode, String value) {
 		clearCache();
-		return resolveString(baseLeaf, value);
+		return resolveValueInternal(baseNode, value);
+	}
+
+	protected URI pathToUri(String pathToLeaf) {
+		String stringUri = Arrays.stream(pathToLeaf.split(Pattern.quote(pathSeparator)))
+				.map(ConfijNode::uriEncode)
+				.collect(Collectors.joining("/"));
+		return URI.create(stringUri);
 	}
 
 	protected String resolveVariable(ConfijNode baseLeaf, String variableName) {
 		// allows for recursive variable names like ${x${y}}
-		String pathToLeaf = resolveString(baseLeaf, variableName);
+		String pathToLeaf = resolveValueInternal(baseLeaf, variableName);
 		return resolveStaticForAbsolutePaths(pathToLeaf).orElseGet(() -> {
 			// variable must represent a path to a leaf now (usually relative)
-			ConfijNode leaf = baseLeaf.resolve(pathToLeaf);
-			// further resolve the content of this leaf
-			return resolveString(leaf);
+			URI uriToLeaf = pathToUri(pathToLeaf);
+			ConfijNode leaf = baseLeaf.resolve(uriToLeaf);
+			// further resolveLeaf the content of this leaf
+			return resolveLeafInternal(leaf);
 		});
 	}
 
@@ -75,7 +94,7 @@ public class DefaultResolver implements IVariableResolver {
 		inProgressLeaves.clear();
 	}
 
-	protected String resolveString(ConfijNode baseLeaf, String value) {
+	protected String resolveValueInternal(ConfijNode baseNode, String value) {
 		boolean isEscape = false;
 		boolean wasDollar = false;
 		int bracketCount = 0;
@@ -110,7 +129,7 @@ public class DefaultResolver implements IVariableResolver {
 				bracketCount--;
 				if (bracketCount == 0) {
 					String toResolve = value.substring(bracketContentStart, i);
-					String resolved = escape(resolveVariable(baseLeaf, toResolve));
+					String resolved = escape(resolveVariable(baseNode, toResolve));
 					String beforeReplacement = value.substring(0, bracketContentStart - 2);
 					String afterReplacement = value.substring(i + 1);
 					i = beforeReplacement.length() + resolved.length();

@@ -8,15 +8,17 @@ import ch.kk7.confij.binding.ConfigBindingFactory;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatLeaf;
 import ch.kk7.confij.format.FormatSettings;
 import ch.kk7.confij.source.tree.ConfijNode;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.ToString;
 
 import java.util.Optional;
 
+@ToString
+@AllArgsConstructor
 public class LeafBinding<T> implements ConfigBinding<T> {
+	@NonNull
 	private final ValueMapperInstance<T> valueMapper;
-
-	public LeafBinding(ValueMapperInstance<T> valueMapper) {
-		this.valueMapper = valueMapper;
-	}
 
 	@Override
 	public ConfigFormatLeaf describe(FormatSettings formatSettings) {
@@ -24,8 +26,12 @@ public class LeafBinding<T> implements ConfigBinding<T> {
 	}
 
 	@Override
-	public T bind(ConfijNode config) {
-		return valueMapper.fromString(config.getValue());
+	public T bind(ConfijNode leaf) {
+		String value = leaf.getConfig()
+				.getFormatSettings()
+				.getVariableResolver()
+				.resolveLeaf(leaf);
+		return valueMapper.fromString(value);
 	}
 
 	public static class ForcedLeafBindingFactory implements ConfigBindingFactory<LeafBinding> {

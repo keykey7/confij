@@ -33,7 +33,7 @@ public class CollectionBindingFactory implements ConfigBindingFactory<Collection
 			}
 			ResolvedType componentType = typeParameters.get(0);
 			if (Util.rawObjectType.equals(componentType)) {
-				throw new BindingException("cannot resolve the generic type within Collection<?> for " + type);
+				throw new BindingException("cannot resolveLeaf the generic type within Collection<?> for " + type);
 			}
 			// otherwise: we have at least an upper bound for the generic (like <? extends Integer> becomes Integer.class)
 			CollectionBuilder builder = builderFactory.apply(type);

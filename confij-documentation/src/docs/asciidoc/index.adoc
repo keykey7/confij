@@ -20,3 +20,5 @@ include::setup.adoc[]
 include::binding.adoc[]
 
 include::source.adoc[]
+
+include::variables.adoc[]

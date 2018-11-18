@@ -29,25 +29,25 @@ public class ConfijPipelineImpl<T> implements ConfijPipeline<T> {
 		return defaultsOnly;
 	}
 
-	protected ConfijNode readSimpleConfig() {
-		ConfijNode simpleConfig = newDefaultConfig();
+	protected ConfijNode readConfigToNode() {
+		ConfijNode rootNode = newDefaultConfig();
 		for (ConfigSource source : sources) {
-			source.override(simpleConfig);
+			source.override(rootNode);
 			// always overriding with default source to make sure new
 			// (optional) branches are filled with default values before
 			// the next source might reference it...
-			defaultSource.override(simpleConfig);
+			defaultSource.override(rootNode);
 		}
-		return simpleConfig;
+		return rootNode;
 	}
 
-	protected T bind(ConfijNode simpleConfig) {
-		return configBinding.bind(simpleConfig);
+	protected T bind(ConfijNode rootNode) {
+		return configBinding.bind(rootNode);
 	}
 
 	@Override
 	public T build() {
-		ConfijNode simpleConfig = readSimpleConfig();
+		ConfijNode simpleConfig = readConfigToNode();
 		T config = bind(simpleConfig);
 		validator.validate(config);
 		return config;
