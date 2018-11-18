@@ -7,14 +7,13 @@ import ch.kk7.confij.format.ConfigFormat.ConfigFormatMap;
 import ch.kk7.confij.format.FormatSettings;
 import ch.kk7.confij.source.tree.ConfijNode;
 import org.assertj.core.api.AbstractStringAssert;
+import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-class DefaultResolverTest {
+class DefaultResolverTest implements WithAssertions {
 
 	private static String resolve(String template, String... x) {
 		FormatSettings settings = FormatSettings.newDefaultSettings();
@@ -64,7 +63,7 @@ class DefaultResolverTest {
 
 	@Test
 	public void resolveEmbeddedCircular() {
-		assertThrows(Config4jException.class, () -> resolve("hello ${x1}", "${x1}"));
+		assertThatThrownBy(() -> resolve("hello ${x1}", "${x1}")).isInstanceOf(Config4jException.class);
 	}
 
 	@Test
@@ -79,7 +78,7 @@ class DefaultResolverTest {
 
 	@Test
 	public void resolveNestedCircular() {
-		assertThrows(Config4jException.class, () -> resolve("hello ${x1}", "1${x2}", "2${x3}", "3${x1}"));
+		assertThatThrownBy(() -> resolve("hello ${x1}", "1${x2}", "2${x3}", "3${x1}")).isInstanceOf(Config4jException.class);
 	}
 
 	@Test
@@ -89,12 +88,12 @@ class DefaultResolverTest {
 
 	@Test
 	public void emptyVariable() {
-		assertThrows(Config4jException.class, () -> resolve("hello ${}", "1"));
+		assertThatThrownBy(() -> resolve("hello ${}", "1")).isInstanceOf(Config4jException.class);
 	}
 
 	@Test
 	public void nonexistentVariable() {
-		assertThrows(Config4jException.class, () -> resolve("hello ${x1}"));
+		assertThatThrownBy(() -> resolve("hello ${x1}")).isInstanceOf(Config4jException.class);
 	}
 
 	@Test
@@ -110,6 +109,16 @@ class DefaultResolverTest {
 	@Test
 	public void doubleEscaped() {
 		assertThat("hello \\\\${x1}", "one").isEqualTo("hello \\one");
+	}
+
+	@Test
+	public void currency() {
+		assertThat("23$ 10¢").isEqualTo("23$ 10¢");
+	}
+
+	@Test
+	public void noNullReferences() {
+		assertThatThrownBy(() -> resolve("${x1}", (String) null)).isInstanceOf(Config4jException.class);
 	}
 
 	@Test

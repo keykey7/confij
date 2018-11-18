@@ -2,12 +2,12 @@ package ch.kk7.confij.format.resolve;
 
 import ch.kk7.confij.common.Config4jException;
 import ch.kk7.confij.source.tree.ConfijNode;
-import lombok.Data;
+import lombok.ToString;
 
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -15,17 +15,16 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 // TODO: make ThreadSafe
-@Data
+@ToString
 public class DefaultResolver implements IVariableResolver {
 	private char escapeChar = '\\';
 	private String pathSeparator = ".";
 	private final Map<ConfijNode, String> resolvedLeaves = new HashMap<>();
-	private final Set<ConfijNode> inProgressLeaves = new HashSet<>();
+	private final Set<ConfijNode> inProgressLeaves = new LinkedHashSet<>();
 
 	@Override
 	public String resolveLeaf(ConfijNode leaf) {
-		String value = leaf.getValue();
-		if (value == null) {
+		if (leaf.getValue() == null) {
 			return null;
 		}
 		clearCache();
@@ -34,11 +33,14 @@ public class DefaultResolver implements IVariableResolver {
 
 	protected String resolveLeafInternal(ConfijNode leaf) {
 		String value = leaf.getValue();
+		if (value == null) {
+			throw new Config4jException("referenced property {} is null", leaf);
+		}
 		if (resolvedLeaves.containsKey(leaf)) {
 			return resolvedLeaves.get(leaf);
 		}
 		if (inProgressLeaves.contains(leaf)) {
-			throw new Config4jException("circular dependency: cannot resolveLeafInternal leaf value");
+			throw new Config4jException("circular dependency: cannot resolve leaf value. Call stack: {}", inProgressLeaves);
 		}
 		inProgressLeaves.add(leaf);
 		String resolvedValue = resolveValueInternal(leaf, value);

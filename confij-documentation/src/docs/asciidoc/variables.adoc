@@ -7,8 +7,7 @@ All configuration values might contain placeholders referencing other values.
 Placeholders are only resolved after all sources were loaded.
 Therefore it is possible for an unfinished configuration to contain undefined references.
 
-Additionally some source paths are subject to templating.
-In these cases all references variables must already be defined.
+Additionally some source paths are subject to templating (see <<anysource>>).
 
 == built-in Variable Substitution
 
