@@ -1,9 +1,7 @@
-package ch.kk7.confij.binding.leaf.mapper;
+package ch.kk7.confij.binding.values;
 
 import ch.kk7.confij.annotation.ValueMapper;
 import ch.kk7.confij.binding.BindingType;
-import ch.kk7.confij.binding.leaf.ValueMapperFactory;
-import ch.kk7.confij.binding.leaf.ValueMapperInstance;
 import com.fasterxml.classmate.ResolvedType;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;

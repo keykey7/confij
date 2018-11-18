@@ -1,4 +1,4 @@
-package ch.kk7.confij.binding.leaf;
+package ch.kk7.confij.binding.values;
 
 import ch.kk7.confij.binding.BindingType;
 import lombok.NonNull;

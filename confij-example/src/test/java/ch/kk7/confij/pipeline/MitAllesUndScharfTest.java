@@ -1,7 +1,7 @@
 package ch.kk7.confij.pipeline;
 
 import ch.kk7.confij.annotation.Default;
-import ch.kk7.confij.binding.leaf.mapper.Base64Mapper.Base64;
+import ch.kk7.confij.binding.values.Base64Mapper.Base64;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;

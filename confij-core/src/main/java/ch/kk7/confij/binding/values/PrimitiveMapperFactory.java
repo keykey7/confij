@@ -1,9 +1,7 @@
-package ch.kk7.confij.binding.leaf.mapper;
+package ch.kk7.confij.binding.values;
 
 import ch.kk7.confij.binding.BindingType;
-import ch.kk7.confij.binding.leaf.ValueMapperInstance;
-import ch.kk7.confij.binding.leaf.ValueMapperInstance.NullableValueMapperInstance;
-import ch.kk7.confij.binding.leaf.ValueMapperFactory;
+import ch.kk7.confij.binding.values.ValueMapperInstance.NullableValueMapperInstance;
 import com.fasterxml.classmate.ResolvedType;
 
 import java.util.HashMap;

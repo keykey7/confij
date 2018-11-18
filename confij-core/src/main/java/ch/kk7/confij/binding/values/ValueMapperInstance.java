@@ -1,4 +1,4 @@
-package ch.kk7.confij.binding.leaf;
+package ch.kk7.confij.binding.values;
 
 @FunctionalInterface
 public interface ValueMapperInstance<T> {

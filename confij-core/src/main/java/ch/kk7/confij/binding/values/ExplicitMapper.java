@@ -1,6 +1,5 @@
-package ch.kk7.confij.binding.leaf.mapper;
+package ch.kk7.confij.binding.values;
 
-import ch.kk7.confij.binding.leaf.ValueMapperFactory;
 import lombok.experimental.UtilityClass;
 
 import java.io.File;

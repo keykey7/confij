@@ -5,6 +5,7 @@ import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.ConfigBindingFactory;
+import ch.kk7.confij.binding.values.ValueMapperInstance;
 import ch.kk7.confij.format.ConfigFormat.ConfigFormatLeaf;
 import ch.kk7.confij.format.FormatSettings;
 import ch.kk7.confij.source.tree.ConfijNode;

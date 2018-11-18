@@ -1,16 +1,16 @@
 package ch.kk7.confij.binding;
 
 import ch.kk7.confij.annotation.ValueMapper;
-import ch.kk7.confij.binding.leaf.ValueMapperFactory;
-import ch.kk7.confij.binding.leaf.ValueMapperInstance;
-import ch.kk7.confij.binding.leaf.mapper.DateTimeMapper;
-import ch.kk7.confij.binding.leaf.mapper.DurationMapper;
-import ch.kk7.confij.binding.leaf.mapper.EnumMapper;
-import ch.kk7.confij.binding.leaf.mapper.ExplicitMapper;
-import ch.kk7.confij.binding.leaf.mapper.PeriodMapper;
-import ch.kk7.confij.binding.leaf.mapper.PrimitiveMapperFactory;
-import ch.kk7.confij.binding.leaf.mapper.SoloConstructorMapper;
-import ch.kk7.confij.binding.leaf.mapper.StaticFunctionMapper;
+import ch.kk7.confij.binding.values.ValueMapperFactory;
+import ch.kk7.confij.binding.values.ValueMapperInstance;
+import ch.kk7.confij.binding.values.DateTimeMapper;
+import ch.kk7.confij.binding.values.DurationMapper;
+import ch.kk7.confij.binding.values.EnumMapper;
+import ch.kk7.confij.binding.values.ExplicitMapper;
+import ch.kk7.confij.binding.values.PeriodMapper;
+import ch.kk7.confij.binding.values.PrimitiveMapperFactory;
+import ch.kk7.confij.binding.values.SoloConstructorMapper;
+import ch.kk7.confij.binding.values.StaticFunctionMapper;
 import ch.kk7.confij.common.AnnotationUtil;
 import ch.kk7.confij.common.AnnotationUtil.AnnonResponse;
 import ch.kk7.confij.format.FormatSettings.LazyClassToImplCache;

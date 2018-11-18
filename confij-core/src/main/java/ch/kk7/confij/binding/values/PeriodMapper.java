@@ -1,10 +1,9 @@
-package ch.kk7.confij.binding.leaf.mapper;
+package ch.kk7.confij.binding.values;
 
 import ch.kk7.confij.binding.BindingException;
 import ch.kk7.confij.binding.BindingType;
-import ch.kk7.confij.binding.leaf.ValueMapperInstance;
-import ch.kk7.confij.binding.leaf.ValueMapperInstance.NullableValueMapperInstance;
-import ch.kk7.confij.binding.leaf.mapper.DurationMapper.DurationMapperInstance;
+import ch.kk7.confij.binding.values.ValueMapperInstance.NullableValueMapperInstance;
+import ch.kk7.confij.binding.values.DurationMapper.DurationMapperInstance;
 
 import java.time.DateTimeException;
 import java.time.Period;
