@@ -169,13 +169,12 @@ subprojects {
 	bintray {
 		user = 'kk7'
 		key = System.getenv('BINTRAY_TOKEN')
-
 		publications = publications = project.publishing.publications.collect{ it.name }
 		publish = isReleaseBuild
 
 		pkg {
 			repo = isReleaseBuild ? 'mvn-release' : 'mvn-snapshot'
-			name = rootProject.name
+			name = project.name
 			desc = project.confijDescription
 
 			websiteUrl = project.confijUrl
@@ -194,7 +193,7 @@ subprojects {
 	}
 
 	bintrayUpload {
-		// dependsOn publishToMavenLocal
+		dependsOn publishToMavenLocal
 		doFirst {
 			Objects.requireNonNull(apiKey, 'missing bintray token')
 		}
