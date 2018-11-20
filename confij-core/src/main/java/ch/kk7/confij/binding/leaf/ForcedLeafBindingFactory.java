@@ -10,7 +10,7 @@ import java.util.Optional;
 public class ForcedLeafBindingFactory implements ConfigBindingFactory<LeafBinding> {
 	@Override
 	public Optional<LeafBinding> maybeCreate(BindingType bindingType, ConfigBinder configBinder) {
-		return bindingType.getBindingSettings()
+		return bindingType.getBindingContext()
 				.getForcedMapperFactory()
 				.map(iValueMapperFactory -> iValueMapperFactory.maybeForType(bindingType)
 						.orElseThrow(() -> new BindingException(

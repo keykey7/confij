@@ -35,7 +35,7 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 		siblingsByName = new LinkedHashMap<>();
 		interfaceBuilder = new InterfaceProxyBuilder<>((ResolvedInterfaceType) baseType);
 		for (ResolvedMethod method : interfaceBuilder.getAllowedMethods()) {
-			BindingType methodBindingType = bindingType.bindingFor(method.getReturnType(), bindingType.getBindingSettings()
+			BindingType methodBindingType = bindingType.bindingFor(method.getReturnType(), bindingType.getBindingContext()
 					.settingsFor(method.getRawMember()));
 			ConfigBinding<?> methodDescription = configBinder.toConfigBinding(methodBindingType);
 			String configKey = AnnotationUtil.findAnnotation(method.getRawMember(), Key.class).map(Key::value)

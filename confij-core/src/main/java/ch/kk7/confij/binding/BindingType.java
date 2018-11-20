@@ -7,37 +7,37 @@ import java.lang.reflect.Type;
 
 public class BindingType {
 	private final ResolvedType resolvedType;
-	private final BindingSettings bindingSettings;
+	private final BindingContext bindingContext;
 	private final TypeResolver typeResolver;
 
-	protected BindingType(ResolvedType resolvedType, BindingSettings bindingSettings, TypeResolver typeResolver) {
+	protected BindingType(ResolvedType resolvedType, BindingContext bindingContext, TypeResolver typeResolver) {
 		this.resolvedType = resolvedType;
-		this.bindingSettings = bindingSettings;
+		this.bindingContext = bindingContext;
 		this.typeResolver = typeResolver;
 	}
 
 	public static BindingType newBindingType(Type forType) {
-		return newBindingType(forType, BindingSettings.newDefaultSettings());
+		return newBindingType(forType, BindingContext.newDefaultContext());
 	}
 
-	public static BindingType newBindingType(Type forType, BindingSettings bindingSettings) {
+	public static BindingType newBindingType(Type forType, BindingContext bindingContext) {
 		TypeResolver typeResolver = new TypeResolver();
-		return new BindingType(typeResolver.resolve(forType), bindingSettings, typeResolver);
+		return new BindingType(typeResolver.resolve(forType), bindingContext, typeResolver);
 	}
 
 	public BindingType bindingFor(ResolvedType resolvedType) {
-		return new BindingType(resolvedType, bindingSettings, typeResolver);
+		return new BindingType(resolvedType, bindingContext, typeResolver);
 	}
 
-	public BindingType bindingFor(ResolvedType resolvedType, BindingSettings bindingSettings) {
-		return new BindingType(resolvedType, bindingSettings, typeResolver);
+	public BindingType bindingFor(ResolvedType resolvedType, BindingContext bindingContext) {
+		return new BindingType(resolvedType, bindingContext, typeResolver);
 	}
 
 	public ResolvedType getResolvedType() {
 		return resolvedType;
 	}
 
-	public BindingSettings getBindingSettings() {
-		return bindingSettings;
+	public BindingContext getBindingContext() {
+		return bindingContext;
 	}
 }

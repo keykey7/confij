@@ -58,7 +58,7 @@ public class StaticFunctionMapper implements ValueMapperFactory {
 	}
 
 	public static boolean isExpectedMethodName(String methodName, BindingType bindingType) {
-		return Arrays.asList(bindingType.getBindingSettings()
+		return Arrays.asList(bindingType.getBindingContext()
 				.getFactoryConfigFor(StaticFunctionMapper.class)
 				.filter(StaticFunction.class::isInstance)
 				.map(StaticFunction.class::cast)

@@ -62,7 +62,7 @@ public class Base64Mapper implements ValueMapperFactory {
 	}
 
 	public java.util.Base64.Decoder getDecoder(BindingType bindingType) {
-		return bindingType.getBindingSettings()
+		return bindingType.getBindingContext()
 				.getFactoryConfigFor(Base64Mapper.class)
 				.filter(Base64.class::isInstance)
 				.map(Base64.class::cast)

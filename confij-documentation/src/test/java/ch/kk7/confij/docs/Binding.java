@@ -2,11 +2,10 @@ package ch.kk7.confij.docs;
 
 import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.annotation.ValueMapper;
-import ch.kk7.confij.binding.BindingSettings;
 import ch.kk7.confij.binding.BindingType;
+import ch.kk7.confij.binding.values.Base64Mapper.Base64;
 import ch.kk7.confij.binding.values.ValueMapperFactory;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
-import ch.kk7.confij.binding.values.Base64Mapper.Base64;
 import ch.kk7.confij.pipeline.ConfijBuilder;
 import ch.kk7.confij.source.env.PropertiesSource;
 import org.junit.jupiter.api.Test;
@@ -124,10 +123,8 @@ public class Binding extends DocTestBase {
 	@Test
 	public void customValueMappingWithBuilder() {
 		// tag::custom-value-mapping[]
-		BindingSettings bindingSettings = BindingSettings.newDefaultSettings()
-				.addValueMapper(Color::decode, java.awt.Color.class);
 		EmptyColorHolder colorHolder = ConfijBuilder.of(EmptyColorHolder.class)
-				.withBindingSettings(bindingSettings)
+				.withValueMapperForClass(Color::decode, java.awt.Color.class)
 				// end::custom-value-mapping[]
 				.withSource(new PropertiesSource().with("black", "#000000")
 						.with("green", "#00FF00"))

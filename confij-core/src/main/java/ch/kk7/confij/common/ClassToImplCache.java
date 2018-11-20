@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @ToString
-public class LazyClassToImplCache {
+public class ClassToImplCache {
 	private final Map<Class<?>, Object> instances = new HashMap<>();
 
 	@SuppressWarnings("unchecked")

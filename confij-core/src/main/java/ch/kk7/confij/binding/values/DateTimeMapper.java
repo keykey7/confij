@@ -79,7 +79,7 @@ public class DateTimeMapper implements ValueMapperFactory {
 	}
 
 	protected OffsetDateTimeMapperInstance newOffsetDateTimeMapperInstance(BindingType bindingType) {
-		DateTime dateTime = bindingType.getBindingSettings()
+		DateTime dateTime = bindingType.getBindingContext()
 				.getFactoryConfigFor(DateTimeMapper.class)
 				.filter(DateTime.class::isInstance)
 				.map(DateTime.class::cast)

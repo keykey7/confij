@@ -1,8 +1,10 @@
 package ch.kk7.confij.pipeline;
 
-import ch.kk7.confij.binding.BindingSettings;
+import ch.kk7.confij.binding.BindingContext;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
+import ch.kk7.confij.binding.values.ValueMapperFactory;
+import ch.kk7.confij.binding.values.ValueMapperInstance;
 import ch.kk7.confij.format.ConfigFormat;
 import ch.kk7.confij.format.FormatSettings;
 import ch.kk7.confij.format.resolve.NoopResolver;
@@ -28,10 +30,8 @@ public class ConfijBuilder<T> {
 	private final Type forType;
 	private final List<ConfigSource> sources = new ArrayList<>();
 	private ConfijValidator validator = null;
-	@NonNull
 	private FormatSettings formatSettings = FormatSettings.newDefaultSettings();
-	@NonNull
-	private BindingSettings bindingSettings = BindingSettings.newDefaultSettings();
+	private BindingContext bindingContext = null;
 	private ConfijReloader<T> reloader = null;
 
 	protected ConfijBuilder(@NonNull Type forType) {
@@ -81,9 +81,29 @@ public class ConfijBuilder<T> {
 		return withTemplating(new NoopResolver());
 	}
 
-	public ConfijBuilder<T> withBindingSettings(BindingSettings bindingSettings) {
-		this.bindingSettings = bindingSettings;
+	@NonNull
+	protected BindingContext getBindingContext() {
+		if (bindingContext == null) {
+			bindingContext = BindingContext.newDefaultContext();
+		}
+		return bindingContext;
+	}
+
+	public ConfijBuilder<T> bindingContext(BindingContext bindingContext) {
+		if (this.bindingContext != null) {
+			throw new IllegalStateException("unsafe usage of BindingSettings after it has been modified already");
+		}
+		this.bindingContext = bindingContext;
 		return this;
+	}
+
+	public ConfijBuilder<T> withValueMapperFactory(ValueMapperFactory valueMapperFactory) {
+		this.bindingContext = getBindingContext().withMapperFactory(valueMapperFactory);
+		return this;
+	}
+
+	public <I> ConfijBuilder<T> withValueMapperForClass(ValueMapperInstance<I> valueMapper, Class<I> forClass) {
+		return withValueMapperFactory(ValueMapperFactory.forClass(valueMapper, forClass));
 	}
 
 	public ConfijBuilder<T> withReloader(@NonNull ConfijReloader<T> reloader) {
@@ -96,7 +116,7 @@ public class ConfijBuilder<T> {
 				.orElseGet(ServiceLoaderValidator::new);
 		ConfigBinder configBinder = new ConfigBinder();
 		@SuppressWarnings("unchecked")
-		ConfigBinding<T> configBinding = (ConfigBinding<T>) configBinder.toRootConfigBinding(forType, bindingSettings);
+		ConfigBinding<T> configBinding = (ConfigBinding<T>) configBinder.toRootConfigBinding(forType, getBindingContext());
 		ConfigFormat configFormat = configBinding.describe(formatSettings);
 		return new ConfijPipelineImpl<>(sources, new DefaultSource(), validator, configBinding, configFormat);
 	}

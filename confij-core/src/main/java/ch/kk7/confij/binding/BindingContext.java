@@ -1,0 +1,101 @@
+package ch.kk7.confij.binding;
+
+import ch.kk7.confij.annotation.ValueMapper;
+import ch.kk7.confij.binding.values.DateTimeMapper;
+import ch.kk7.confij.binding.values.DurationMapper;
+import ch.kk7.confij.binding.values.EnumMapper;
+import ch.kk7.confij.binding.values.ExplicitMapper;
+import ch.kk7.confij.binding.values.PeriodMapper;
+import ch.kk7.confij.binding.values.PrimitiveMapperFactory;
+import ch.kk7.confij.binding.values.SoloConstructorMapper;
+import ch.kk7.confij.binding.values.StaticFunctionMapper;
+import ch.kk7.confij.binding.values.ValueMapperFactory;
+import ch.kk7.confij.common.AnnotationUtil;
+import ch.kk7.confij.common.AnnotationUtil.AnnonResponse;
+import ch.kk7.confij.common.ClassToImplCache;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.experimental.Wither;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * considered when parsing the configuration types.
+ */
+@Wither
+public class BindingContext {
+	private final ValueMapperFactory forcedMapperFactory;
+	@Getter
+	@NonNull
+	private final List<ValueMapperFactory> mapperFactories;
+	@NonNull
+	private final Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs;
+	@NonNull
+	@Wither(AccessLevel.NONE)
+	private final ClassToImplCache implCache;
+
+	public BindingContext(ValueMapperFactory forcedMapperFactory, @NonNull List<ValueMapperFactory> mapperFactories,
+			@NonNull Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs, @NonNull ClassToImplCache implCache) {
+		this.forcedMapperFactory = forcedMapperFactory;
+		this.mapperFactories = Collections.unmodifiableList(mapperFactories);
+		this.factoryConfigs = Collections.unmodifiableMap(factoryConfigs);
+		this.implCache = implCache;
+	}
+
+	public static BindingContext newDefaultContext() {
+		List<ValueMapperFactory> mapperFactories = Arrays.asList(ExplicitMapper.forString(), new PrimitiveMapperFactory(),
+				ExplicitMapper.forFile(), ExplicitMapper.forPath(), new EnumMapper(), new DurationMapper(), new PeriodMapper(),
+				new DateTimeMapper(), new StaticFunctionMapper(), new SoloConstructorMapper());
+		return new BindingContext(null, mapperFactories, Collections.emptyMap(), new ClassToImplCache());
+	}
+
+	public Optional<ValueMapperFactory> getForcedMapperFactory() {
+		return Optional.ofNullable(forcedMapperFactory);
+	}
+
+	public BindingContext withMapperFactory(ValueMapperFactory valueMapperFactory) {
+		// always add at the beginning
+		List<ValueMapperFactory> factories = new ArrayList<>();
+		factories.add(valueMapperFactory);
+		factories.addAll(mapperFactories);
+		return withMapperFactories(factories);
+	}
+
+	protected BindingContext withMapperFactoryFor(ValueMapper valueMapper) {
+		Class<? extends ValueMapperFactory> clazz = valueMapper.value();
+		ValueMapperFactory mapperFactory = implCache.getInstance(clazz, ValueMapperFactory.class);
+		if (valueMapper.force()) {
+			return withForcedMapperFactory(mapperFactory);
+		}
+		return withMapperFactory(mapperFactory);
+	}
+
+	public Optional<Annotation> getFactoryConfigFor(Class<? extends ValueMapperFactory> forClass) {
+		return Optional.ofNullable(factoryConfigs.get(forClass));
+	}
+
+	protected BindingContext withFactoryConfigFor(Class<? extends ValueMapperFactory> forClass, Annotation declaringAnnotation) {
+		Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs = new HashMap<>(this.factoryConfigs);
+		factoryConfigs.put(forClass, declaringAnnotation);
+		return withFactoryConfigs(factoryConfigs);
+	}
+
+	public BindingContext settingsFor(AnnotatedElement element) {
+		Optional<AnnonResponse<ValueMapper>> declaration = AnnotationUtil.findAnnotationAndDeclaration(element, ValueMapper.class);
+		if (declaration.isPresent()) {
+			AnnonResponse<ValueMapper> response = declaration.get();
+			ValueMapper valueMapper = response.getAnnotationType();
+			return withFactoryConfigFor(valueMapper.value(), response.getDeclaredAnnotation()).withMapperFactoryFor(valueMapper);
+		}
+		return this;
+	}
+}

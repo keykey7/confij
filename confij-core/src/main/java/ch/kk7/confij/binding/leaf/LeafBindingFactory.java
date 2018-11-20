@@ -9,7 +9,7 @@ import java.util.Optional;
 public class LeafBindingFactory implements ConfigBindingFactory<LeafBinding> {
 	@Override
 	public Optional<LeafBinding> maybeCreate(BindingType bindingType, ConfigBinder configBinder) {
-		return bindingType.getBindingSettings()
+		return bindingType.getBindingContext()
 				.getMapperFactories()
 				.stream()
 				.map(iValueMapperFactory -> iValueMapperFactory.maybeForType(bindingType))

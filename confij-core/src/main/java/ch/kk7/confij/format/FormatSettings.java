@@ -2,7 +2,7 @@ package ch.kk7.confij.format;
 
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.common.AnnotationUtil;
-import ch.kk7.confij.common.LazyClassToImplCache;
+import ch.kk7.confij.common.ClassToImplCache;
 import ch.kk7.confij.format.resolve.DefaultResolver;
 import ch.kk7.confij.format.resolve.VariableResolver;
 import lombok.AccessLevel;
@@ -25,10 +25,10 @@ public class FormatSettings {
 	private final VariableResolver variableResolver;
 	@NonNull
 	@Wither(AccessLevel.NONE)
-	private final LazyClassToImplCache implCache;
+	private final ClassToImplCache implCache;
 
 	public static FormatSettings newDefaultSettings() {
-		LazyClassToImplCache implCache = new LazyClassToImplCache();
+		ClassToImplCache implCache = new ClassToImplCache();
 		return new FormatSettings( null, implCache.getInstance(DefaultResolver.class), implCache);
 	}
 
