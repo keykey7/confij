@@ -4,15 +4,15 @@ buildscript {
 		jcenter()
 	}
 	dependencies {
-		classpath 'com.cinnober.gradle:semver-git:2.2.0'
+		classpath 'com.cinnober.gradle:semver-git:2.4.0'
 		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+		classpath 'org.asciidoctor:asciidoctor-gradle-plugin:1.5.9.2'
 	}
 }
 
 plugins {
 	id 'net.ltgt.apt-idea' version '0.19'
 	id 'com.github.ben-manes.versions' version '0.20.0'
-	id 'org.asciidoctor.convert' version '1.5.9.1' apply false
 }
 
 def isCiBuild = System.getenv('CI') != null
@@ -116,16 +116,17 @@ task jacocoRootReport(type: JacocoReport, group: 'verification') {
 }
 
 // releases
-ext {
-	confijDescription = "A type-safe, strongly defined Java configuration library"
-	confijGithub = "keykey7/confij"
-	confijUrl = "https://github.com/${confijGithub}"
-}
 subprojects {
 	if (sourceSets.main.allSource.isEmpty()) {
 		return // excluding test-only subprojects
 	}
+
 	apply plugin: 'maven-publish'
+	ext {
+		confijDescription = "A type-safe, strongly defined Java configuration library"
+		confijGithub = "keykey7/confij"
+		confijUrl = "https://github.com/${confijGithub}"
+	}
 
 	task sourcesJar(type: Jar, dependsOn: classes) {
 		classifier = 'sources'
@@ -161,4 +162,42 @@ subprojects {
 			}
 		}
 	}
+
+	// bintray
+	apply plugin: 'com.jfrog.bintray'
+	def isReleaseBuild = project.version.matches("[0-9.]+") // no "rc" or "snapshot"
+	bintray {
+		user = 'kk7'
+		key = System.getenv('BINTRAY_TOKEN')
+
+		publications = publications = project.publishing.publications.collect{ it.name }
+		publish = isReleaseBuild
+
+		pkg {
+			repo = isReleaseBuild ? 'mvn-release' : 'mvn-snapshot'
+			name = rootProject.name
+			desc = project.confijDescription
+
+			websiteUrl = project.confijUrl
+			vcsUrl = project.confijUrl
+			githubRepo = project.confijGithub
+			licenses = ['Apache-2.0']
+			labels = ['configuration']
+			version {
+				name = project.version
+				released = new Date()
+				mavenCentralSync {
+					sync = false
+				}
+			}
+		}
+	}
+
+	bintrayUpload {
+		// dependsOn publishToMavenLocal
+		doFirst {
+			Objects.requireNonNull(apiKey, 'missing bintray token')
+		}
+	}
+	publish.dependsOn bintrayUpload
 }

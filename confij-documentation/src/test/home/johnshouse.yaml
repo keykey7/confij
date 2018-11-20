@@ -1,0 +1,11 @@
+# johnshouse.yaml
+rooms:
+  livingroom:
+    numberOfWindows: 4
+  bedroom:
+    numberOfWindows: 1
+    floor: Wood
+inhabitants:
+  - John
+  - Alice
+chimneyCheckEvery: 2years
