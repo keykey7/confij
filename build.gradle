@@ -3,12 +3,25 @@ buildscript {
 		mavenLocal()
 		jcenter()
 	}
+	dependencies {
+		classpath 'com.cinnober.gradle:semver-git:2.2.0'
+		classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+	}
 }
 
 plugins {
 	id 'net.ltgt.apt-idea' version '0.19'
 	id 'com.github.ben-manes.versions' version '0.20.0'
 	id 'org.asciidoctor.convert' version '1.5.9.1' apply false
+}
+
+def isCiBuild = System.getenv('CI') != null
+if (isCiBuild) {
+	ext.snapshotSuffix = "rc.<count><dirty>"
+	ext.dirtyMarker = "-SNAPSHOT"
+	apply plugin: 'com.cinnober.gradle.semver-git'
+} else {
+	project.version = "0.0.0-SNAPSHOT"
 }
 
 allprojects {
@@ -29,8 +42,7 @@ allprojects {
 	}
 	apply plugin: 'idea'
 	group 'ch.kk7'
-	version '0.0.0-SNAPSHOT'
-
+	version rootProject.version
 	dependencyUpdates.revision = 'release'
 }
 
@@ -100,5 +112,53 @@ task jacocoRootReport(type: JacocoReport, group: 'verification') {
 
 	doLast {
 		logger.lifecycle("report at: " + reports.html.entryPoint.toURI())
+	}
+}
+
+// releases
+ext {
+	confijDescription = "A type-safe, strongly defined Java configuration library"
+	confijGithub = "keykey7/confij"
+	confijUrl = "https://github.com/${confijGithub}"
+}
+subprojects {
+	if (sourceSets.main.allSource.isEmpty()) {
+		return // excluding test-only subprojects
+	}
+	apply plugin: 'maven-publish'
+
+	task sourcesJar(type: Jar, dependsOn: classes) {
+		classifier = 'sources'
+		from sourceSets.main.allSource
+	}
+
+	javadoc {
+		options.addStringOption('Xdoclint:none', '-quiet')
+	}
+
+	task javadocJar(type: Jar, dependsOn: javadoc) {
+		classifier = 'javadoc'
+		from javadoc.destinationDir
+	}
+
+	publishing {
+		publications {
+			mavenJava(MavenPublication) {
+				from components.java
+				artifact sourcesJar
+				artifact javadocJar
+				pom {
+					name = project.name
+					description = project.confijDescription
+					url = "" + project.confijUrl
+					licenses {
+						license {
+							name = 'The Apache License, Version 2.0'
+							url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+						}
+					}
+				}
+			}
+		}
 	}
 }

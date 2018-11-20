@@ -31,7 +31,7 @@ include::{home}/mapped.yml[]
 
 The default mapping behaviour attemts to map from string to target type in the following order:
 
-. if the attribute is annotated with a custom `@ValueMapper` or a `@ValueMapperFactory` enforce that one
+. if the attribute is annotated with a custom `@ValueMapper` enforce that one
   (see <<custom-value-mapping>>)
 . primitives types, where `null` values are mapped to their empty types:
   a non-existent `int` becomes 0.
@@ -122,7 +122,9 @@ Typical branches contain, but are not limited to:
 [source]
 ----
 include::{src}[tag=nestedList]
-
+----
+[source]
+----
 include::{src}[tag=nestedBuild]
 ----
 ====

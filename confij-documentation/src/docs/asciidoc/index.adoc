@@ -12,8 +12,8 @@
 :data-uri:
 :nofooter:
 
-ConfiJ is a type-safe, zero-dependency Java configuration library.
-It enforces a contract on the configuration close to the code as Java-Types.
+ConfiJ is a type-safe, strongly defined, minimal-dependency Java configuration library.
+It enforces a contract on the configuration as Java-types.
 
 include::setup.adoc[]
 

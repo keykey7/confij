@@ -80,11 +80,11 @@ public class Binding extends DocTestBase {
 	public void nested() {
 		// tag::nestedBuild[]
 		DbConfig dbConfig = ConfijBuilder.of(DbConfig.class)
-				.withSource(new PropertiesSource()
-						.with("dbConnections.0.url", "https://db0.example.com")
-						.with("dbConnections.0.timing.keepAlive", "30s")
-						.with("additionalParameters.somekey", "somevalue"))
-				.build();
+			.withSource(new PropertiesSource()
+				.with("dbConnections.0.url", "https://db0.example.com")
+				.with("dbConnections.0.timing.keepAlive", "30s")
+				.with("additionalParameters.somekey", "somevalue"))
+			.build();
 		// end::nestedBuild[]
 		assertThat(dbConfig.dbConnections()
 				.get(0)
