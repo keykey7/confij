@@ -22,3 +22,5 @@ include::binding.adoc[]
 include::source.adoc[]
 
 include::templates.adoc[]
+
+include::validation.adoc[]

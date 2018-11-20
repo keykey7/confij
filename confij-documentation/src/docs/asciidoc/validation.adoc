@@ -1,0 +1,20 @@
+= Validation
+:src: ../../test/java/ch/kk7/confij/docs/Validation.java
+:home: ../../test/home
+
+== JSR303 Validator
+
+NOTE: JSR303 Validator format requires the `{group}:confij-validation` maven artifact.
+
+Straight forward http://hibernate.org/validator/[Hibernate-Validation].
+Validation is applied to the configuration as a last step after templating.
+
+.JSR303 Bean validation
+====
+[source]
+----
+include::{src}[tag=jsr303-interface]
+----
+====
+
+WARNING: `{group}:confij-validation` depends on `hibernate-validator` >= 6.1 in order to support non-getter properties
