@@ -2,15 +2,35 @@ language: java
 install: true
 
 jdk:
-- oraclejdk8
+  - oraclejdk8
+  - oraclejdk11
 
 jobs:
   include:
   - stage: build
-    script: ./gradlew -s build
-  - stage: release
+    script: ./gradlew -s build publishToMavenLocal
+
+deploy:
+  - provider: script
     script: ./gradlew -s publish
-    if: (branch = master AND type IN (push)) OR (tag =~ ^[0-9]+\.[0-9]+\.[0-9]+$)
+    skip-cleanup: true
+    on:
+      branch: master
+      jdk: oraclejdk8
+  - provider: script
+    script: ./gradlew -s publish
+    skip-cleanup: true
+    on:
+      tags: true
+      jdk: oraclejdk8
+  - provider: pages
+    local-dir: confij-documentation/build/asciidoc/html5
+    skip-cleanup: true
+    github-token: $GITHUB_TOKEN
+    keep-history: true
+    on:
+      branch: master
+      jdk: oraclejdk8
 
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
