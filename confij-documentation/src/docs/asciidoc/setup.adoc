@@ -2,6 +2,8 @@
 :src: ../../test/java/ch/kk7/confij/docs/Setup.java
 :home: ../../test/home
 
+ConfiJ requires Java 1.8 or later.
+
 == Repository
 ConfiJ maven artifacts are available on Bintray/JCenter.
 It is modularly organized in order to reduce the amount of dependencies.
