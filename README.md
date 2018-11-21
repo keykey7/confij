@@ -19,26 +19,29 @@ This includes features such as
 Sample configuration of a house with nested properties, defaults and validation
 ```java
 interface House {
-    @Default("true")
-    boolean hasRoof();
+	@Default("true")
+	boolean hasRoof();
 
-    Map<String,Room> rooms();
+	Map<String,Room> rooms();
 
-    Set<@NotEmpty String> inhabitants();
+	Set<@NotEmpty String> inhabitants();
 
-    Period chimneyCheckEvery();
+	Period chimneyCheckEvery();
+
+	@Default("${chimneyCheckEvery}")
+	Period boilerCheckEvery();
 }
 
 interface Room {
-    @Positive
-    int numberOfWindows();
+	@Positive
+	int numberOfWindows();
 
-    @Default("Wood")
-    FloorType floor();
+	@Default("Wood")
+	FloorType floor();
 
-    enum FloorType {
-        Wood, Carpet, Stone
-    }
+	enum FloorType {
+		Wood, Carpet, Stone
+	}
 }
 ```
 Load an immutable configuration instance with base settings from
@@ -46,8 +49,8 @@ a property file on the classpath and override it with a YAML configuration from
 the local filesystem.
 ```java
 House johnsHouse = ConfijBuilder.of(House.class)
-    .withSource("classpath:house.properties", "johnshouse.yaml")
-    .build();
+	.withSource("classpath:house.properties", "johnshouse.yaml")
+	.build();
 ```
 ```yaml
 # johnshouse.yaml

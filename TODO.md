@@ -1,3 +1,9 @@
+# IntelliJ Dev Setup
+* manually enable annotation processing: 
+  in Settings… → Build, Execution, Deployment → Compiler → Annotation Processors, 
+  check `Enable annotation processing` and `Obtain processors from project classpath`
+* use the Intellij Lombok Plugin
+
 # TODO
 - add integration tests for each mapping type
 - extend @Base64 with different charsets and base64 standards

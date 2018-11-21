@@ -5,3 +5,5 @@ include 'confij-yaml'
 include 'confij-validation'
 include 'confij-example'
 include 'confij-documentation'
+
+enableFeaturePreview('STABLE_PUBLISHING')
