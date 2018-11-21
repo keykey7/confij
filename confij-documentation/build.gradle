@@ -18,13 +18,15 @@ asciidoctor {
 	// workound for https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/154
 	ext.capturedOutput = [ ]
 	def listener = { ext.capturedOutput << it } as StandardOutputListener
-	logging.addStandardErrorListener(listener)
-	logging.addStandardOutputListener(listener)
+	doFirst {
+		logging.addStandardErrorListener(listener)
+		logging.addStandardOutputListener(listener)
+	}
 	doLast {
 		logging.removeStandardOutputListener(listener)
 		logging.removeStandardErrorListener(listener)
 		ext.capturedOutput.join('').with { output ->
-			if (output =~ /WARNING:|SEVERE:/) {
+			if (output =~ /WARNING:|SEVERE:/ && !output.contains('illegal-access=warn')) {
 				throw new GradleException("Warnings found in ${name}:\n" + output)
 			}
 		}
