@@ -11,6 +11,7 @@ buildscript {
 }
 
 plugins {
+	id 'com.gradle.build-scan' version '1.16'
 	id 'net.ltgt.apt-idea' version '0.19'
 	id 'com.github.ben-manes.versions' version '0.20.0'
 }
@@ -44,6 +45,11 @@ allprojects {
 	group 'ch.kk7'
 	version rootProject.version
 	dependencyUpdates.revision = 'release'
+}
+
+buildScan {
+	termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+	termsOfServiceAgree = 'yes'
 }
 
 subprojects {
