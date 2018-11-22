@@ -18,6 +18,7 @@ plugins {
 
 def isCiBuild = System.getenv('CI') != null
 if (isCiBuild) {
+	ext.nextVersion = "patch"
 	ext.snapshotSuffix = "rc.<count><dirty>"
 	ext.dirtyMarker = "-SNAPSHOT"
 	apply plugin: 'com.cinnober.gradle.semver-git'
