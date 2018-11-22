@@ -3,7 +3,7 @@ install: true
 
 jdk:
   - oraclejdk8
-  - oraclejdk11
+  - oraclejdk9
 
 script:
   - ./gradlew --no-daemon --scan -s build publishToMavenLocal
