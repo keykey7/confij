@@ -19,7 +19,11 @@ public class PropertiesSource extends PropertiesFormat implements ConfigSource {
 	}
 
 	public PropertiesSource with(String key, String value) {
-		properties.setProperty(key, value);
+		if (value == null) {
+			properties.remove(key);
+		} else {
+			properties.setProperty(key, value);
+		}
 		return this;
 	}
 
