@@ -2,19 +2,15 @@ package ch.kk7.confij.binding;
 
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.TypeResolver;
+import lombok.Value;
 
 import java.lang.reflect.Type;
 
+@Value
 public class BindingType {
 	private final ResolvedType resolvedType;
 	private final BindingContext bindingContext;
 	private final TypeResolver typeResolver;
-
-	protected BindingType(ResolvedType resolvedType, BindingContext bindingContext, TypeResolver typeResolver) {
-		this.resolvedType = resolvedType;
-		this.bindingContext = bindingContext;
-		this.typeResolver = typeResolver;
-	}
 
 	public static BindingType newBindingType(Type forType) {
 		return newBindingType(forType, BindingContext.newDefaultContext());
@@ -31,13 +27,5 @@ public class BindingType {
 
 	public BindingType bindingFor(ResolvedType resolvedType, BindingContext bindingContext) {
 		return new BindingType(resolvedType, bindingContext, typeResolver);
-	}
-
-	public ResolvedType getResolvedType() {
-		return resolvedType;
-	}
-
-	public BindingContext getBindingContext() {
-		return bindingContext;
 	}
 }

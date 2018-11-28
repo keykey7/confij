@@ -35,16 +35,16 @@ public class Templates implements WithAssertions {
 
 	// tag::relative-interface[]
 	interface Letter {
-		Salutation saluation();
+		Salutation salutation();
 
-		@Default("I dearly miss you, ${saluation.name}!") // <1>
+		@Default("I dearly miss you, ${salutation.name}!") // <1>
 		String body();
 
 		Regards regards();
 	}
 
 	interface Regards {
-		@Default("${.saluation.name}'s friend") // <2>
+		@Default("${.salutation.name}'s friend") // <2>
 		String sender();
 
 		@Default("Sincierly\n${sender}")

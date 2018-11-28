@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.NonNull;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -17,7 +16,6 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public class Base64Mapper implements ValueMapperFactory {
-	@Inherited
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.TYPE})
 	@ValueMapper(Base64Mapper.class)

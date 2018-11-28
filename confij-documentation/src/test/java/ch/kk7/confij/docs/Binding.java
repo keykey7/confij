@@ -4,6 +4,8 @@ import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.annotation.ValueMapper;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.values.Base64Mapper.Base64;
+import ch.kk7.confij.binding.values.Base64Mapper.Base64Decoder;
+import ch.kk7.confij.binding.values.SeparatedMapper.Separated;
 import ch.kk7.confij.binding.values.ValueMapperFactory;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
 import ch.kk7.confij.pipeline.ConfijBuilder;
@@ -16,6 +18,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class Binding extends DocTestBase {
 
@@ -133,18 +136,19 @@ public class Binding extends DocTestBase {
 		assertThat(colorHolder.green()).isEqualTo(Color.GREEN);
 	}
 
-	// tag::custom-value-mapping-builtin[]
-	interface BuiltInMappers {
+	// tag::base64-mapping[]
+	interface Base64Encoded {
 		@Base64
 		byte[] base64Arr();
-		@Base64
+
+		@Base64(decoder = Base64Decoder.RFC4648_URLSAFE)
 		List<Byte> base64List();
 	}
-	// end::custom-value-mapping-builtin[]
+	// end::base64-mapping[]
 
 	@Test
 	public void testBuiltinCustomMappings() {
-		BuiltInMappers builtInMappers = ConfijBuilder.of(BuiltInMappers.class)
+		Base64Encoded builtInMappers = ConfijBuilder.of(Base64Encoded.class)
 				.withSource(new PropertiesSource().with("base64Arr", "AQIDBA==")
 						.with("base64List", "AQIDBA=="))
 				.build();
@@ -152,4 +156,25 @@ public class Binding extends DocTestBase {
 		assertThat(builtInMappers.base64List()).containsExactly((byte) 1, (byte) 2, (byte) 3, (byte) 4);
 	}
 
+	// tag::separated-mapping[]
+	interface SeparatedConfig {
+		@Separated
+		List<String> commaSeparated();
+
+		@Separated(separator = "#")
+		int[] hashSeparated();
+
+		Set<String> usuallyAList();
+	}
+	// end::separated-mapping[]
+
+	@Test
+	public void separated() {
+		SeparatedConfig separated = ConfijBuilder.of(SeparatedConfig.class)
+				.withSource("separated.properties")
+				.build();
+		assertThat(separated.commaSeparated()).containsExactly("comma", "separated", "values");
+		assertThat(separated.hashSeparated()).containsExactly(1, 2, 3);
+		assertThat(separated.usuallyAList()).containsExactly("common", "list", "notation");
+	}
 }

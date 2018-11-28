@@ -9,7 +9,7 @@ Each configuration is organized in a tree-structure and generally immutable.
 == Value Mapping
 
 When values are read from a configuration files they are first available as Strings.
-They are then transparently mapped to Objects or pimitives the match the defined type.
+They are then transparently mapped to Objects or pimitives to match the defined type.
 
 .Value Mapping to known types in a flat configuration
 ====
@@ -25,11 +25,11 @@ include::{home}/mapped.yml[]
 <1> mapping to primitives or java.lang objects
 <2> configuration keys can be changed if the attribute name doesn't fit
 <3> arrays are usually mapped from lists (see <<nested-configuration>>)
-<4> or the default behaviour can be changed with a custom `ValueMapping`.
+<4> or the default behavior can be changed with a custom `ValueMapping`.
 
 === Default Value Mapping
 
-The default mapping behaviour attemts to map from string to target type in the following order:
+The default mapping behavior attempts to map from string to target type in the following order:
 
 . if the attribute is annotated with a custom `@ValueMapper` enforce that one
   (see <<custom-value-mapping>>)
@@ -50,13 +50,45 @@ The default mapping behaviour attemts to map from string to target type in the f
 . classes with a constructor taking a single String as input argument
 
 TIP: Arrays/Collections are not considered leafs. In order to map a comma separated
-configuration string to a `string[]` you have to annotate it with `@CsvSeparated`.
+configuration string to a `string[]` you have to annotate it with `@Separated`.
+
+=== Built-in Value Mapping
+
+==== Base64 encoded [[base64-mapping]]
+
+`@Base64` expects to bind a base64-encoded string to an array or collection of bytes.
+
+.Mapping base64 encoded configuration properties
+====
+[source]
+----
+include::{src}[tag=base64-mapping]
+----
+====
+
+==== Comma Separated [[separated-mapping]]
+
+`@Separated` expects to bind a delimited string to an array or collection of arbitrary type.
+
+
+.@Separated as a short-form for collection types
+====
+[source]
+----
+include::{src}[tag=separated-mapping]
+----
+----
+include::{home}/separated.properties[]
+----
+====
 
 ////
-FIXME: @CsvSeparated already supported?
+TODO
+==== Time Types
+==== Duration and Period
 ////
 
-== Custom Value Mapping [[custom-value-mapping]]
+=== Custom Value Mapping [[custom-value-mapping]]
 
 If the default mapping does not fit or the target type is unknown, you generally have
 two options: programmatic the ConfiJBuilder or with an annotation on the affected attribute.
@@ -74,9 +106,7 @@ include::{src}[tag=custom-value-mapping]
 
 If a custom mapping should only be applied to specific attributes,
 annotate them with `@ValueMapper(Class)`.
-The mapper must have an accessible empty constructor.
-For more complex scenarios, where the target type is not known at compile time,
-a `ValueMapperFactory` can be used.
+The mapper class must have an accessible empty constructor.
 
 .Annotation based support to map RGB codes like "#0F0F0F" to Color
 ====
@@ -86,16 +116,9 @@ include::{src}[tag=custom-value-mapping-interface]
 ----
 ====
 
-There are some built-in mappers:
-
-.Using built-in value mappers
-====
-[source]
-----
-include::{src}[tag=custom-value-mapping-builtin]
-----
-====
-
+In order to pass compile time options to the mapper instance,
+introduce fresh custom annotation, annotated with `@ValueMapper(Class)`.
+See for example the implementation of <<separated-mapping>>.
 
 == Nested Configuration [[nested-configuration]]
 
