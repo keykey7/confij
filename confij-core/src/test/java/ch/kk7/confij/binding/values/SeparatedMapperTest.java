@@ -1,6 +1,6 @@
 package ch.kk7.confij.binding.values;
 
-import ch.kk7.confij.binding.values.CommaSeparatedMapper.CommaSeparated;
+import ch.kk7.confij.binding.values.SeparatedMapper.Separated;
 import ch.kk7.confij.pipeline.ConfijBuilder;
 import ch.kk7.confij.source.env.PropertiesSource;
 import org.assertj.core.api.WithAssertions;
@@ -12,16 +12,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-class CommaSeparatedMapperTest implements WithAssertions {
+class SeparatedMapperTest implements WithAssertions {
 
 	interface Stringings {
-		@CommaSeparated
+		@Separated
 		List<String> listOfStrings();
 
-		@CommaSeparated
+		@Separated
 		String[] stringArray();
 
-		@CommaSeparated
+		@Separated
 		Set<String> setOfStrings();
 
 		String notAnnotated();
@@ -57,10 +57,10 @@ class CommaSeparatedMapperTest implements WithAssertions {
 	}
 
 	interface OtherValidTypes {
-		@CommaSeparated
+		@Separated
 		int[] intArray();
 
-		@CommaSeparated
+		@Separated
 		HashSet<Long> longHashSet();
 	}
 
@@ -83,7 +83,7 @@ class CommaSeparatedMapperTest implements WithAssertions {
 	}
 
 	interface InvalidMap {
-		@CommaSeparated
+		@Separated
 		Map<String, String> aMap();
 	}
 
@@ -94,7 +94,7 @@ class CommaSeparatedMapperTest implements WithAssertions {
 	}
 
 	interface InvalidNonList {
-		@CommaSeparated
+		@Separated
 		Stream notACollectionOrArray();
 	}
 
@@ -105,24 +105,25 @@ class CommaSeparatedMapperTest implements WithAssertions {
 	}
 
 	interface CustomAnnotation {
-		@CommaSeparated(separator = ";")
+		@Separated(separator = ";")
 		String[] semicolon();
 
-		@CommaSeparated(separator = ";", trim = true)
+		@Separated(separator = ";", trim = true)
 		String[] semicolonTrimmed();
 
-		@CommaSeparated(separator = "[A-Z]+", trim = true)
+		@Separated(separator = "[A-Z]+", trim = true)
 		int[] intTrimmed();
 	}
 
+	@Test
 	public void customAnnotation() {
 		CustomAnnotation customAnnotation = ConfijBuilder.of(CustomAnnotation.class)
 				.withSource(new PropertiesSource().with("semicolon", "a, b ;c;; ")
 						.with("semicolonTrimmed", "a, b;c;; ")
 						.with("intTrimmed", "1 SPLIT 2 SPLUNK 3"))
 				.build();
-		assertThat(customAnnotation.semicolon()).containsExactly("a, b", "c", "", " ");
-		assertThat(customAnnotation.semicolonTrimmed()).containsExactly("a, b ", "c", "", "");
+		assertThat(customAnnotation.semicolon()).containsExactly("a, b ", "c", "", " ");
+		assertThat(customAnnotation.semicolonTrimmed()).containsExactly("a, b", "c", "", "");
 		assertThat(customAnnotation.intTrimmed()).containsExactly(1, 2, 3);
 	}
 }

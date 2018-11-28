@@ -17,6 +17,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -105,5 +107,9 @@ public class CollectionBuilder {
 	@SuppressWarnings("unchecked")
 	public <T> Collection<T> tryHarden(Collection<T> collection) {
 		return (Collection<T>) hardener.apply(collection);
+	}
+
+	public <T> Collector<T, ?, Collection<T>> asCollector() {
+		return Collectors.collectingAndThen(Collectors.toCollection(this::newInstance), this::tryHarden);
 	}
 }

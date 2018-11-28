@@ -19,11 +19,11 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CommaSeparatedMapper implements ValueMapperFactory {
+public class SeparatedMapper implements ValueMapperFactory {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.TYPE})
-	@ValueMapper(CommaSeparatedMapper.class)
-	public @interface CommaSeparated {
+	@ValueMapper(SeparatedMapper.class)
+	public @interface Separated {
 		/**
 		 * @return a regular expression to split the input value into parts
 		 * @see String#split(String)
@@ -36,16 +36,16 @@ public class CommaSeparatedMapper implements ValueMapperFactory {
 		boolean trim() default false;
 	}
 
-	@CommaSeparated
+	@Separated
 	private static final class AnnonHolder {
 	}
 
-	private static CommaSeparated getContext(BindingType bindingType) {
+	private static Separated getContext(BindingType bindingType) {
 		return bindingType.getBindingContext()
-				.getFactoryConfigFor(CommaSeparatedMapper.class)
-				.filter(CommaSeparated.class::isInstance)
-				.map(CommaSeparated.class::cast)
-				.orElse(AnnonHolder.class.getAnnotation(CommaSeparated.class));
+				.getFactoryConfigFor(SeparatedMapper.class)
+				.filter(Separated.class::isInstance)
+				.map(Separated.class::cast)
+				.orElse(AnnonHolder.class.getAnnotation(Separated.class));
 	}
 
 	@Override
@@ -64,22 +64,21 @@ public class CommaSeparatedMapper implements ValueMapperFactory {
 			});
 		} else if (type.isInstanceOf(Collection.class)) {
 			componentType = CollectionBindingFactory.collectionComponentType(type);
-			CollectionBuilder collectionBuilder = new CollectionBuilder(type);
-			collector = Collectors.collectingAndThen(Collectors.toCollection(collectionBuilder::newInstance), collectionBuilder::tryHarden);
+			collector = new CollectionBuilder(type).asCollector();
 		} else {
 			return Optional.empty();
 		}
-		CommaSeparated context = getContext(bindingType);
+		Separated context = getContext(bindingType);
 		//noinspection unchecked
 		return LeafBindingFactory.firstValueMapper(bindingType.bindingFor(componentType))
-				.map(componentMapper -> new CommaSeparatedMapperInstance<>(componentMapper, collector, context));
+				.map(componentMapper -> new SeparatedMapperInstance<>(componentMapper, collector, context));
 	}
 
 	@AllArgsConstructor
-	public static class CommaSeparatedMapperInstance<T, C> implements ValueMapperInstance<T> {
+	public static class SeparatedMapperInstance<T, C> implements ValueMapperInstance<T> {
 		private final ValueMapperInstance<C> componentMapper;
 		private final Collector<C, ?, T> collector;
-		private final CommaSeparated context;
+		private final Separated context;
 
 		@Override
 		public T fromString(String string) {
