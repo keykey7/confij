@@ -6,7 +6,7 @@
 == Source Pipelines
 ConfiJ sources are loaded one after the other.
 Each consecutive source overrides attributes of the previous ones.
-Typically this is usefull to load a set of default values first,
+Typically this is useful to load a set of default values first,
 then continue with application specifics and environment specific values
 getting more and more detailed.
 Source types can be freely mixed, meaning you can load from classpath, then from a remote file, then from envionment variables and so on.
@@ -56,7 +56,7 @@ include::{src}[tag=defaults]
 
 == The AnySource [[anysource]]
 
-The `AnySource` simply takes a URI-string and determines resouce location and type based on it.
+The `AnySource` simply takes a URI-string and determines resource location and type based on it.
 It is the most compact form to specify a source unless you require special settings.
 
 .Load from multiple sources of dynamic type and location

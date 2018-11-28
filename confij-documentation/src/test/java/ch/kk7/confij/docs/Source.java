@@ -141,7 +141,7 @@ public class Source extends DocTestBase {
 		assertThat(yaml.mapOfIntegers()).allSatisfy((s, i) -> assertThat(i).isEqualTo(12345));
 		assertThat(yaml.mapOfIntegersClone()).isEqualTo(yaml.mapOfIntegers());
 		assertThat(yaml.anotherList()).containsExactly(null, "big");
-		// TODO: this is only a limitation of the yaml lib used. not really intentional behaviour
+		// TODO: this is only a limitation of the yaml lib used. not really intentional behavior
 		assertThat(yaml.date()).isEqualTo(OffsetDateTime.parse("2001-12-14t21:59:43.10-05:00")
 				.atZoneSameInstant(ZoneOffset.UTC.normalized())
 				.toOffsetDateTime());

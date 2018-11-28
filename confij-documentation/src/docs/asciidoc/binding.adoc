@@ -25,11 +25,11 @@ include::{home}/mapped.yml[]
 <1> mapping to primitives or java.lang objects
 <2> configuration keys can be changed if the attribute name doesn't fit
 <3> arrays are usually mapped from lists (see <<nested-configuration>>)
-<4> or the default behaviour can be changed with a custom `ValueMapping`.
+<4> or the default behavior can be changed with a custom `ValueMapping`.
 
 === Default Value Mapping
 
-The default mapping behaviour attemts to map from string to target type in the following order:
+The default mapping behavior attempts to map from string to target type in the following order:
 
 . if the attribute is annotated with a custom `@ValueMapper` enforce that one
   (see <<custom-value-mapping>>)

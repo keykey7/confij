@@ -71,7 +71,7 @@ include::{src}[tag=recursive]
 == Custom Templating [[templates-custom]]
 
 It is possible register a custom templating functionality globally or per property.
-One use case is to disable templating per propertiy.
+One use case is to disable templating per property.
 
 .Disable templating per property using an annotation
 ====
