@@ -1,16 +1,16 @@
 package ch.kk7.confij.source.logical;
 
-import ch.kk7.confij.source.ConfijSourceException;
 import ch.kk7.confij.source.ConfigSource;
+import ch.kk7.confij.source.ConfijSourceException;
 import ch.kk7.confij.source.tree.ConfijNode;
 import lombok.NonNull;
-import lombok.Value;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@Value
+@ToString
 public class OrSource implements ConfigSource {
 	private final List<ConfigSource> orList;
 

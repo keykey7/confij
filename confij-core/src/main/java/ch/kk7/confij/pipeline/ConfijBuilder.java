@@ -14,6 +14,8 @@ import ch.kk7.confij.pipeline.reload.ScheduledReloader;
 import ch.kk7.confij.source.AnySource;
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.defaults.DefaultSource;
+import ch.kk7.confij.source.logical.MaybeSource;
+import ch.kk7.confij.source.logical.OrSource;
 import ch.kk7.confij.validation.ConfijValidator;
 import ch.kk7.confij.validation.ServiceLoaderValidator;
 import com.fasterxml.classmate.GenericType;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ConfijBuilder<T> {
@@ -56,6 +59,21 @@ public class ConfijBuilder<T> {
 	public ConfijBuilder<T> withSource(ConfigSource... source) {
 		sources.addAll(Arrays.asList(source));
 		return this;
+	}
+
+	public ConfijBuilder<T> withOptionalSource(String... maybeSourceStr) {
+		return withSource(Stream.of(maybeSourceStr)
+				.map(AnySource::new)
+				.map(MaybeSource::new)
+				.collect(Collectors.toList())
+				.toArray(new MaybeSource[]{}));
+	}
+
+	public ConfijBuilder<T> withFirstSource(String firstSource, String secondSource, String... otherSources) {
+		return withSource(new OrSource(new AnySource(firstSource), new AnySource(secondSource), Stream.of(otherSources)
+				.map(AnySource::new)
+				.collect(Collectors.toList())
+				.toArray(new AnySource[]{})));
 	}
 
 	public ConfijBuilder<T> withValidator(@NonNull ConfijValidator validator) {
