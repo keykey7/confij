@@ -38,7 +38,7 @@ public class ServiceLoaderUtil {
 	public static <T> List<T> newOf(Class<T> serviceClass) {
 		List<T> services = maybeNewOf(serviceClass);
 		if (services.isEmpty()) {
-			throw new IllegalStateException("Failed to load any instance of " + serviceClass + ". Check your AnnotationProcessor.");
+			throw new IllegalStateException("Failed to loadFrom any instance of " + serviceClass + ". Check your AnnotationProcessor.");
 		}
 		return services;
 	}

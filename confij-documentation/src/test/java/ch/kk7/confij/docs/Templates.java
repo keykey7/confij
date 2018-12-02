@@ -2,10 +2,10 @@ package ch.kk7.confij.docs;
 
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.annotation.VariableResolver;
-import ch.kk7.confij.format.resolve.NoopResolver.NoopVariableResolver;
-import ch.kk7.confij.pipeline.ConfijBuilder;
+import ch.kk7.confij.template.NoopResolver.NoopVariableResolver;
+import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.env.PropertiesSource;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.ConfijNode;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -24,11 +24,11 @@ public class Templates implements WithAssertions {
 	@Test
 	public void simple() {
 		Salutation salutation = ConfijBuilder.of(Salutation.class)
-				.withSource(new PropertiesSource().with("name", "Bob"))
+				.loadFrom(new PropertiesSource().with("name", "Bob"))
 				.build();
 		assertThat(salutation.hello()).isEqualTo("Hi Bob");
 		salutation = ConfijBuilder.of(Salutation.class)
-				.withSource(new PropertiesSource().with("hello", "Cya"))
+				.loadFrom(new PropertiesSource().with("hello", "Cya"))
 				.build();
 		assertThat(salutation.hello()).isEqualTo("Cya");
 	}
@@ -101,22 +101,22 @@ public class Templates implements WithAssertions {
 	@Test
 	public void noop() {
 		assertThat(ConfijBuilder.of(Noop.class)
-				.withSource(new PropertiesSource().with("canContainDollar", "${variable}"))
+				.loadFrom(new PropertiesSource().with("canContainDollar", "${variable}"))
 				.build().canContainDollar()).isEqualTo("${variable}");
 		assertThat(ConfijBuilder.of(GlobalNoop.class)
-				.withSource(new PropertiesSource().with("canContainDollar", "${variable}"))
+				.loadFrom(new PropertiesSource().with("canContainDollar", "${variable}"))
 				.build().canContainDollar()).isEqualTo("${variable}");
 
 		assertThat(
 				// tag::builder-noop[]
-		ConfijBuilder.of(BuilderNoop.class).withoutTemplating()
+		ConfijBuilder.of(BuilderNoop.class).templatingDisabled()
 				// end::builder-noop[]
-				.withSource(new PropertiesSource().with("canContainDollar", "${variable}"))
+				.loadFrom(new PropertiesSource().with("canContainDollar", "${variable}"))
 				.build().canContainDollar()).isEqualTo("${variable}");
 	}
 
 	// tag::customresolver[]
-	static class FooResolver implements ch.kk7.confij.format.resolve.VariableResolver {
+	static class FooResolver implements ch.kk7.confij.template.VariableResolver {
 		@Override
 		public String resolveValue(ConfijNode baseLeaf, String valueToResolve) {
 			return "foo";
@@ -140,7 +140,7 @@ public class Templates implements WithAssertions {
 	@Test
 	public void globalFooResolver() {
 		assertThat(ConfijBuilder.of(BuilderNoop.class)
-				.withTemplating(new FooResolver())
+				.templatingWith(new FooResolver())
 				.build()
 				.canContainDollar()).isEqualTo("foo");
 	}

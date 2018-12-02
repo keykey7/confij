@@ -4,9 +4,9 @@ import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.collection.CollectionUtil;
-import ch.kk7.confij.format.ConfigFormat.ConfigFormatList;
-import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionList;
+import ch.kk7.confij.tree.NodeBindingContext;
+import ch.kk7.confij.tree.ConfijNode;
 import com.fasterxml.classmate.ResolvedType;
 
 import java.lang.reflect.Array;
@@ -23,8 +23,8 @@ public class ArrayBinding<T> implements ConfigBinding<Object> {
 	}
 
 	@Override
-	public ConfigFormatList describe(FormatSettings formatSettings) {
-		return new ConfigFormatList(formatSettings, componentDescription.describe(formatSettings));
+	public NodeDefinitionList describe(NodeBindingContext nodeBindingContext) {
+		return new NodeDefinitionList(nodeBindingContext, componentDescription.describe(nodeBindingContext));
 	}
 
 	/**

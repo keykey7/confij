@@ -1,6 +1,6 @@
 package ch.kk7.confij.docs;
 
-import ch.kk7.confij.pipeline.ConfijBuilder;
+import ch.kk7.confij.ConfijBuilder;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 

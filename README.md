@@ -55,7 +55,7 @@ a property file on the classpath and override it with a YAML configuration from
 the local filesystem.
 ```java
 House johnsHouse = ConfijBuilder.of(House.class)
-	.withSource("classpath:house.properties", "johnshouse.yaml")
+	.loadFrom("classpath:house.properties", "johnshouse.yaml")
 	.build();
 ```
 ```yaml

@@ -1,7 +1,6 @@
-package ch.kk7.confij.source.tree;
+package ch.kk7.confij.tree;
 
 import ch.kk7.confij.common.ConfijException;
-import ch.kk7.confij.format.ConfigFormat;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -19,7 +18,7 @@ import java.util.Map;
 public class ConfijNode {
 	@Getter
 	@NonNull
-	private final ConfigFormat config;
+	private final NodeDefinition config;
 	@NonNull
 	private final Map<String, ConfijNode> children = new LinkedHashMap<>();
 	@NonNull
@@ -31,17 +30,17 @@ public class ConfijNode {
 	@ToString.Include
 	private String value;
 
-	protected ConfijNode(@NonNull ConfigFormat config) {
+	protected ConfijNode(@NonNull NodeDefinition config) {
 		this.config = config;
 		this.root = this;
 		this.uri = URI.create("config:/");
 	}
 
-	protected ConfijNode(ConfigFormat config, ConfijNode parent, String name) {
+	protected ConfijNode(NodeDefinition config, ConfijNode parent, String name) {
 		this(config, parent.root, parent.uri.resolve(uriEncode(name) + (config.isValueHolder() ? "" : "/")));
 	}
 
-	protected ConfijNode(@NonNull ConfigFormat config, @NonNull ConfijNode root, @NonNull URI uri) {
+	protected ConfijNode(@NonNull NodeDefinition config, @NonNull ConfijNode root, @NonNull URI uri) {
 		this.config = config;
 		this.root = root;
 		this.uri = uri;
@@ -55,8 +54,8 @@ public class ConfijNode {
 		}
 	}
 
-	public static ConfijNode newRootFor(ConfigFormat configFormat) {
-		return new ConfijNode(configFormat);
+	public static ConfijNode newRootFor(NodeDefinition nodeDefinition) {
+		return new ConfijNode(nodeDefinition);
 	}
 
 	public ConfijNode deepClone() {
@@ -93,7 +92,7 @@ public class ConfijNode {
 			String rootScheme = root.uri.getScheme();
 			String targetScheme = relativeTarget.getScheme();
 			if (!rootScheme.equals(targetScheme)) {
-				throw new SimpleConfigException("unknown scheme '{}', expected is '{}'", targetScheme, rootScheme);
+				throw new ConfijException("unknown scheme '{}', expected is '{}'", targetScheme, rootScheme);
 			}
 			return root.resolve(absolute);
 		}
@@ -104,7 +103,7 @@ public class ConfijNode {
 		String firstPart = targetPath.split("/", 2)[0];
 		ConfijNode child = children.get(firstPart);
 		if (child == null) {
-			throw new SimpleConfigException("invalid path {}: node {} doesn't have a child named '{}'", target, uri, firstPart);
+			throw new ConfijException("invalid path {}: node {} doesn't have a child named '{}'", target, uri, firstPart);
 		}
 		return child.resolve(absolute);
 	}
@@ -119,7 +118,7 @@ public class ConfijNode {
 		if (children.containsKey(key)) {
 			throw new IllegalStateException("node " + this + " already contains a child named '" + key + "'");
 		}
-		ConfigFormat childConfig = config.formatForChild(key);
+		NodeDefinition childConfig = config.definitionForChild(key);
 		ConfijNode child = new ConfijNode(childConfig, this, key);
 		children.put(key, child);
 		return child;
@@ -142,13 +141,13 @@ public class ConfijNode {
 
 	private void assertLeafNode() {
 		if (!config.isValueHolder()) {
-			throw new SimpleConfigException("expected a leaf-node, but got {}", this);
+			throw new ConfijException("expected a leaf-node, but got {}", this);
 		}
 	}
 
 	private void assertBranchNode() {
 		if (config.isValueHolder()) {
-			throw new SimpleConfigException("expected a branch-node but got {}", this);
+			throw new ConfijException("expected a branch-node but got {}", this);
 		}
 	}
 

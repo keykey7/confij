@@ -1,11 +1,11 @@
-package ch.kk7.confij.format.resolve;
+package ch.kk7.confij.template;
 
 import ch.kk7.confij.common.ConfijException;
-import ch.kk7.confij.format.ConfigFormat;
-import ch.kk7.confij.format.ConfigFormat.ConfigFormatLeaf;
-import ch.kk7.confij.format.ConfigFormat.ConfigFormatMap;
-import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeDefinition;
+import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionLeaf;
+import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionMap;
+import ch.kk7.confij.tree.NodeBindingContext;
+import ch.kk7.confij.tree.ConfijNode;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
@@ -16,8 +16,8 @@ import java.util.Map;
 class DefaultResolverTest implements WithAssertions {
 
 	private static String resolve(String template, String... x) {
-		FormatSettings settings = FormatSettings.newDefaultSettings();
-		ConfigFormat format = ConfigFormatMap.anyKeyMap(settings, new ConfigFormatLeaf(settings));
+		NodeBindingContext settings = NodeBindingContext.newDefaultSettings();
+		NodeDefinition format = NodeDefinitionMap.anyKeyMap(settings, new NodeDefinitionLeaf(settings));
 		Map<String, String> map = new HashMap<>();
 		for (int i = 0; i < x.length; i++) {
 			map.put("x" + (i + 1), x[i]);

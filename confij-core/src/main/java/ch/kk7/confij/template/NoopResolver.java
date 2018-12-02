@@ -1,6 +1,6 @@
-package ch.kk7.confij.format.resolve;
+package ch.kk7.confij.template;
 
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.ConfijNode;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;

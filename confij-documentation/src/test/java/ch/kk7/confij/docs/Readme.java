@@ -1,5 +1,11 @@
 package ch.kk7.confij.docs;
 
+import ch.kk7.confij.ConfijBuilder;
+import ch.kk7.confij.annotation.Default;
+import org.junit.jupiter.api.Test;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Positive;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.Period;
@@ -8,12 +14,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Positive;
-
-import ch.kk7.confij.annotation.Default;
-import ch.kk7.confij.pipeline.ConfijBuilder;
-import org.junit.jupiter.api.Test;
 
 public class Readme extends DocTestBase {
 
@@ -46,7 +46,7 @@ public class Readme extends DocTestBase {
 	@Test
 	public void houseTest() {
 		House johnsHouse = ConfijBuilder.of(House.class)
-				.withSource("classpath:house.properties", "johnshouse.yaml")
+				.loadFrom("classpath:house.properties", "johnshouse.yaml")
 				.build();
 		assertThat(johnsHouse.chimneyCheckEvery()).isEqualTo(Period.ofYears(2));
 		assertThat(johnsHouse.boilerCheckEvery()).isEqualTo(Period.ofYears(2));

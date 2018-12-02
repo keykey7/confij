@@ -3,7 +3,7 @@ package ch.kk7.confij.source.file;
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.file.format.ConfijSourceFormat;
 import ch.kk7.confij.source.file.resource.ConfijResourceProvider;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.ConfijNode;
 import lombok.NonNull;
 import lombok.Value;
 

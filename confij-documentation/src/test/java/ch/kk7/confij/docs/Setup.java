@@ -1,6 +1,6 @@
 package ch.kk7.confij.docs;
 
-import ch.kk7.confij.pipeline.ConfijBuilder;
+import ch.kk7.confij.ConfijBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.net.URL;
@@ -18,7 +18,7 @@ public class Setup extends DocTestBase {
 	public void gettingStarted() {
 		// tag::simple_builder[]
 		ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
-				.withSource("server.properties") // <2>
+				.loadFrom("server.properties") // <2>
 				.build(); // <3>
 		// end::simple_builder[]
 	}

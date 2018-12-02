@@ -1,9 +1,9 @@
 package ch.kk7.confij.pipeline;
 
 import ch.kk7.confij.binding.ConfigBinding;
-import ch.kk7.confij.format.ConfigFormat;
+import ch.kk7.confij.tree.NodeDefinition;
 import ch.kk7.confij.source.ConfigSource;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.ConfijNode;
 import ch.kk7.confij.validation.ConfijValidator;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
@@ -21,7 +21,7 @@ public class ConfijPipelineImpl<T> implements ConfijPipeline<T> {
 	@NonNull
 	private final ConfigBinding<T> configBinding;
 	@NonNull
-	private final ConfigFormat format;
+	private final NodeDefinition format;
 
 	protected ConfijNode newDefaultConfig() {
 		ConfijNode defaultsOnly = ConfijNode.newRootFor(format);

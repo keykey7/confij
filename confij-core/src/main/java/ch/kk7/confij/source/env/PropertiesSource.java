@@ -2,7 +2,7 @@ package ch.kk7.confij.source.env;
 
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.file.format.PropertiesFormat;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.ConfijNode;
 
 import java.util.Properties;
 

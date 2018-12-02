@@ -3,9 +3,9 @@ package ch.kk7.confij.binding.collection;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
-import ch.kk7.confij.format.ConfigFormat.ConfigFormatList;
-import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionList;
+import ch.kk7.confij.tree.NodeBindingContext;
+import ch.kk7.confij.tree.ConfijNode;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,8 +21,8 @@ public class CollectionBinding<T> implements ConfigBinding<Collection<T>> {
 	}
 
 	@Override
-	public ConfigFormatList describe(FormatSettings formatSettings) {
-		return new ConfigFormatList(formatSettings, componentDescription.describe(formatSettings));
+	public NodeDefinitionList describe(NodeBindingContext nodeBindingContext) {
+		return new NodeDefinitionList(nodeBindingContext, componentDescription.describe(nodeBindingContext));
 	}
 
 	@Override

@@ -1,10 +1,10 @@
-package ch.kk7.confij.format;
+package ch.kk7.confij.tree;
 
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.common.AnnotationUtil;
 import ch.kk7.confij.common.ClassToImplCache;
-import ch.kk7.confij.format.resolve.DefaultResolver;
-import ch.kk7.confij.format.resolve.VariableResolver;
+import ch.kk7.confij.template.DefaultResolver;
+import ch.kk7.confij.template.VariableResolver;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,10 +14,15 @@ import lombok.experimental.Wither;
 
 import java.lang.reflect.AnnotatedElement;
 
+/**
+ * Immutable class to define (compile-time) definitions of how to map string configuration properties
+ * to abstract nodes in a configuration context.
+ * It's a binding-context since it can be modified using annotations.
+ */
+@Wither
 @ToString
 @AllArgsConstructor
-@Wither
-public class FormatSettings {
+public class NodeBindingContext {
 	@Getter
 	private final String defaultValue;
 	@NonNull
@@ -27,25 +32,25 @@ public class FormatSettings {
 	@Wither(AccessLevel.NONE)
 	private final ClassToImplCache implCache;
 
-	public static FormatSettings newDefaultSettings() {
+	public static NodeBindingContext newDefaultSettings() {
 		ClassToImplCache implCache = new ClassToImplCache();
-		return new FormatSettings( null, implCache.getInstance(DefaultResolver.class), implCache);
+		return new NodeBindingContext( null, implCache.getInstance(DefaultResolver.class), implCache);
 	}
 
-	protected FormatSettings withVariableResolverFor(AnnotatedElement element) {
+	protected NodeBindingContext withVariableResolverFor(AnnotatedElement element) {
 		return withVariableResolver(AnnotationUtil.findAnnotation(element, ch.kk7.confij.annotation.VariableResolver.class)
 				.map(ch.kk7.confij.annotation.VariableResolver::value)
 				.map(x -> implCache.getInstance(x, VariableResolver.class))
 				.orElse(variableResolver));
 	}
 
-	protected FormatSettings withDefaultValueFor(AnnotatedElement element) {
+	protected NodeBindingContext withDefaultValueFor(AnnotatedElement element) {
 		return withDefaultValue(AnnotationUtil.findAnnotation(element, Default.class)
 				.map(Default::value)
 				.orElse(defaultValue));
 	}
 
-	public FormatSettings settingsFor(AnnotatedElement element) {
+	public NodeBindingContext settingsFor(AnnotatedElement element) {
 		return withDefaultValueFor(element).withVariableResolverFor(element);
 	}
 }
