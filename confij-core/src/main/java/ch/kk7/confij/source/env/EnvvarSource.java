@@ -3,7 +3,7 @@ package ch.kk7.confij.source.env;
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.ConfigSourceBuilder;
 import ch.kk7.confij.source.file.format.PropertiesFormat;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 
 import java.net.URI;

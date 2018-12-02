@@ -1,5 +1,6 @@
 package ch.kk7.confij.pipeline;
 
+import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.ConfijSourceException;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 class ConfijBuilderTest {
 	private static AbstractStringAssert<?> assertSourceBecomes(String source, String expectedValue) {
 		return assertThat(ConfijBuilder.of(MyConfig.class)
-				.withSource(source)
+				.loadFrom(source)
 				.build()
 				.aString()).isEqualTo(expectedValue);
 	}
@@ -49,7 +50,7 @@ class ConfijBuilderTest {
 	@Test
 	public void unknownScheme() {
 		ConfijBuilder builder = ConfijBuilder.of(MyConfig.class)
-				.withSource("unknown:whatever");
+				.loadFrom("unknown:whatever");
 		assertThrows(ConfijSourceException.class, builder::build);
 	}
 

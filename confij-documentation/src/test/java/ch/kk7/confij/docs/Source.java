@@ -4,7 +4,7 @@ import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.common.ServiceLoaderPriority;
 import ch.kk7.confij.common.ServiceLoaderUtil;
-import ch.kk7.confij.pipeline.ConfijBuilder;
+import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.file.resource.ConfijResourceProvider;
 import com.google.auto.service.AutoService;
 import org.junit.jupiter.api.Test;
@@ -41,9 +41,9 @@ public class Source extends DocTestBase {
 		System.setProperty("app.line", "3");
 		// tag::pipedsource[]
 		ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
-				.withSource("classpath:generic.properties") // <2>
-				.withSource("server.properties") // <3>
-				.withSource("sys:app") // <4>
+				.loadFrom("classpath:generic.properties") // <2>
+				.loadFrom("server.properties") // <3>
+				.loadFrom("sys:app") // <4>
 				.build();
 		// end::pipedsource[]
 		assertThat(serverConfig.toString()).isEqualToIgnoringWhitespace(classpath("pipedsource.txt"));
@@ -94,7 +94,7 @@ public class Source extends DocTestBase {
 	@Test
 	public void nestedPropertiesFile() {
 		Config config = ConfijBuilder.of(Config.class)
-				.withSource("nested.properties")
+				.loadFrom("nested.properties")
 				.build();
 		assertThat(config.key()).isEqualTo("value");
 		assertThat(config.nest().x()).isEqualTo(0);
@@ -109,13 +109,13 @@ public class Source extends DocTestBase {
 		System.setProperty("some.prefix.key", "fromSysprops");
 		// tag::anysource[]
 		ConfijBuilder.of(Config.class)
-				.withSource("nested.properties") // properties file in current working directory
-				.withSource(new File("nested.properties").getAbsolutePath()) // equivalent
-				.withSource("file:nested.properties") // equivalent
-				.withSource("classpath:nested${key}.yaml") // a YAML file on the classpath root
-				.withSource("${key}:nestedvalue.yaml") // ...with variable replacements
-				.withSource("sys:some.prefix") // from system properties
-				.withSource("env:some_prefix") // from environment variables
+				.loadFrom("nested.properties") // properties file in current working directory
+				.loadFrom(new File("nested.properties").getAbsolutePath()) // equivalent
+				.loadFrom("file:nested.properties") // equivalent
+				.loadFrom("classpath:nested${key}.yaml") // a YAML file on the classpath root
+				.loadFrom("${key}:nestedvalue.yaml") // ...with variable replacements
+				.loadFrom("sys:some.prefix") // from system properties
+				.loadFrom("env:some_prefix") // from environment variables
 				.build();
 		// end::anysource[]
 	}
@@ -135,7 +135,7 @@ public class Source extends DocTestBase {
 	@Test
 	public void complexYaml() {
 		ComlexYaml yaml = ConfijBuilder.of(ComlexYaml.class)
-				.withSource("complex.yaml")
+				.loadFrom("complex.yaml")
 				.build();
 		assertThat(yaml.listOfStrings()).containsExactly("String", "String on a single line", "Double quotation marks\t");
 		assertThat(yaml.mapOfIntegers()).allSatisfy((s, i) -> assertThat(i).isEqualTo(12345));
@@ -188,7 +188,7 @@ public class Source extends DocTestBase {
 	public void customResourceProvider() {
 		// tag::resourceprovider[]
 		Foo foo = ConfijBuilder.of(Foo.class)
-				.withSource("foo:fuuuuu.properties")
+				.loadFrom("foo:fuuuuu.properties")
 				.build();
 		// end::resourceprovider[]
 		assertThat(foo.foo()).isEqualTo("bar");

@@ -1,6 +1,6 @@
 package ch.kk7.confij.source.file.format;
 
-import ch.kk7.confij.pipeline.ConfijBuilder;
+import ch.kk7.confij.ConfijBuilder;
 import com.fasterxml.classmate.GenericType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class YamlFormatTest {
 	public static void setupTypes() {
 		types = ConfijBuilder.of(new GenericType<Map<String, Map<String, String>>>() {
 		})
-				.withSource("classpath:types.yml")
+				.loadFrom("classpath:types.yml")
 				.build();
 	}
 
@@ -63,7 +63,7 @@ class YamlFormatTest {
 	@Test
 	public void multidoc() {
 		Multidoc multidoc = ConfijBuilder.of(Multidoc.class)
-				.withSource("classpath:multidoc.yml")
+				.loadFrom("classpath:multidoc.yml")
 				.build();
 		assertThat(multidoc.x()).isEqualTo(1);
 		assertThat(multidoc.y()).isEqualTo(2);

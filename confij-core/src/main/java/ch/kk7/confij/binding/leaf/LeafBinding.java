@@ -2,9 +2,9 @@ package ch.kk7.confij.binding.leaf;
 
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
-import ch.kk7.confij.format.ConfigFormat.ConfigFormatLeaf;
-import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionLeaf;
+import ch.kk7.confij.tree.NodeBindingContext;
+import ch.kk7.confij.tree.ConfijNode;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
@@ -16,14 +16,14 @@ public class LeafBinding<T> implements ConfigBinding<T> {
 	private final ValueMapperInstance<T> valueMapper;
 
 	@Override
-	public ConfigFormatLeaf describe(FormatSettings formatSettings) {
-		return new ConfigFormatLeaf(formatSettings);
+	public NodeDefinitionLeaf describe(NodeBindingContext nodeBindingContext) {
+		return new NodeDefinitionLeaf(nodeBindingContext);
 	}
 
 	@Override
 	public T bind(ConfijNode leaf) {
 		String value = leaf.getConfig()
-				.getFormatSettings()
+				.getNodeBindingContext()
 				.getVariableResolver()
 				.resolveLeaf(leaf);
 		return valueMapper.fromString(value);

@@ -1,6 +1,6 @@
 package ch.kk7.confij.source.logical;
 
-import ch.kk7.confij.pipeline.ConfijBuilder;
+import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.ConfijSourceException;
 import ch.kk7.confij.source.ConfijSourceTestBase;
@@ -14,8 +14,8 @@ class OrSourceTest extends ConfijSourceTestBase {
 
 	private static AbstractStringAssert<?> assertThatX(ConfigSource one, ConfigSource or, ConfigSource... orEven) {
 		ConfigX orConfig = ConfijBuilder.of(ConfigX.class)
-				.withSource(setXTo("before"))
-				.withSource(new OrSource(one, or, orEven))
+				.loadFrom(setXTo("before"))
+				.loadFrom(new OrSource(one, or, orEven))
 				.build();
 		return assertThat(orConfig.x());
 	}
@@ -49,5 +49,15 @@ class OrSourceTest extends ConfijSourceTestBase {
 	@Test
 	public void thirdSucceeds() {
 		assertThatX(alwaysFail, alwaysFail, setXTo("3rd"), alwaysFail).isEqualTo("3rd");
+	}
+
+	@Test
+	public void viaBuilder() {
+		System.setProperty("app.x", "appx");
+		ConfigX orConfig = ConfijBuilder.of(ConfigX.class)
+				.loadFrom(setXTo("before"))
+				.loadFromFirstOf("sys:app", "sys:fuu")
+				.build();
+		assertThat(orConfig.x()).isEqualTo("appx");
 	}
 }

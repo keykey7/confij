@@ -1,7 +1,7 @@
-package ch.kk7.confij.format.resolve;
+package ch.kk7.confij.template;
 
 import ch.kk7.confij.common.ConfijException;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.ConfijNode;
 import lombok.ToString;
 
 import java.net.URI;

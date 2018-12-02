@@ -3,9 +3,9 @@ package ch.kk7.confij.binding.map;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
-import ch.kk7.confij.format.ConfigFormat.ConfigFormatMap;
-import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionMap;
+import ch.kk7.confij.tree.NodeBindingContext;
+import ch.kk7.confij.tree.ConfijNode;
 
 import java.util.Map;
 
@@ -20,8 +20,8 @@ public class MapBinding<T> implements ConfigBinding<Map<String, T>> {
 	}
 
 	@Override
-	public ConfigFormatMap describe(FormatSettings formatSettings) {
-		return ConfigFormatMap.anyKeyMap(formatSettings, componentDescription.describe(formatSettings));
+	public NodeDefinitionMap describe(NodeBindingContext nodeBindingContext) {
+		return NodeDefinitionMap.anyKeyMap(nodeBindingContext, componentDescription.describe(nodeBindingContext));
 	}
 
 	@Override

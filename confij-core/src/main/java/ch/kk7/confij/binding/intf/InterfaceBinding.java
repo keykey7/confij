@@ -5,9 +5,9 @@ import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.common.AnnotationUtil;
-import ch.kk7.confij.format.ConfigFormat.ConfigFormatMap;
-import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionMap;
+import ch.kk7.confij.tree.NodeBindingContext;
+import ch.kk7.confij.tree.ConfijNode;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.ResolvedMethod;
 import com.fasterxml.classmate.types.ResolvedInterfaceType;
@@ -45,11 +45,11 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 	}
 
 	@Override
-	public ConfigFormatMap describe(FormatSettings formatSettings) {
-		FormatSettings settingsForThisClass = formatSettings.settingsFor(interfaceBuilder.getType()
+	public NodeDefinitionMap describe(NodeBindingContext nodeBindingContext) {
+		NodeBindingContext settingsForThisClass = nodeBindingContext.settingsFor(interfaceBuilder.getType()
 				.getErasedType());
 		// TODO: support a special method like: @UnknownValues Map<String,Object> unknowns;
-		return ConfigFormatMap.fixedKeysMap(settingsForThisClass, siblingsByName.entrySet()
+		return NodeDefinitionMap.fixedKeysMap(settingsForThisClass, siblingsByName.entrySet()
 				.stream()
 				.collect(Collectors.toMap(Entry::getKey, e -> e.getValue()
 						.getDescription()

@@ -1,6 +1,6 @@
 package ch.kk7.confij.source.file.format;
 
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import lombok.NonNull;
 import org.yaml.snakeyaml.Yaml;

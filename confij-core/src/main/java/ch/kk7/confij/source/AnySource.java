@@ -1,8 +1,8 @@
 package ch.kk7.confij.source;
 
 import ch.kk7.confij.common.ServiceLoaderUtil;
-import ch.kk7.confij.format.resolve.VariableResolver;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.template.VariableResolver;
+import ch.kk7.confij.tree.ConfijNode;
 import lombok.ToString;
 
 import java.net.URI;
@@ -26,7 +26,7 @@ public class AnySource implements ConfigSource {
 			return resolverOverride;
 		}
 		return rootNode.getConfig()
-				.getFormatSettings()
+				.getNodeBindingContext()
 				.getVariableResolver();
 	}
 
@@ -46,7 +46,7 @@ public class AnySource implements ConfigSource {
 				.findFirst()
 				.orElseThrow(() -> {
 					String addon = pathTemplate.equals(actualPath) ? "" : " (resolved from '" + pathTemplate + "')";
-					return new ConfijSourceException("failed to load source data from '{}'{}", path, addon);
+					return new ConfijSourceException("failed to loadFrom source data from '{}'{}", path, addon);
 				})
 				.override(rootNode);
 	}

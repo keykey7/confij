@@ -1,7 +1,7 @@
 package ch.kk7.confij.source.file.format;
 
-import ch.kk7.confij.format.ConfigFormat;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeDefinition;
+import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import lombok.NonNull;
 import lombok.Setter;
@@ -53,7 +53,7 @@ public class PropertiesFormat implements ConfijSourceFormat {
 		node.overrideWith(newConfig);
 	}
 
-	protected Object flatToNestedMapWithPrefix(ConfigFormat format, Map<String, String> globalMap) {
+	protected Object flatToNestedMapWithPrefix(NodeDefinition format, Map<String, String> globalMap) {
 		if (format.isValueHolder()) {
 			return globalMap.get(globalPrefix);
 		}
@@ -65,9 +65,9 @@ public class PropertiesFormat implements ConfijSourceFormat {
 	 * - if it is a leaf node: return the value as String (nullable)<br>
 	 * - otherwise: return the branch as Map<String, Object> (nonnull)<br>
 	 */
-	protected Function<String, Object> valueMapper(ConfigFormat parentFormat, Map<String, String> map) {
+	protected Function<String, Object> valueMapper(NodeDefinition parentFormat, Map<String, String> map) {
 		return k -> {
-			ConfigFormat childFormat = parentFormat.formatForChild(k);
+			NodeDefinition childFormat = parentFormat.definitionForChild(k);
 			if (childFormat.isValueHolder()) {
 				return map.get(k);
 			}
@@ -77,7 +77,7 @@ public class PropertiesFormat implements ConfijSourceFormat {
 	}
 
 	@NonNull
-	protected Object flatToNestedMap(ConfigFormat format, Map<String, String> map) {
+	protected Object flatToNestedMap(NodeDefinition format, Map<String, String> map) {
 		return map.keySet()
 				.stream()
 				.map(key -> key.split(Pattern.quote(separator), 2)[0]) // extract all prefixes

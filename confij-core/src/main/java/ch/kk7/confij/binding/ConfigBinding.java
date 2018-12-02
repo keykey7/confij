@@ -1,11 +1,11 @@
 package ch.kk7.confij.binding;
 
-import ch.kk7.confij.format.ConfigFormat;
-import ch.kk7.confij.format.FormatSettings;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeDefinition;
+import ch.kk7.confij.tree.NodeBindingContext;
+import ch.kk7.confij.tree.ConfijNode;
 
 public interface ConfigBinding<T> {
-	ConfigFormat describe(FormatSettings formatSettings);
+	NodeDefinition describe(NodeBindingContext nodeBindingContext);
 
 	T bind(ConfijNode config);
 }

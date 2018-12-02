@@ -2,7 +2,7 @@ package ch.kk7.confij.source.defaults;
 
 import ch.kk7.confij.common.Util;
 import ch.kk7.confij.source.ConfigSource;
-import ch.kk7.confij.source.tree.ConfijNode;
+import ch.kk7.confij.tree.ConfijNode;
 
 import java.util.Set;
 
@@ -25,7 +25,7 @@ public class DefaultSource implements ConfigSource {
 		String currentValue = leafNode.getValue();
 		if (currentValue == null) {
 			leafNode.setValue(leafNode.getConfig()
-					.getFormatSettings()
+					.getNodeBindingContext()
 					.getDefaultValue()); // might still be null!
 		}
 	}

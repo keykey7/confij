@@ -1,6 +1,6 @@
 package ch.kk7.confij.source.logical;
 
-import ch.kk7.confij.pipeline.ConfijBuilder;
+import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.ConfijSourceTestBase;
 import org.assertj.core.api.AbstractStringAssert;
@@ -13,8 +13,8 @@ class MaybeSourceTest extends ConfijSourceTestBase {
 
 	private static AbstractStringAssert<?> assertThatX(ConfigSource nested) {
 		ConfigX orConfig = ConfijBuilder.of(ConfigX.class)
-				.withSource(setXTo("before"))
-				.withSource(new MaybeSource(nested))
+				.loadFrom(setXTo("before"))
+				.loadFrom(new MaybeSource(nested))
 				.build();
 		return assertThat(orConfig.x());
 	}
@@ -37,5 +37,15 @@ class MaybeSourceTest extends ConfijSourceTestBase {
 	@Test
 	public void noNullSource() {
 		assertThatThrownBy(() -> new MaybeSource(null));
+	}
+
+	@Test
+	public void viaBuilder() {
+		System.setProperty("app.x", "appx");
+		ConfigX orConfig = ConfijBuilder.of(ConfigX.class)
+				.loadFrom(setXTo("before"))
+				.loadOptionalFrom("nonexistent.properties", "sys:app")
+				.build();
+		assertThat(orConfig.x()).isEqualTo("appx");
 	}
 }
