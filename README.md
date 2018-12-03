@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.com/keykey7/confij.svg?branch=master)](https://travis-ci.com/keykey7/confij)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](LICENSE)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ch.kk7%3Aconfij&metric=coverage)](https://sonarcloud.io/dashboard?id=ch.kk7%3Aconfij)
 [![release](https://api.bintray.com/packages/kk7/mvn-release/confij-core/images/download.svg) ](https://bintray.com/kk7/mvn-release/confij-core/_latestVersion)
 
 ConfiJ is a Java configuration framework to facilitate loading and validating

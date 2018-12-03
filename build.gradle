@@ -14,6 +14,7 @@ plugins {
 	id 'com.gradle.build-scan' version '2.0.2'
 	id 'net.ltgt.apt-idea' version '0.19'
 	id 'com.github.ben-manes.versions' version '0.20.0' // task: dependencyUpdates
+	id 'org.sonarqube' version '2.6.2'
 }
 
 reckon {
@@ -123,6 +124,18 @@ task jacocoRootReport(type: JacocoReport, group: 'verification') {
 		logger.lifecycle("report at: " + reports.html.entryPoint.toURI())
 	}
 }
+
+allprojects {
+	sonarqube {
+		properties {
+			property 'sonar.host.url', 'https://sonarcloud.io'
+			property 'sonar.organization', 'keykey7-github'
+			property 'sonar.login', System.getenv('SONAR_TOKEN')
+			property 'sonar.jacoco.reportPaths', jacocoMerge.destinationFile
+		}
+	}
+}
+project.tasks['sonarqube'].dependsOn jacocoRootReport
 
 // releases
 subprojects {
