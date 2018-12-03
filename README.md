@@ -1,6 +1,6 @@
 # ConfiJ - Configuration for Java
 
-[![Build Status](https://travis-ci.com/keykey7/confij.svg?branch=master)](https://travis-ci.com/keykey7/gradle-spawn-plugin)
+[![Build Status](https://travis-ci.com/keykey7/confij.svg?branch=master)](https://travis-ci.com/keykey7/confij)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](LICENSE)
 [![release](https://api.bintray.com/packages/kk7/mvn-release/confij-core/images/download.svg) ](https://bintray.com/kk7/mvn-release/confij-core/_latestVersion)
 

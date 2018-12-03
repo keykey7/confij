@@ -7,7 +7,7 @@ dependencies {
 }
 
 asciidoctor {
-	attributes 'revnumber': project.version,
+	attributes 'revnumber': project.version.toString(),
 			'group': project.group,
 			'reproducible': 'true',
 			'attribute-missing': 'warn'
