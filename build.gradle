@@ -11,9 +11,9 @@ buildscript {
 
 plugins {
 	id 'org.ajoberstar.reckon' version '0.9.0'
-	id 'com.gradle.build-scan' version '1.16'
+	id 'com.gradle.build-scan' version '2.0.2'
 	id 'net.ltgt.apt-idea' version '0.19'
-	id 'com.github.ben-manes.versions' version '0.20.0'
+	id 'com.github.ben-manes.versions' version '0.20.0' // task: dependencyUpdates
 }
 
 reckon {
@@ -24,8 +24,10 @@ if (System.getenv('CI') == null) {
 	project.version = "0.0.0-SNAPSHOT"
 }
 task version {
-	println "to release a new version run:"
-	println "CI=true gw reckonTagPush -Preckon.scope=[major,minor,patch] -Preckon.stage=[rc,final]"
+	doLast {
+		println "to release a new version run:"
+		println "CI=true ./gradlew reckonTagPush -Preckon.scope=[major,minor,patch] -Preckon.stage=[rc,final]"
+	}
 }
 reckonTagCreate.dependsOn "build"
 
@@ -37,11 +39,9 @@ allprojects {
 		// broken by hibernate. We therefore use a custom (idiotic) ivy repo pattern to get a snapshot version
 		ivy {
 			url 'http://ci.hibernate.org/plugin/repository/project/hibernate-validator-master/LastSuccessful/repository'
-			layout 'pattern' , {
-				layout 'pattern', {
-					m2compatible = true
-					artifact '[organisation]/[module]/[revision]/[artifact]-[revision](.[ext])'
-				}
+			patternLayout {
+				m2compatible = true
+				artifact '[organisation]/[module]/[revision]/[artifact]-[revision](.[ext])'
 			}
 		}
 	}
@@ -75,7 +75,7 @@ subprojects {
 		testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
 		testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-		def junitVersion = '5.3.1'
+		def junitVersion = '5.3.2'
 		testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 		testImplementation('org.junit-pioneer:junit-pioneer:0.3.0') {
@@ -91,7 +91,7 @@ subprojects {
 }
 
 wrapper {
-	gradleVersion = '4.10.2'
+	gradleVersion = '5.0'
 	distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -115,11 +115,10 @@ task jacocoRootReport(type: JacocoReport, group: 'verification') {
 	description = 'Generates an aggregate report from all subprojects'
 	dependsOn subprojects.test, jacocoMerge
 
-	additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
-	sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-	classDirectories = files(subprojects.sourceSets.main.output)
+	additionalSourceDirs.from(subprojects.sourceSets.main.allSource.srcDirs)
+	sourceDirectories.from(subprojects.sourceSets.main.allSource.srcDirs)
+	classDirectories.from(subprojects.sourceSets.main.output)
 	executionData jacocoMerge.destinationFile
-
 	doLast {
 		logger.lifecycle("report at: " + reports.html.entryPoint.toURI())
 	}
