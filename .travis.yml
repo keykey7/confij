@@ -10,7 +10,7 @@ addons:
     organization: keykey7-github
 
 script:
-  - ./gradlew --no-daemon --scan -s build publishToMavenLocal
+  - ./gradlew --no-daemon --scan -s build publishToMavenLocal sonarqube
 
 deploy:
   - provider: script
