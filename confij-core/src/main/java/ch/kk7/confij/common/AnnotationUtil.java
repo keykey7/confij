@@ -1,12 +1,12 @@
 package ch.kk7.confij.common;
 
-import lombok.Value;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+
+import lombok.Value;
 
 /**
  * taken from:
@@ -29,7 +29,7 @@ public class AnnotationUtil {
 		Set<Annotation> visited = new HashSet<>();
 		for (Annotation declaredAnn : annotatedElement.getDeclaredAnnotations()) {
 			Class<? extends Annotation> declaredType = declaredAnn.annotationType();
-			if (!isInJavaLangAnnotationPackage(declaredType) && visited.add(declaredAnn)) {
+			if (declaredType != null && !isInJavaLangAnnotationPackage(declaredType) && visited.add(declaredAnn)) {
 				annotation = findAnnotation(declaredType, annotationType, visited);
 				if (annotation != null) {
 					return Optional.of(new AnnonResponse<>(declaredAnn, annotation));
@@ -52,7 +52,7 @@ public class AnnotationUtil {
 		}
 		for (Annotation declaredAnn : annotatedElement.getDeclaredAnnotations()) {
 			Class<? extends Annotation> declaredType = declaredAnn.annotationType();
-			if (!isInJavaLangAnnotationPackage(declaredType) && visited.add(declaredAnn)) {
+			if (declaredType != null && !isInJavaLangAnnotationPackage(declaredType) && visited.add(declaredAnn)) {
 				annotation = findAnnotation(declaredType, annotationType, visited);
 				if (annotation != null) {
 					return annotation;
