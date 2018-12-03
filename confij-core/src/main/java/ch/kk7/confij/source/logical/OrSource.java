@@ -1,5 +1,6 @@
 package ch.kk7.confij.source.logical;
 
+import ch.kk7.confij.logging.ConfijLogger;
 import ch.kk7.confij.source.ConfigSource;
 import ch.kk7.confij.source.ConfijSourceException;
 import ch.kk7.confij.tree.ConfijNode;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @ToString
 public class OrSource implements ConfigSource {
+	private static final ConfijLogger LOG = ConfijLogger.getLogger(OrSource.class.getName());
 	private final List<ConfigSource> orList;
 
 	public OrSource(@NonNull ConfigSource one, @NonNull ConfigSource or, ConfigSource... orEven) {
@@ -30,6 +32,7 @@ public class OrSource implements ConfigSource {
 				source.override(copy);
 			} catch (Exception e) {
 				pastExceptions.add(e);
+				LOG.info("failed reading optional source {}", source, e);
 				continue;
 			}
 			rootNode.overrideWith(copy);
