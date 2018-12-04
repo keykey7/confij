@@ -10,7 +10,7 @@ public interface ConfijLogger {
 
 	@NonNull
 	static ConfijLogger getLogger(String name) {
-		return ServiceLoaderUtil.instancesOf(ConfijLogFactory.class)
+		return ServiceLoaderUtil.requireInstancesOf(ConfijLogFactory.class)
 				.get(0)
 				.getLogger(name);
 	}

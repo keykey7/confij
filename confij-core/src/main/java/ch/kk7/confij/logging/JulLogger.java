@@ -1,15 +1,19 @@
 package ch.kk7.confij.logging;
 
-import ch.kk7.confij.common.ServiceLoaderPriority;
-import com.google.auto.service.AutoService;
-import lombok.Value;
+import static ch.kk7.confij.logging.LogUtil.formatLogSupplier;
+import static ch.kk7.confij.logging.LogUtil.throwableOrNull;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static ch.kk7.confij.logging.LogUtil.formatLogSupplier;
-import static ch.kk7.confij.logging.LogUtil.throwableOrNull;
+import ch.kk7.confij.common.ServiceLoaderPriority;
+import com.google.auto.service.AutoService;
+import lombok.Value;
 
+/**
+ * A logger which uses java.util.logging underneath, but allows for slf4j-like log message patterns.
+ * The only reason being that jul doesn't require a dependency: don't use it otherwise.
+ */
 @Value
 public class JulLogger implements ConfijLogger {
 	private final Logger logger;
