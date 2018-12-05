@@ -191,7 +191,7 @@ subprojects {
 	bintray {
 		user = 'kk7'
 		key = System.getenv('BINTRAY_TOKEN')
-		publications = publications = project.publishing.publications.collect{ it.name }
+		publications = project.publishing.publications.collect{ it.name }
 		publish = isReleaseBuild
 
 		pkg {

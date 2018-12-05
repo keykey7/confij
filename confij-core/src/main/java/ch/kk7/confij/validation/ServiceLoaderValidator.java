@@ -1,15 +1,15 @@
 package ch.kk7.confij.validation;
 
-import java.util.List;
+import static ch.kk7.confij.common.ServiceLoaderUtil.instancesOf;
 
-import static ch.kk7.confij.common.ServiceLoaderUtil.maybeNewOf;
+import java.util.List;
 
 // NOT detectable by serviceLoader himself
 public class ServiceLoaderValidator implements ConfijValidator {
 	private final List<ConfijValidator> validators;
 
 	public ServiceLoaderValidator() {
-		validators = maybeNewOf(ConfijValidator.class);
+		validators = instancesOf(ConfijValidator.class);
 	}
 
 	@Override

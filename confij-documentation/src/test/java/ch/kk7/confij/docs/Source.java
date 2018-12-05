@@ -192,7 +192,7 @@ public class Source extends DocTestBase {
 				.build();
 		// end::resourceprovider[]
 		assertThat(foo.foo()).isEqualTo("bar");
-		assertThat(ServiceLoaderUtil.instancesOf(ConfijResourceProvider.class)).anySatisfy(
+		assertThat(ServiceLoaderUtil.requireInstancesOf(ConfijResourceProvider.class)).anySatisfy(
 				x -> assertThat(x).isInstanceOf(AnUnimportantFooProvider.class));
 	}
 }

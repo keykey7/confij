@@ -1,4 +1,4 @@
-= Validation
+= Miscellaneous
 :src: ../../test/java/ch/kk7/confij/docs/Validation.java
 :home: ../../test/home
 
@@ -18,3 +18,9 @@ include::{src}[tag=jsr303-interface]
 ====
 
 WARNING: `{group}:confij-validation` depends on `hibernate-validator` >= 6.1 in order to support non-getter properties
+
+== Logging
+
+ConfiJ core relies on `java.util.logging` (JUL) ony due to it's zero-dependency strategy.
+If `{group}:confij-slf4j` is found on the classpath, logging uses the slf4j-framework.
+To support a custom logging-framework, register a <<serviceloader>> for `ConfijLogFactory`.

@@ -16,8 +16,8 @@ public class AnyResourceBuilder implements ConfigSourceBuilder {
 	private final List<ConfijSourceFormat> supportedFormats;
 
 	public AnyResourceBuilder() {
-		supportedResources = ServiceLoaderUtil.instancesOf(ConfijResourceProvider.class);
-		supportedFormats = ServiceLoaderUtil.instancesOf(ConfijSourceFormat.class);
+		supportedResources = ServiceLoaderUtil.requireInstancesOf(ConfijResourceProvider.class);
+		supportedFormats = ServiceLoaderUtil.requireInstancesOf(ConfijSourceFormat.class);
 	}
 
 	@Override

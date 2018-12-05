@@ -18,7 +18,7 @@ public class AnySource implements ConfigSource {
 
 	public AnySource(String pathTemplate) {
 		this.pathTemplate = Objects.requireNonNull(pathTemplate);
-		sourceBuilders = ServiceLoaderUtil.instancesOf(ConfigSourceBuilder.class);
+		sourceBuilders = ServiceLoaderUtil.requireInstancesOf(ConfigSourceBuilder.class);
 	}
 
 	private VariableResolver getResolver(ConfijNode rootNode) {
