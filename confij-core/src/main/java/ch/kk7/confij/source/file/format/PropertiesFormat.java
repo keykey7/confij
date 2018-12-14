@@ -105,7 +105,6 @@ public class PropertiesFormat implements ConfijSourceFormat {
 
 	@Override
 	public boolean canHandle(URI path) {
-		return path.getSchemeSpecificPart()
-				.matches("(?s).+\\.prop(ertie)?s?$");
+		return ConfijSourceFormat.canHandleIfMatches(path, "(?s).+\\.prop(ertie)?s?$");
 	}
 }
