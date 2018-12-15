@@ -12,6 +12,7 @@ import lombok.experimental.NonFinal;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
+import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
@@ -35,6 +36,7 @@ public class GitResourceProvider extends AbstractResourceProvider {
 	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(GitResourceProvider.class);
 	private static final Pattern SCHEME_PATTERN = Pattern.compile("git(?:@(?<rev>.+))?");
 	private static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
+	protected static final String TEMP_DIR_PREFIX = "confij-";
 
 	@Value
 	@Builder
@@ -93,67 +95,63 @@ public class GitResourceProvider extends AbstractResourceProvider {
 		String name = UUID.nameUUIDFromBytes(seed.getBytes())
 				.toString()
 				.replace("-", "");
-		return TEMP_DIR.resolve("confij-" + name)
+		return TEMP_DIR.resolve(TEMP_DIR_PREFIX + name + ".git")
 				.toFile();
 	}
 
 	protected Git gitCloneOrFetch(GitSettings settings) {
-		if (new File(settings.getLocalDir(), Constants.DOT_GIT).exists()) {
-			return gitFetch(settings);
-		}
-		return gitClone(settings);
-	}
-
-	protected Git gitFetch(GitSettings settings) {
-		LOGGER.debug("git fetch: {}", settings);
-		File localDir = settings.getLocalDir()
-				.getAbsoluteFile();
+		Git git = null;
 		try {
-			Git git = Git.open(localDir);
-			gitFetch(git, settings);
-			return git;
-		} catch (IOException | JGitInternalException | GitAPIException e) {
-			throw new ConfijSourceException("failed to open and fetch git repository for {}", settings, e);
+			git = Git.open(settings.getLocalDir());
+		} catch (RepositoryNotFoundException e) {
+			// expected behaviour, let's clone it then...
+		} catch (IOException e) {
+			throw new ConfijSourceException("failed to check git repository with {}", settings, e);
+		}
+		try {
+			if (git == null) {
+				return gitClone(settings);
+			}
+			return gitFetch(git, settings);
+		}
+		catch (JGitInternalException | GitAPIException | IOException e) {
+			throw new ConfijSourceException("failed to open and fetch git repository with {}", settings, e);
 		}
 	}
 
-	protected void gitFetch(Git git, GitSettings settings) throws GitAPIException {
+	protected Git gitFetch(Git git, GitSettings settings) throws GitAPIException, IOException {
+		LOGGER.debug("git fetch: {}", settings);
 		// verify there are no dirty files
-		if (!git.status()
-				.call()
-				.isClean()) {
-			throw new ConfijSourceException("git repository is not clean: {}", settings);
-		}
-		// verify the origin matches
-		String originUrl = git.getRepository()
-				.getConfig()
-				.getString("remote", Constants.DEFAULT_REMOTE_NAME, "url");
-		if (!settings.getRemoteUrl()
-				.equals(originUrl)) {
-			// TODO: probably needs url normalization first
-			throw new ConfijSourceException("git config --get remote.origin.url is {}, but expected {}", originUrl,
-					settings.getRemoteUrl());
-		}
+//		if (!git.status()
+//				.call()
+//				.isClean()) {
+//			throw new ConfijSourceException("git repository is not clean: {}", settings);
+//		}
 		FetchResult fetchResult = git.fetch()
-				// .setRefSpecs()
+				.setRemote(settings.getRemoteUrl())
+				.setRefSpecs("+refs/*:refs/*") // similar to --mirror
+				.setRemoveDeletedRefs(true)
+				.setCheckFetchedObjects(true)
 				// .setForceUpdate()
 				// .setTimeout()
 				.call();
-		LOGGER.debug("git fetch result: {}", fetchResult.getMessages());
+		LOGGER.info("git fetch result: {}", fetchResult.getTrackingRefUpdates());
+		git.log()
+				.all()
+				.call()
+				.forEach(x -> LOGGER.info("gitlog: {}", x));
+		return git;
 	}
 
-	protected Git gitClone(GitSettings settings) {
+	protected Git gitClone(GitSettings settings) throws GitAPIException {
 		LOGGER.debug("git clone: {}", settings);
-		try {
-			return Git.cloneRepository()
-					.setDirectory(settings.getLocalDir())
-					.setURI(settings.getRemoteUrl())
-					// .setCredentialsProvider()
-					// .setTimeout()
-					.call();
-		} catch (JGitInternalException | GitAPIException e) {
-			throw new ConfijException("git clone failed for {}", settings, e);
-		}
+		return Git.cloneRepository()
+				.setDirectory(settings.getLocalDir())
+				.setURI(settings.getRemoteUrl())
+				.setBare(true)
+				// .setCredentialsProvider()
+				// .setTimeout()
+				.call();
 	}
 
 	protected RevCommit getRevCommit(Git git, GitSettings settings) {
