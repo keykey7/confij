@@ -84,6 +84,7 @@ public class YamlFormat implements ConfijSourceFormat {
 
 	@Override
 	public boolean canHandle(URI path) {
-		return ConfijSourceFormat.canHandleIfMatches(path, "(?i).+\\.ya?ml$");
+		return path.getSchemeSpecificPart()
+				.matches("(?i).+\\.ya?ml$");
 	}
 }

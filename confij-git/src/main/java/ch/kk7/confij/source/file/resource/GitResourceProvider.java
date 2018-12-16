@@ -30,13 +30,16 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ch.kk7.confij.common.Util.not;
+
 @ToString
 @AutoService(ConfijResourceProvider.class)
 public class GitResourceProvider extends AbstractResourceProvider {
-	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(GitResourceProvider.class);
-	private static final Pattern SCHEME_PATTERN = Pattern.compile("git(?:@(?<rev>.+))?");
-	private static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 	protected static final String TEMP_DIR_PREFIX = "confij-";
+	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(GitResourceProvider.class);
+	private static final String SCHEME = "git";
+	private static final Pattern URL_FILE_SPLITTER = Pattern.compile("^(?<url>.+(?:\\.git/?|[^:]/))/(?<file>.+)$");
+	private static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
 	@Value
 	@Builder
@@ -53,17 +56,13 @@ public class GitResourceProvider extends AbstractResourceProvider {
 	}
 
 	public static URI toUri(@NonNull String remoteUri, @NonNull String configFile, String gitRevision) {
-		return URI.create("git" + (gitRevision == null ? "" : "@" + gitRevision) + ":" + remoteUri + "#" + configFile);
+		configFile = configFile.startsWith("/") ? configFile.substring(1) : configFile;
+		String urlFileSep = remoteUri.matches(".*\\.git/?$") ? "/" : "//";
+		return URI.create(SCHEME + ":" + remoteUri + urlFileSep + configFile + (gitRevision == null ? "" : "#" + gitRevision));
 	}
 
 	@Override
 	public String read(URI path) {
-		if (!canHandle(path) || path.getFragment() == null) {
-			String expected = "git[@<gitRevision>]:https://example.com/repo.git#path/to/someFile.properties";
-			throw new ConfijSourceException("expected the git source to be in the format {}, but got {}", expected, path);
-		}
-		// TODO: might be an idea to also do guessing on: https://example.com/repo.git/path/to/someFile.properties
-
 		GitSettings settings = uriToGitSettings(path);
 		Git git = gitCloneOrFetch(settings);
 		return readFile(git, settings);
@@ -71,27 +70,35 @@ public class GitResourceProvider extends AbstractResourceProvider {
 
 	@Override
 	public boolean canHandle(URI path) {
-		return path.getScheme() != null &&
-				SCHEME_PATTERN.matcher(path.getScheme())
-						.matches();
+		return SCHEME.equals(path.getScheme());
 	}
 
 	protected GitSettings uriToGitSettings(URI uri) {
-		Matcher m = SCHEME_PATTERN.matcher(uri.getScheme());
+		String urlAndFile = uri.getSchemeSpecificPart();
+		Matcher m = URL_FILE_SPLITTER.matcher(urlAndFile);
 		if (!m.matches()) {
-			throw new IllegalStateException();
+			throw new ConfijSourceException("expected the git source to have a format like " +
+					"'git:https://example.com/repo.git/path/to/file.yaml' (repo ending in '.git/') or " +
+					"'git:/var/opt/dir//path/to/file.yaml' (repo separated from file by double slash). " +
+					"However the provided '{}' does not match: {}", urlAndFile, URL_FILE_SPLITTER.pattern());
 		}
-		String remoteUrl = uri.getSchemeSpecificPart();
+		// TODO: also support: git://example.com/repo.git/... and ssh+git://... as a shortform
+		//       for http this might be confusing however
+
+		String remoteUrl = m.group("url");
+		String configFile = m.group("file");
 		return GitSettings.builder()
-				.gitRevision(Optional.ofNullable(m.group("rev"))
+				.gitRevision(Optional.ofNullable(uri.getFragment())
+						.filter(not(String::isEmpty))
 						.orElse(Constants.HEAD))
 				.remoteUrl(remoteUrl)
-				.configFile(uri.getFragment())
+				.configFile(configFile)
 				.localDir(getFileForSeed(remoteUrl))
 				.build();
 	}
 
 	protected File getFileForSeed(@NonNull String seed) {
+		// another idea would be to use the SHA1 hash of the first git commit instead
 		String name = UUID.nameUUIDFromBytes(seed.getBytes())
 				.toString()
 				.replace("-", "");
@@ -113,33 +120,21 @@ public class GitResourceProvider extends AbstractResourceProvider {
 				return gitClone(settings);
 			}
 			return gitFetch(git, settings);
-		}
-		catch (JGitInternalException | GitAPIException | IOException e) {
+		} catch (JGitInternalException | GitAPIException e) {
 			throw new ConfijSourceException("failed to open and fetch git repository with {}", settings, e);
 		}
 	}
 
-	protected Git gitFetch(Git git, GitSettings settings) throws GitAPIException, IOException {
+	protected Git gitFetch(Git git, GitSettings settings) throws GitAPIException {
 		LOGGER.debug("git fetch: {}", settings);
-		// verify there are no dirty files
-//		if (!git.status()
-//				.call()
-//				.isClean()) {
-//			throw new ConfijSourceException("git repository is not clean: {}", settings);
-//		}
 		FetchResult fetchResult = git.fetch()
 				.setRemote(settings.getRemoteUrl())
 				.setRefSpecs("+refs/*:refs/*") // similar to --mirror
 				.setRemoveDeletedRefs(true)
 				.setCheckFetchedObjects(true)
-				// .setForceUpdate()
 				// .setTimeout()
 				.call();
 		LOGGER.info("git fetch result: {}", fetchResult.getTrackingRefUpdates());
-		git.log()
-				.all()
-				.call()
-				.forEach(x -> LOGGER.info("gitlog: {}", x));
 		return git;
 	}
 
@@ -149,7 +144,7 @@ public class GitResourceProvider extends AbstractResourceProvider {
 				.setDirectory(settings.getLocalDir())
 				.setURI(settings.getRemoteUrl())
 				.setBare(true)
-				// .setCredentialsProvider()
+				// TODO: support .setCredentialsProvider()
 				// .setTimeout()
 				.call();
 	}
