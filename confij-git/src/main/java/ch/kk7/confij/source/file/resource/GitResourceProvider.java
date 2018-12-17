@@ -17,12 +17,16 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.FetchResult;
+import org.eclipse.jgit.transport.URIish;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.treewalk.TreeWalk;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -36,10 +40,10 @@ import static ch.kk7.confij.common.Util.not;
 @AutoService(ConfijResourceProvider.class)
 public class GitResourceProvider extends AbstractResourceProvider {
 	protected static final String TEMP_DIR_PREFIX = "confij-";
+	protected static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(GitResourceProvider.class);
 	private static final String SCHEME = "git";
 	private static final Pattern URL_FILE_SPLITTER = Pattern.compile("^(?<url>.+(?:\\.git/?|[^:]/))/(?<file>.+)$");
-	private static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
 
 	@Value
 	@Builder
@@ -49,6 +53,24 @@ public class GitResourceProvider extends AbstractResourceProvider {
 		@NonNull String remoteUrl;
 		@NonNull File localDir;
 		@NonNull String configFile;
+
+		public CredentialsProvider getCredentialsProvider() {
+			final URIish urIish;
+			try {
+				urIish = new URIish(remoteUrl);
+			} catch (URISyntaxException e) {
+				throw new ConfijSourceException("not URIish: " + remoteUrl, e);
+			}
+			if (urIish.getUser() != null) {
+				return new UsernamePasswordCredentialsProvider(urIish.getUser(), Optional.ofNullable(urIish.getPass())
+						.orElse(""));
+			}
+			return null;
+		}
+
+		public int getTimeoutInSeconds() {
+			return 0; // no timeout
+		}
 	}
 
 	public static URI toUri(@NonNull String remoteUri, @NonNull String configFile) {
@@ -132,7 +154,8 @@ public class GitResourceProvider extends AbstractResourceProvider {
 				.setRefSpecs("+refs/*:refs/*") // similar to --mirror
 				.setRemoveDeletedRefs(true)
 				.setCheckFetchedObjects(true)
-				// .setTimeout()
+				.setCredentialsProvider(settings.getCredentialsProvider())
+				.setTimeout(settings.getTimeoutInSeconds())
 				.call();
 		LOGGER.info("git fetch result: {}", fetchResult.getTrackingRefUpdates());
 		return git;
@@ -144,8 +167,8 @@ public class GitResourceProvider extends AbstractResourceProvider {
 				.setDirectory(settings.getLocalDir())
 				.setURI(settings.getRemoteUrl())
 				.setBare(true)
-				// TODO: support .setCredentialsProvider()
-				// .setTimeout()
+				.setCredentialsProvider(settings.getCredentialsProvider())
+				.setTimeout(settings.getTimeoutInSeconds())
 				.call();
 	}
 
@@ -153,9 +176,12 @@ public class GitResourceProvider extends AbstractResourceProvider {
 		Repository repository = git.getRepository();
 		try {
 			ObjectId head = repository.resolve(settings.getGitRevision());
+			if (head == null) {
+				throw new ConfijSourceException("unable to git resove revision {}", settings.getGitRevision());
+			}
 			return repository.parseCommit(head);
 		} catch (IOException e) {
-			throw new ConfijException("unable to git resove {}", settings.getGitRevision(), e);
+			throw new ConfijSourceException("failed to git resove revision {}", settings.getGitRevision(), e);
 		}
 	}
 
