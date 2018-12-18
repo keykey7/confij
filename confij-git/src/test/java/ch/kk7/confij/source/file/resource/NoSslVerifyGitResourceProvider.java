@@ -7,7 +7,7 @@ import org.eclipse.jgit.transport.HttpConfig;
 
 import java.io.IOException;
 
-public class LaxGitResourceProvider extends GitResourceProvider {
+public class NoSslVerifyGitResourceProvider extends GitResourceProvider {
 	@Override
 	protected Git gitInit(GitSettings settings) throws GitAPIException, IOException {
 		Git git = super.gitInit(settings);

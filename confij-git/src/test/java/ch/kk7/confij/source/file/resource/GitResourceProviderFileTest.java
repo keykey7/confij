@@ -13,26 +13,26 @@ import java.io.File;
 import java.net.URI;
 
 @ExtendWith(TempDirCleanupExtension.class)
-class GitResourceProviderTest implements WithAssertions {
+class GitResourceProviderFileTest implements WithAssertions {
 	private GitResourceProvider git;
 	private GitTestrepo testGit;
-	private URI uri;
+	private URI fileUri;
 
 	@BeforeEach
 	public void initGit() throws Exception {
 		git = new GitResourceProvider();
 		testGit = new GitTestrepo();
-		uri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE);
+		fileUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE);
 	}
 
 	@Test
 	public void localFileRepoIsFetched() throws Exception {
 		testGit.addAndCommit();
 		RevCommit commit2 = testGit.addAndCommit();
-		assertThat(git.read(uri)).isEqualTo(commit2.getShortMessage());
+		assertThat(git.read(fileUri)).isEqualTo(commit2.getShortMessage());
 
 		RevCommit commit3 = testGit.addAndCommit();
-		assertThat(git.read(uri)).isEqualTo(commit3.getShortMessage());
+		assertThat(git.read(fileUri)).isEqualTo(commit3.getShortMessage());
 	}
 
 	@Test
@@ -51,8 +51,7 @@ class GitResourceProviderTest implements WithAssertions {
 	@ValueSource(strings = {"%20", // not a scheme at all
 			"aaaaaaaaaaaaaaa", // doesn't exist
 			"null", // kinda empty
-			"HEAD~42",
-	})
+			"HEAD~42",})
 	public void unknwonRevision(String revision) throws Exception {
 		testGit.addAndCommit();
 		URI revUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, revision);
@@ -61,7 +60,7 @@ class GitResourceProviderTest implements WithAssertions {
 
 	@Test
 	public void notGitScheme() {
-		assertThat(git.canHandle(uri)).isTrue();
+		assertThat(git.canHandle(fileUri)).isTrue();
 		assertThat(git.canHandle(URI.create("someUri"))).isFalse();
 		assertThat(git.canHandle(URI.create("http://example.com/bla.git"))).isFalse();
 	}
@@ -83,15 +82,15 @@ class GitResourceProviderTest implements WithAssertions {
 	public void tmpRepoIsRemovedAtRuntimeRecovers() throws Exception {
 		testGit.addAndCommit();
 		RevCommit commit2 = testGit.addAndCommit();
-		assertThat(git.read(uri)).isEqualTo(commit2.getShortMessage());
+		assertThat(git.read(fileUri)).isEqualTo(commit2.getShortMessage());
 
 		// move away
-		File currentTempDir = git.uriToGitSettings(uri)
+		File currentTempDir = git.uriToGitSettings(fileUri)
 				.getLocalDir();
 		currentTempDir.renameTo(new File(currentTempDir.getParentFile(), GitResourceProvider.TEMP_DIR_PREFIX + "moved"));
 		assertThat(currentTempDir).doesNotExist();
 
-		assertThat(git.read(uri)).isEqualTo(commit2.getShortMessage());
+		assertThat(git.read(fileUri)).isEqualTo(commit2.getShortMessage());
 		assertThat(currentTempDir).exists();
 	}
 
@@ -105,7 +104,7 @@ class GitResourceProviderTest implements WithAssertions {
 
 	@Test
 	public void gitRepoIsEmpty() {
-		assertThatThrownBy(() -> git.read(uri)).isInstanceOf(ConfijSourceException.class);
+		assertThatThrownBy(() -> git.read(fileUri)).isInstanceOf(ConfijSourceException.class);
 	}
 
 	@Test
@@ -117,5 +116,12 @@ class GitResourceProviderTest implements WithAssertions {
 		GitResourceProvider.toUri("http://example.com/repo.git/", "file.txt");
 		GitResourceProvider.toUri("http://example.com/repo.git", "/file.txt");
 		GitResourceProvider.toUri("http://example.com/repo.git/", "/file.txt");
+	}
+
+	@Test
+	public void getFileForSeedIsStable() {
+		assertThat(git.getFileForSeed("fuu")).isEqualTo(git.getFileForSeed("fuu"))
+				.isNotEqualTo(git.getFileForSeed("bar"));
+		assertThatThrownBy(() -> git.getFileForSeed(null)).isInstanceOf(NullPointerException.class);
 	}
 }

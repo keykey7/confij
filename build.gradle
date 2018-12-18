@@ -83,6 +83,8 @@ subprojects {
 			exclude group: 'org.junit.jupiter'
 		}
 		testImplementation "org.assertj:assertj-core:3.11.1"
+
+		testRuntime 'ch.qos.logback:logback-classic:1.2.3'
 	}
 
 	test {

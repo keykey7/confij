@@ -16,7 +16,7 @@ import java.net.URI;
 import java.security.cert.CertificateException;
 
 @ExtendWith(TempDirCleanupExtension.class)
-public class GitResourceProviderIntTest implements WithAssertions {
+public class GitResourceProviderHttpTest implements WithAssertions {
 	private GitResourceProvider git;
 	private GitTestrepo testGit;
 	private SimpleHttpServer server;
@@ -24,7 +24,7 @@ public class GitResourceProviderIntTest implements WithAssertions {
 	private URI httpsUri;
 
 	@BeforeEach
-	public void initGit() throws Exception {
+	public void initServer() throws Exception {
 		git = new GitResourceProvider();
 		testGit = new GitTestrepo();
 		server = new SimpleHttpServer(testGit.getRepository(), true);
@@ -73,7 +73,7 @@ public class GitResourceProviderIntTest implements WithAssertions {
 
 	@Test
 	void basicAuthOverHttps() throws Exception {
-		git = new LaxGitResourceProvider();
+		git = new NoSslVerifyGitResourceProvider();
 		testGit.addAndCommit();
 		RevCommit commit2 = testGit.addAndCommit();
 		assertThat(git.read(httpUri)).isEqualTo(commit2.getShortMessage());

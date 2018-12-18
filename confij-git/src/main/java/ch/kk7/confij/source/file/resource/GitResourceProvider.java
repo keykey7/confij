@@ -118,6 +118,7 @@ public class GitResourceProvider extends AbstractResourceProvider {
 			throw new ConfijSourceException("not URIish: " + remoteUrl, e);
 		}
 		if (urIish.getUser() != null) {
+			// that's not 100% correct, you can very well send creds in the URL and ignore Authorization headers...
 			return new UsernamePasswordCredentialsProvider(urIish.getUser(), Optional.ofNullable(urIish.getPass())
 					.orElse(""));
 		}
