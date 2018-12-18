@@ -9,6 +9,11 @@ public interface ConfijLogger {
 	void error(String message, Object... attributes);
 
 	@NonNull
+	static ConfijLogger getLogger(@NonNull Class<?> clazz) {
+		return getLogger(clazz.getName());
+	}
+
+	@NonNull
 	static ConfijLogger getLogger(String name) {
 		return ServiceLoaderUtil.requireInstancesOf(ConfijLogFactory.class)
 				.get(0)

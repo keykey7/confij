@@ -1,6 +1,9 @@
 language: java
 install: true
 
+git:
+  depth: false
+
 jdk:
   - oraclejdk8
   - oraclejdk9

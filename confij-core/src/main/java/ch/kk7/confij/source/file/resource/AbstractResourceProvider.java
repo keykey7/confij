@@ -1,17 +1,13 @@
 package ch.kk7.confij.source.file.resource;
 
+import lombok.Data;
+import lombok.NonNull;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
+@Data
 public abstract class AbstractResourceProvider implements ConfijResourceProvider {
+	@NonNull
 	private Charset charset = StandardCharsets.UTF_8;
-
-	public Charset getCharset() {
-		return charset;
-	}
-
-	public void setCharset(Charset charset) {
-		this.charset = Objects.requireNonNull(charset, "null charset");
-	}
 }
