@@ -94,8 +94,8 @@ public class GitResourceProvider extends AbstractResourceProvider {
 					"'git:/var/opt/dir//path/to/file.yaml' (repo separated from file by double slash). " +
 					"However the provided '{}' does not match: {}", urlAndFile, URL_FILE_SPLITTER.pattern());
 		}
-		// TODO: also support: git://example.com/repo.git/... and ssh+git://... as a shortform
-		//       for http this might be confusing however
+		// we might also support: git://example.com/repo.git/... and ssh+git://... as a shortform
+		// for http this might be confusing however
 
 		String remoteUrl = m.group("url");
 		String configFile = m.group("file");
