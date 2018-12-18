@@ -1,9 +1,11 @@
 package ch.kk7.confij.source.file.resource;
 
+import ch.kk7.confij.source.ConfijSourceException;
 import org.assertj.core.api.WithAssertions;
+import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.junit.http.AppServer;
 import org.eclipse.jgit.junit.http.SimpleHttpServer;
-import org.eclipse.jgit.transport.URIish;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -11,19 +13,30 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.net.URI;
+import java.security.cert.CertificateException;
 
-@ExtendWith(TestCleanupExtension.class)
+@ExtendWith(TempDirCleanupExtension.class)
 public class GitResourceProviderIntTest implements WithAssertions {
 	private GitResourceProvider git;
 	private GitTestrepo testGit;
 	private SimpleHttpServer server;
+	private URI httpUri;
+	private URI httpsUri;
 
 	@BeforeEach
 	public void initGit() throws Exception {
 		git = new GitResourceProvider();
 		testGit = new GitTestrepo();
-		server = new SimpleHttpServer(testGit.getRepository());
+		server = new SimpleHttpServer(testGit.getRepository(), true);
 		server.start();
+		httpUri = GitResourceProvider.toUri(server.getUri()
+				.setUser(AppServer.username)
+				.setPass(AppServer.password)
+				.toPrivateString(), GitTestrepo.DEFAULT_FILE);
+		httpsUri = GitResourceProvider.toUri(server.getSecureUri()
+				.setUser(AppServer.username)
+				.setPass(AppServer.password)
+				.toPrivateString(), GitTestrepo.DEFAULT_FILE);
 	}
 
 	@AfterEach
@@ -32,15 +45,41 @@ public class GitResourceProviderIntTest implements WithAssertions {
 	}
 
 	@Test
-	void overHttp() throws Exception {
-		URIish urIish = server.getUri()
+	void basicAuthOverHttp() throws Exception {
+		testGit.addAndCommit();
+		RevCommit commit2 = testGit.addAndCommit();
+		assertThat(git.read(httpUri)).isEqualTo(commit2.getShortMessage());
+
+		RevCommit commit3 = testGit.addAndCommit();
+		assertThat(git.read(httpUri)).isEqualTo(commit3.getShortMessage());
+	}
+
+	@Test
+	void invalidPassword() throws Exception {
+		URI invalidPasswordUri = GitResourceProvider.toUri(server.getUri()
 				.setUser(AppServer.username)
-				.setPass(AppServer.password);
-		String testFile = "file.txt";
-		URI uri = GitResourceProvider.toUri(urIish.toPrivateString(), testFile);
-		testGit.addAndCommit(testFile, "111");
-		testGit.addAndCommit(testFile, "222");
-		assertThat(git.read(uri)).isEqualTo("222");
+				.setPass("totallyWrongPassword")
+				.toPrivateString(), GitTestrepo.DEFAULT_FILE);
+		assertThatThrownBy(() -> git.read(invalidPasswordUri)).isInstanceOf(ConfijSourceException.class)
+				.hasCauseInstanceOf(TransportException.class);
+	}
+
+	@Test
+	void httpsFailsDueToCerts() throws Exception {
+		testGit.addAndCommit();
+		assertThatThrownBy(() -> git.read(httpsUri)).isInstanceOf(ConfijSourceException.class)
+				.hasRootCauseInstanceOf(CertificateException.class);
+	}
+
+	@Test
+	void basicAuthOverHttps() throws Exception {
+		git = new LaxGitResourceProvider();
+		testGit.addAndCommit();
+		RevCommit commit2 = testGit.addAndCommit();
+		assertThat(git.read(httpUri)).isEqualTo(commit2.getShortMessage());
+
+		RevCommit commit3 = testGit.addAndCommit();
+		assertThat(git.read(httpUri)).isEqualTo(commit3.getShortMessage());
 	}
 
 	@Disabled("since it is a remote repo")

@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Objects;
 
-public class TestCleanupExtension implements BeforeAllCallback, AfterTestExecutionCallback {
+public class TempDirCleanupExtension implements BeforeAllCallback, AfterTestExecutionCallback {
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception {
 		afterTestExecution(context);

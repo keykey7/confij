@@ -7,8 +7,10 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.UUID;
 
 public class GitTestrepo {
+	public static final String DEFAULT_FILE = "file.txt";
 	private int counter = 0;
 	private Git git;
 
@@ -33,14 +35,18 @@ public class GitTestrepo {
 				.call();
 	}
 
-	public RevCommit addAndCommit(String filename, String content) throws Exception {
-		addFile(filename, content);
-		return commit();
+	public RevCommit addAndCommit() throws Exception {
+		return addAndCommit(DEFAULT_FILE, "nr" + (counter++) + " " + UUID.randomUUID());
 	}
 
-	public RevCommit commit() throws Exception {
+	public RevCommit addAndCommit(String filename, String content) throws Exception {
+		addFile(filename, content);
+		return commit(content);
+	}
+
+	public RevCommit commit(String msg) throws Exception {
 		return git.commit()
-				.setMessage("commit nr " + counter++)
+				.setMessage(msg)
 				.call();
 	}
 

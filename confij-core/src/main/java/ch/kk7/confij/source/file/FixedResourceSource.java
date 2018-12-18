@@ -6,17 +6,16 @@ import ch.kk7.confij.source.file.resource.ConfijResourceProvider;
 import ch.kk7.confij.tree.ConfijNode;
 import lombok.NonNull;
 import lombok.Value;
+import lombok.experimental.NonFinal;
 
 import java.net.URI;
 
 @Value
+@NonFinal
 public class FixedResourceSource implements ConfigSource {
-	@NonNull
-	private final URI path;
-	@NonNull
-	private final ConfijResourceProvider resource;
-	@NonNull
-	private final ConfijSourceFormat format;
+	@NonNull URI path;
+	@NonNull ConfijResourceProvider resource;
+	@NonNull ConfijSourceFormat format;
 
 	@Override
 	public void override(ConfijNode rootNode) {
