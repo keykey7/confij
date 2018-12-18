@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.net.URI;
-import java.security.cert.CertificateException;
 
 @ExtendWith(TempDirCleanupExtension.class)
 public class GitResourceProviderHttpTest implements WithAssertions {
@@ -68,7 +67,7 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 	void httpsFailsDueToCerts() throws Exception {
 		testGit.addAndCommit();
 		assertThatThrownBy(() -> git.read(httpsUri)).isInstanceOf(ConfijSourceException.class)
-				.hasRootCauseInstanceOf(CertificateException.class);
+				.hasStackTraceContaining("cert");
 	}
 
 	@Test
