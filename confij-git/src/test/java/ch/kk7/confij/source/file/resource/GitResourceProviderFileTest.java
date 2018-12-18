@@ -103,6 +103,34 @@ class GitResourceProviderFileTest implements WithAssertions {
 	}
 
 	@Test
+	public void fileOnBranch() throws Exception {
+		testGit.addAndCommit();
+		RevCommit commit2 = testGit.addAndCommit();
+		testGit.createBranch("fuu");
+		RevCommit branch1 = testGit.addAndCommit();
+		RevCommit branch2 = testGit.addAndCommit();
+
+		assertThat(git.read(fileUri)).isEqualTo(commit2.getShortMessage());
+		URI branchFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "refs/heads/fuu");
+		assertThat(git.read(branchFile)).isEqualTo(branch2.getShortMessage());
+
+		URI olderBranchFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "refs/heads/fuu~1");
+		assertThat(git.read(olderBranchFile)).isEqualTo(branch1.getShortMessage());
+	}
+
+	@Test
+	public void fileOnTag() throws Exception {
+		testGit.addAndCommit();
+		RevCommit commit2 = testGit.addAndCommit();
+		testGit.createTag("v1.0.42");
+		testGit.addAndCommit();
+
+		URI tagFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "refs/tags/v1.0.42");
+		assertThat(git.read(tagFile)).isEqualTo(commit2.getShortMessage());
+	}
+
+
+	@Test
 	public void gitRepoIsEmpty() {
 		assertThatThrownBy(() -> git.read(fileUri)).isInstanceOf(ConfijSourceException.class);
 	}

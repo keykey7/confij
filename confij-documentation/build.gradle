@@ -4,6 +4,7 @@ apply plugin: 'org.asciidoctor.convert'
 dependencies {
 	testImplementation project(':confij-yaml')
 	testImplementation project(':confij-validation')
+	testImplementation project(':confij-git')
 }
 
 asciidoctor {

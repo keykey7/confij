@@ -81,13 +81,65 @@ The configuration format (yaml, json,...) is detected based on the ending.
 Configuration sources that can load from a file can usually load from other input streams as well.
 For those, the source location and source format can be combined freely.
 
-<<anysource>> detects the location based on the scheme:
+<<anysource>> usually detects the location based on the scheme:
 
 - `file:` - is the default scheme and loads from the local Filesystem
 - `classpath:` - load from classpath on the default classloader
 - `http:` or any other registered URL format
+- `git:` for GIT repositories, see <<git>>
 
 Register custom resource providers using a <<serviceloader>> for `ch.kk7.confij.source.file.resource.ConfijResourceProvider`.
+
+=== GIT Resource Provider [[git]]
+
+NOTE: GIT resources require the `{group}:confij-git` maven artifact.
+
+Configuration sources can be fetched via GIT.
+For simple cases an <<anysource>> can be used with a special URL format:
+
+- a fixed scheme 'git:'
+- followed by the URI-like path to the repository.
+- followed by the path to the file in the repository.
+  If the repository doesn't end with `.git`, separate the filepath with two slashes `//`.
+- optionally add a refspec pointing to a commit as fragment (separated from the rest by `#`).
+  The default refspec is HEAD.
+
+.Valid AnySource-URLs specifying the path to a file in a GIT-repository
+====
+[source,bash]
+----
+# annonymous https GIT repository containing /some/file.yaml
+git:https://example.com/repo.git/some/file.yaml
+
+# double slash is required if not ending with .git
+git:https://example.com/repo//some/file.yaml
+
+# BasicAuth
+git:https://user:password@example.com/repo//some/file.yaml
+
+# annonymous ssh
+git:ssh://example.com/annonymous.git/some/file.yaml
+
+# annonymous native git protocol: twice 'git' (sic)
+git:git://example.com/annonymous.git/some/file.yaml
+
+# refspec of a commit as SHA1-prefix
+git:git://example.com/repo.git/file.yaml#4a4255c
+
+# previous commit of default HEAD (usually the master branch)
+git:git://example.com/repo.git/file.yaml#HEAD~1
+
+# file on a GIT-branch named 'fuu'
+git:git://example.com/repo.git/file.yaml#refs/heads/fuu
+
+# file tagged with 'v1.0.42'
+git:git://example.com/repo.git/file.yaml#refs/tags/v1.0.42
+----
+====
+
+For more complex scenarios like custom SSL authentication consider extending
+the existing `GitResourceProvider`.
+
 
 === YAML Format
 

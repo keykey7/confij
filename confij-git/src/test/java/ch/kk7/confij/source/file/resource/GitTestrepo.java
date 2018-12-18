@@ -35,6 +35,21 @@ public class GitTestrepo {
 				.call();
 	}
 
+	public void createTag(String tagName) throws Exception {
+		git.tag()
+				.setAnnotated(true)
+				.setMessage("tagged " + tagName)
+				.setName(tagName)
+				.call();
+	}
+
+	public void createBranch(String branchName) throws Exception {
+		git.checkout()
+				.setCreateBranch(true)
+				.setName(branchName)
+				.call();
+	}
+
 	public RevCommit addAndCommit() throws Exception {
 		return addAndCommit(DEFAULT_FILE, "nr" + (counter++) + " " + UUID.randomUUID());
 	}
