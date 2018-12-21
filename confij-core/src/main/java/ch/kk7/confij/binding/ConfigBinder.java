@@ -34,6 +34,11 @@ public class ConfigBinder {
 		bindingFactories.add(new LeafBindingFactory());
 	}
 
+	@SuppressWarnings("unchecked")
+	public <T> ConfigBinding<T> toRootConfigBinding(Class<T> forClass) {
+		return (ConfigBinding<T>) toRootConfigBinding(forClass, BindingContext.newDefaultContext());
+	}
+
 	public ConfigBinding<?> toRootConfigBinding(Type forType, BindingContext bindingContext) {
 		return toConfigBinding(BindingType.newBindingType(forType, bindingContext));
 	}

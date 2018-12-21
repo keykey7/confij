@@ -26,8 +26,8 @@ public class InterfaceBindingFactory implements ConfigBindingFactory<InterfaceBi
 	public Optional<InterfaceBinding> maybeCreate(BindingType bindingType, ConfigBinder configBinder) {
 		ResolvedType type = bindingType.getResolvedType();
 		if (type.isInterface()) {
-			if (callStack.contains(type)) {
-				throw new ConfijDefinitionException("circular interface definition: {}: cannot add another {}", stackAsString(), type);
+			if (callStack.contains(type) || type.getSelfReferencedType() != null) {
+				throw new ConfijDefinitionException("circular interface definition {}: cannot add another {}", stackAsString(), type);
 			}
 			callStack.push(type);
 			try {

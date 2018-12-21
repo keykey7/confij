@@ -28,7 +28,9 @@ dependencies {
 [source]
 ----
 include::{src}[tag=simple_interface]
-
+----
+[source]
+----
 include::{src}[tag=simple_builder]
 ----
 ----
@@ -36,7 +38,7 @@ include::{home}/server.properties[]
 ----
 ====
 <1> Define your configuration type, in this case as a Java-interface
-<2> Load from various sources, in this case from a properties file
+<2> Load from various sources, in this case from a single properties file
 <3> Bind the source to a configuration instance of matching type
 
 The corresponding properties file must have the same attributes as in the interface.
