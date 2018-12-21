@@ -6,18 +6,18 @@ public abstract class ConfijSourceTestBase {
 		String x();
 	}
 
-	public static ConfigSource noop = x -> {};
+	public static ConfijSource noop = x -> {};
 
-	public static ConfigSource alwaysFail = first -> {
+	public static ConfijSource alwaysFail = first -> {
 		throw new RuntimeException("fuuu");
 	};
 
-	public static ConfigSource setThenFail = first -> {
+	public static ConfijSource setThenFail = first -> {
 		setXTo("FAIL").override(first);
 		alwaysFail.override(first);
 	};
 
-	public static ConfigSource setXTo(String value) {
+	public static ConfijSource setXTo(String value) {
 		return rootNode -> rootNode.getChildren()
 				.get("x")
 				.setValue(value);

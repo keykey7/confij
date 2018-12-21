@@ -1,6 +1,6 @@
 package ch.kk7.confij.binding.collection;
 
-import ch.kk7.confij.binding.BindingException;
+import ch.kk7.confij.binding.ConfijDefinitionException;
 import com.fasterxml.classmate.ResolvedType;
 import lombok.NonNull;
 
@@ -61,7 +61,7 @@ public class CollectionBuilder {
 		} else if (collectionClass.isAssignableFrom(TreeSet.class)) {
 			return TreeSet::new;
 		} else {
-			throw new BindingException("Attempting to bind to a Collection of interface-type {}. " +
+			throw new ConfijDefinitionException("Attempting to bind to a Collection of interface-type {}. " +
 					"However no supported implementation is known for this. Prefer Set or List directly.", collectionClass);
 		}
 	}
@@ -72,7 +72,7 @@ public class CollectionBuilder {
 				.map(x -> (Constructor<Collection>) x)
 				.filter(c -> c.getParameterCount() == 0)
 				.findAny()
-				.orElseThrow(() -> new BindingException("Attempted to bind to a Collection of type {}. " +
+				.orElseThrow(() -> new ConfijDefinitionException("Attempted to bind to a Collection of type {}. " +
 						"However this class doesn't provide a no-arg constructor. " +
 						"It's preferable to use tree Set or List interfaces " +
 						"instead of concrete Collection classes.", collectionClass));
@@ -80,7 +80,7 @@ public class CollectionBuilder {
 			try {
 				return constructor.newInstance();
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-				throw new BindingException("unable to call no-arg constructor on {}", collectionClass, e);
+				throw new ConfijDefinitionException("unable to call no-arg constructor on {}", collectionClass, e);
 			}
 		};
 	}

@@ -1,8 +1,10 @@
 package ch.kk7.confij.binding.map;
 
-import ch.kk7.confij.binding.BindingException;
+import ch.kk7.confij.binding.ConfijBindingException;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.RawConstructor;
+import lombok.Value;
+import lombok.experimental.NonFinal;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -15,6 +17,8 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+@Value
+@NonFinal
 public class MapBuilder {
 	private final Supplier<Map> supplier;
 	private final Function<Map, Map> hardener;
@@ -42,7 +46,7 @@ public class MapBuilder {
 		} else if (intfClass.isAssignableFrom(TreeMap.class)) {
 			return TreeMap::new;
 		} else {
-			throw new BindingException("Attempting to bind to a Map of interface-type {}. " +
+			throw new ConfijBindingException("Attempting to bind to a Map of interface-type {}. " +
 					"However no supported implementation is known for this. Prefer Map directly.", type);
 		}
 	}
@@ -54,7 +58,7 @@ public class MapBuilder {
 				.map(RawConstructor::getRawMember)
 				.filter(c -> c.getParameterCount() == 0)
 				.findAny()
-				.orElseThrow(() -> new BindingException("Attempted to bind to a Map of type {}. " +
+				.orElseThrow(() -> new ConfijBindingException("Attempted to bind to a Map of type {}. " +
 						"However this class doesn't provide a no-arg constructor. " +
 						"It's preferable to use a tree Map interface " +
 						"instead of concrete Map classes.", type));
@@ -62,7 +66,7 @@ public class MapBuilder {
 			try {
 				return constructor.newInstance();
 			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-				throw new BindingException("unable to call no-arg constructor on {}", type, e);
+				throw new ConfijBindingException("unable to call no-arg constructor on {}", type, e);
 			}
 		};
 	}

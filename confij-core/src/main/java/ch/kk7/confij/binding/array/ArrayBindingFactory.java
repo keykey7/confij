@@ -4,9 +4,11 @@ import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBindingFactory;
 import com.fasterxml.classmate.ResolvedType;
+import lombok.ToString;
 
 import java.util.Optional;
 
+@ToString
 public class ArrayBindingFactory implements ConfigBindingFactory<ArrayBinding> {
 	@Override
 	public Optional<ArrayBinding> maybeCreate(BindingType bindingType, ConfigBinder configBinder) {

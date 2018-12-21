@@ -5,7 +5,7 @@ import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.common.ServiceLoaderPriority;
 import ch.kk7.confij.common.ServiceLoaderUtil;
 import ch.kk7.confij.ConfijBuilder;
-import ch.kk7.confij.source.file.resource.ConfijResourceProvider;
+import ch.kk7.confij.source.resource.ConfijResourceProvider;
 import com.google.auto.service.AutoService;
 import org.junit.jupiter.api.Test;
 

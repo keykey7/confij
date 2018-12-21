@@ -2,8 +2,8 @@ package ch.kk7.confij.binding.values;
 
 import ch.kk7.confij.annotation.ValueMapper;
 import ch.kk7.confij.binding.BindingType;
+import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.values.ValueMapperInstance.NullableValueMapperInstance;
-import ch.kk7.confij.common.ConfijException;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.RawConstructor;
 import lombok.NonNull;
@@ -15,7 +15,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
 public class SoloConstructorMapper implements ValueMapperFactory {
@@ -35,8 +34,9 @@ public class SoloConstructorMapper implements ValueMapperFactory {
 		public T fromNonNullString(String string) {
 			try {
 				return constructor.newInstance(string);
-			} catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-				throw new ConfijException("unable to instanitate object using constructor " + constructor, e);
+			} catch (Exception e) {
+				throw new ConfijBindingException("failed to instanitate a leaf object using its string-only-constructor {}", constructor,
+						e);
 			}
 		}
 	}

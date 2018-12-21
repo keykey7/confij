@@ -1,17 +1,19 @@
 package ch.kk7.confij.common;
 
+import lombok.Value;
+import lombok.experimental.UtilityClass;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-import lombok.Value;
-
 /**
  * taken from:
  * https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/core/annotation/AnnotationUtils.html
  */
+@UtilityClass
 public class AnnotationUtil {
 
 	@Value

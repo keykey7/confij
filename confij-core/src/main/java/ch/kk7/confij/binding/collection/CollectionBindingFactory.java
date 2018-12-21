@@ -1,18 +1,20 @@
 package ch.kk7.confij.binding.collection;
 
-import ch.kk7.confij.binding.BindingException;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBindingFactory;
+import ch.kk7.confij.binding.ConfijDefinitionException;
 import ch.kk7.confij.common.Util;
 import com.fasterxml.classmate.ResolvedType;
 import lombok.NonNull;
+import lombok.ToString;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
+@ToString
 public class CollectionBindingFactory implements ConfigBindingFactory<CollectionBinding> {
 	private final Function<ResolvedType, ? extends CollectionBuilder> builderFactory;
 
@@ -32,7 +34,8 @@ public class CollectionBindingFactory implements ConfigBindingFactory<Collection
 		}
 		ResolvedType componentType = typeParameters.get(0);
 		if (Util.rawObjectType.equals(componentType)) {
-			throw new BindingException("cannot resolveLeaf the generic type within Collection<?> for " + type);
+			throw new ConfijDefinitionException("Failed to determine the generic component type of Collection<?> for {}. " +
+					"There is no upper bound for this generic parameter but we cannot bind to Object. " + type);
 		}
 		// otherwise: we have at least an upper bound for the generic (like <? extends Integer> becomes Integer.class)
 		return componentType;
@@ -44,7 +47,6 @@ public class CollectionBindingFactory implements ConfigBindingFactory<Collection
 		if (type.isInstanceOf(Collection.class)) {
 			ResolvedType componentType = collectionComponentType(type);
 			CollectionBuilder builder = builderFactory.apply(type);
-			//noinspection unchecked
 			return Optional.of(new CollectionBinding(builder, bindingType.bindingFor(componentType), configBinder));
 		}
 		return Optional.empty();

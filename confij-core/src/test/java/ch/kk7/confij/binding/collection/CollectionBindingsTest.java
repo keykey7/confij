@@ -3,6 +3,7 @@ package ch.kk7.confij.binding.collection;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.common.ConfijException;
+import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -16,10 +17,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-class CollectionBindingsTest {
+class CollectionBindingsTest implements WithAssertions {
 	private CollectionBindingFactory collectionFactory = new CollectionBindingFactory();
 	private ConfigBinder configBinder = new ConfigBinder();
 
@@ -86,6 +84,6 @@ class CollectionBindingsTest {
 	@ParameterizedTest
 	@MethodSource("invalidCollectionTypes")
 	public void invalidSets(BindingType type) {
-		assertThrows(ConfijException.class, () -> collectionFactory.maybeCreate(type, configBinder));
+		assertThatThrownBy(() -> collectionFactory.maybeCreate(type, configBinder)).isInstanceOf(ConfijException.class);
 	}
 }

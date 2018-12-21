@@ -1,7 +1,7 @@
 package ch.kk7.confij.source.logical;
 
 import ch.kk7.confij.logging.ConfijLogger;
-import ch.kk7.confij.source.ConfigSource;
+import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.ConfijSourceException;
 import ch.kk7.confij.tree.ConfijNode;
 import lombok.NonNull;
@@ -12,11 +12,11 @@ import java.util.Arrays;
 import java.util.List;
 
 @ToString
-public class OrSource implements ConfigSource {
+public class OrSource implements ConfijSource {
 	private static final ConfijLogger LOG = ConfijLogger.getLogger(OrSource.class.getName());
-	private final List<ConfigSource> orList;
+	private final List<ConfijSource> orList;
 
-	public OrSource(@NonNull ConfigSource one, @NonNull ConfigSource or, ConfigSource... orEven) {
+	public OrSource(@NonNull ConfijSource one, @NonNull ConfijSource or, ConfijSource... orEven) {
 		orList = new ArrayList<>();
 		orList.add(one);
 		orList.add(or);
@@ -26,7 +26,7 @@ public class OrSource implements ConfigSource {
 	@Override
 	public void override(ConfijNode rootNode) {
 		List<Exception> pastExceptions = new ArrayList<>();
-		for (ConfigSource source : orList) {
+		for (ConfijSource source : orList) {
 			ConfijNode copy = rootNode.deepClone();
 			try {
 				source.override(copy);
