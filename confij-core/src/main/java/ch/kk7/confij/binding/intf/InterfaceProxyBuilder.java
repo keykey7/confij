@@ -1,7 +1,7 @@
 package ch.kk7.confij.binding.intf;
 
-import ch.kk7.confij.binding.BindingException;
-import ch.kk7.confij.common.ConfijException;
+import ch.kk7.confij.binding.ConfijBindingException;
+import ch.kk7.confij.binding.ConfijDefinitionException;
 import ch.kk7.confij.common.Util;
 import com.fasterxml.classmate.MemberResolver;
 import com.fasterxml.classmate.ResolvedType;
@@ -9,6 +9,7 @@ import com.fasterxml.classmate.TypeResolver;
 import com.fasterxml.classmate.members.ResolvedMethod;
 import com.fasterxml.classmate.types.ResolvedInterfaceType;
 import lombok.Getter;
+import lombok.ToString;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -25,13 +26,13 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
+@Getter
+@ToString
 public class InterfaceProxyBuilder<T> {
 	private final static Map<Class<?>, Object> PRIMITIVE_ZEROS = Stream.of(boolean.class, byte.class, char.class, double.class, float.class,
 			int.class, long.class, short.class)
 			.collect(toMap(clazz -> (Class<?>) clazz, clazz -> Array.get(Array.newInstance(clazz, 1), 0)));
-	@Getter
 	private final ResolvedInterfaceType type;
-	@Getter
 	private final Set<ResolvedMethod> allowedMethods;
 	private final Set<ResolvedMethod> mandatoryMethods;
 
@@ -63,12 +64,10 @@ public class InterfaceProxyBuilder<T> {
 				if (rawMethod.isDefault()) {
 					return false;
 				}
-				throw new ConfijException("expected no-arg methods only, but found " + method);
+				throw new ConfijDefinitionException("expected no-arg methods only in ConfiJ-interface, but found {}. " +
+						"Only default methods are allowed to have parameters.", method);
 			}
-			if (mandatoryOnly && rawMethod.isDefault()) {
-				return false;
-			}
-			return true;
+			return !mandatoryOnly || !rawMethod.isDefault();
 		});
 		return memberResolver;
 	}
@@ -95,13 +94,13 @@ public class InterfaceProxyBuilder<T> {
 			Set<ResolvedMethod> notAllowedMethods = new HashSet<>(inputMethods);
 			notAllowedMethods.removeAll(allowedMethods);
 			if (!notAllowedMethods.isEmpty()) {
-				throw new BindingException("cannot create instance of type '{}' with methods {}. allowed are {}", type, notAllowedMethods,
+				throw new ConfijBindingException("cannot create instance of type '{}' with methods {}. allowed are {}", type, notAllowedMethods,
 						allowedMethods);
 			}
 			Set<ResolvedMethod> missingMandatoryMethods = new HashSet<>(mandatoryMethods);
 			missingMandatoryMethods.removeAll(inputMethods);
 			if (!missingMandatoryMethods.isEmpty()) {
-				throw new BindingException("cannot create instance of type '{}' due to missing mandatory methods {}", type,
+				throw new ConfijBindingException("cannot create instance of type '{}' due to missing mandatory methods {}", type,
 						missingMandatoryMethods);
 			}
 			// input methods are valid at this point

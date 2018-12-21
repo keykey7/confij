@@ -6,6 +6,9 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * given a class with an empty constructor, maintain a cache for class->instance without any guarantees.
+ */
 @ToString
 public class ClassToImplCache {
 	private final Map<Class<?>, Object> instances = new HashMap<>();

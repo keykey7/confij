@@ -4,9 +4,11 @@ import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBindingFactory;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
+import lombok.ToString;
 
 import java.util.Optional;
 
+@ToString
 public class LeafBindingFactory implements ConfigBindingFactory<LeafBinding> {
 	public static Optional<ValueMapperInstance> firstValueMapper(BindingType bindingType) {
 		return bindingType.getBindingContext()

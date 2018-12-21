@@ -66,7 +66,7 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 			Object siblingValue = siblingDescription.getDescription()
 					.bind(childConfigs.get(key));
 			// TODO: what does it mean when a siblingValue is null/empty for a default method? should it be called or simply return null?
-			// TODO: -> maybe make the behavior configurable
+			//       -> maybe make the behavior configurable
 			ResolvedMethod method = siblingDescription.getMethod();
 			if (method.getRawMember()
 					.isDefault() && isEmpty(siblingValue)) {

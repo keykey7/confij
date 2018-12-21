@@ -16,6 +16,8 @@ import ch.kk7.confij.common.ClassToImplCache;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.Value;
+import lombok.experimental.NonFinal;
 import lombok.experimental.Wither;
 
 import java.lang.annotation.Annotation;
@@ -29,9 +31,12 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * considered when parsing the configuration types.
+ * While traversing the tree of interfaces defining the configuration, this represents a state at a given node.
+ * It is an aggregated state over all the parent nodes, usually considering the annotations up to a node.
  */
+@Value
 @Wither
+@NonFinal
 public class BindingContext {
 	private final ValueMapperFactory forcedMapperFactory;
 	@Getter

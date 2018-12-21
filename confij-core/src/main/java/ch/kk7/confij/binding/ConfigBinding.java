@@ -5,6 +5,11 @@ import ch.kk7.confij.tree.NodeBindingContext;
 import ch.kk7.confij.tree.ConfijNode;
 
 public interface ConfigBinding<T> {
+	/**
+	 *
+	 * @param nodeBindingContext
+	 * @return
+	 */
 	NodeDefinition describe(NodeBindingContext nodeBindingContext);
 
 	T bind(ConfijNode config);

@@ -1,6 +1,6 @@
 package ch.kk7.confij.binding.values;
 
-import ch.kk7.confij.binding.BindingException;
+import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.values.ValueMapperInstance.NullableValueMapperInstance;
 import ch.kk7.confij.binding.values.DurationMapper.DurationMapperInstance;
@@ -26,14 +26,14 @@ public class PeriodMapper extends AbstractClassValueMapper<Period> {
 			// this would be caught later anyway, but the error message
 			// is more helpful if we check it here.
 			if (numberString.length() == 0) {
-				throw new BindingException("bad value: cannot convert an empty value to a Period");
+				throw new ConfijBindingException("bad value: cannot convert an empty value to a Period");
 			}
 
 			ChronoUnit units = stringToChronoUnit(unitString);
 			try {
 				return periodOf(Integer.parseInt(numberString), units);
 			} catch (NumberFormatException e) {
-				throw new BindingException("Could not parse duration number '{}'", numberString, e);
+				throw new ConfijBindingException("Could not parse duration number '{}'", numberString, e);
 			}
 		}
 
@@ -58,7 +58,7 @@ public class PeriodMapper extends AbstractClassValueMapper<Period> {
 				case "years":
 					return ChronoUnit.YEARS;
 				default:
-					throw new BindingException("Could not parse time unit '{}' (try d, w, mo, y)", unitString);
+					throw new ConfijBindingException("Could not parse time unit '{}' (try d, w, mo, y)", unitString);
 			}
 		}
 

@@ -1,6 +1,6 @@
 package ch.kk7.confij.template;
 
-import ch.kk7.confij.common.ConfijException;
+import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.tree.ConfijNode;
 import lombok.ToString;
 
@@ -34,13 +34,13 @@ public class DefaultResolver implements VariableResolver {
 	protected String resolveLeafInternal(ConfijNode leaf) {
 		String value = leaf.getValue();
 		if (value == null) {
-			throw new ConfijException("referenced property {} is null", leaf);
+			throw new ConfijBindingException("referenced property {} is null", leaf);
 		}
 		if (resolvedLeaves.containsKey(leaf)) {
 			return resolvedLeaves.get(leaf);
 		}
 		if (inProgressLeaves.contains(leaf)) {
-			throw new ConfijException("circular dependency: cannot resolve leaf value. Call stack: {}", inProgressLeaves);
+			throw new ConfijBindingException("circular dependency: cannot resolve leaf value. Call stack: {}", inProgressLeaves);
 		}
 		inProgressLeaves.add(leaf);
 		String resolvedValue = resolveValueInternal(leaf, value);

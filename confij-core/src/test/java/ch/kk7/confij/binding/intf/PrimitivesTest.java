@@ -1,6 +1,6 @@
 package ch.kk7.confij.binding.intf;
 
-import ch.kk7.confij.binding.BindingException;
+import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.intf.PrimitivesTest.WithPrimitives;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +46,7 @@ public class PrimitivesTest extends AbstractProxyBuilderTest<WithPrimitives> {
 
 	@Test
 	public void allUninitialized() {
-		assertThatThrownBy(this::instance).isInstanceOf(BindingException.class)
+		assertThatThrownBy(this::instance).isInstanceOf(ConfijBindingException.class)
 				.hasMessageContaining("anInt")
 				.hasMessageContaining("byteArray");
 	}
@@ -55,7 +55,7 @@ public class PrimitivesTest extends AbstractProxyBuilderTest<WithPrimitives> {
 	public void partiallyUninitialized() {
 		// NOT withAnInt()
 		withBoolean(false).withByteArray(new byte[]{});
-		assertThatThrownBy(this::instance).isInstanceOf(BindingException.class)
+		assertThatThrownBy(this::instance).isInstanceOf(ConfijBindingException.class)
 				.hasMessageContaining("anInt")
 				.satisfies(o -> assertThat(o.getMessage()).doesNotContain("byteArray"));
 	}

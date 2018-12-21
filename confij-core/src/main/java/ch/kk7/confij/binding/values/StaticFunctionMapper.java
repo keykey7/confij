@@ -2,8 +2,8 @@ package ch.kk7.confij.binding.values;
 
 import ch.kk7.confij.annotation.ValueMapper;
 import ch.kk7.confij.binding.BindingType;
+import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.values.ValueMapperInstance.NullableValueMapperInstance;
-import ch.kk7.confij.common.ConfijException;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.members.RawMethod;
 
@@ -12,7 +12,6 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -43,8 +42,8 @@ public class StaticFunctionMapper implements ValueMapperFactory {
 			try {
 				//noinspection unchecked
 				return (T) method.invoke(null, string);
-			} catch (IllegalAccessException | InvocationTargetException e) {
-				throw new ConfijException("unable to instanitate obj using static method " + method, e);
+			} catch (Exception e) {
+				throw new ConfijBindingException("failed to instanitate a leaf object using its static method {}", method, e);
 			}
 		}
 	}

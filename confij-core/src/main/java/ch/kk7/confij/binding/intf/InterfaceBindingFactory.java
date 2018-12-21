@@ -3,15 +3,17 @@ package ch.kk7.confij.binding.intf;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBindingFactory;
-import ch.kk7.confij.common.ConfijException;
+import ch.kk7.confij.binding.ConfijDefinitionException;
 import com.fasterxml.classmate.ResolvedType;
+import lombok.ToString;
 
 import java.util.Optional;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+@ToString
 public class InterfaceBindingFactory implements ConfigBindingFactory<InterfaceBinding> {
-	private Stack<ResolvedType> callStack = new Stack<>();
+	private final Stack<ResolvedType> callStack = new Stack<>();
 
 	private String stackAsString() {
 		return callStack.stream()
@@ -24,7 +26,7 @@ public class InterfaceBindingFactory implements ConfigBindingFactory<InterfaceBi
 		ResolvedType type = bindingType.getResolvedType();
 		if (type.isInterface()) {
 			if (callStack.contains(type)) {
-				throw new ConfijException("circular interface definition: {}: cannot add another {}", stackAsString(), type);
+				throw new ConfijDefinitionException("circular interface definition: {}: cannot add another {}", stackAsString(), type);
 			}
 			callStack.push(type);
 			try {

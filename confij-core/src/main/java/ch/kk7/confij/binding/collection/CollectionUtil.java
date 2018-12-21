@@ -1,5 +1,6 @@
 package ch.kk7.confij.binding.collection;
 
+import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.tree.ConfijNode;
 import lombok.experimental.UtilityClass;
 
@@ -36,8 +37,14 @@ public class CollectionUtil {
 		return sortedResult;
 	}
 
-	public static List<ConfijNode> childrenAsContinuousList(ConfijNode node) {
-		Map<String, ConfijNode> children = node.getChildren();
+	/**
+	 * finds all children of a node (which are organized as a map) and returns them as a continuous List.
+	 *
+	 * @param parentNode the parent node of which we want the children
+	 * @return the List of child nodes (without null elements)
+	 */
+	public static List<ConfijNode> childrenAsContinuousList(ConfijNode parentNode) {
+		Map<String, ConfijNode> children = parentNode.getChildren();
 		if (children.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -45,7 +52,7 @@ public class CollectionUtil {
 		for (int i = 0; i < children.size(); i++) {
 			String key = String.valueOf(i);
 			if (!children.containsKey(key)) {
-				throw new IllegalArgumentException("expected a continuous list, but node is missing a child named: " + key);
+				throw new ConfijBindingException("expected a continuous list, but node {} is missing a child named '{}'", parentNode, key);
 			}
 			sortedResult.add(children.get(key));
 		}

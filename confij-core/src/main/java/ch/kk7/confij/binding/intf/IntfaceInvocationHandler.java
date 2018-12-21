@@ -1,6 +1,6 @@
 package ch.kk7.confij.binding.intf;
 
-import ch.kk7.confij.binding.BindingException;
+import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.intf.DefaultMethodHandler.DefaultMethodException;
 import ch.kk7.confij.binding.intf.InterfaceProxyBuilder.ConfijHandled;
 import lombok.AllArgsConstructor;
@@ -32,7 +32,7 @@ public class IntfaceInvocationHandler implements InvocationHandler {
 		if (method.isDefault()) {
 			return invokeDefault(proxy, method, args);
 		}
-		throw new BindingException("cannot call method '{}' as it was not initialized. initialized are: {}", method,
+		throw new ConfijBindingException("cannot call method '{}' as it was not initialized. initialized are: {}", method,
 				methodToValues.keySet());
 	}
 

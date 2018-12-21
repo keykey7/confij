@@ -1,7 +1,7 @@
 package ch.kk7.confij.binding.values;
 
 import ch.kk7.confij.annotation.ValueMapper;
-import ch.kk7.confij.binding.BindingException;
+import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.values.ValueMapperInstance.NullableValueMapperInstance;
 
@@ -38,7 +38,7 @@ public class DurationMapper extends AbstractClassValueMapper<Duration> {
 			// this would be caught later anyway, but the error message
 			// is more helpful if we check it here.
 			if (numberString.length() == 0) {
-				throw new BindingException("bad value: cannot convert an empty value to a Duration");
+				throw new ConfijBindingException("bad value: cannot convert an empty value to a Duration");
 			}
 
 			TimeUnit units = stringToTimeUnit(unitString);
@@ -53,7 +53,7 @@ public class DurationMapper extends AbstractClassValueMapper<Duration> {
 					return (long) (Double.parseDouble(numberString) * nanosInUnit);
 				}
 			} catch (NumberFormatException e) {
-				throw new BindingException("Could not parse duration number '{}'", numberString);
+				throw new ConfijBindingException("Could not parse duration number '{}'", numberString);
 			}
 		}
 
@@ -90,7 +90,7 @@ public class DurationMapper extends AbstractClassValueMapper<Duration> {
 				case "minutes":
 					return TimeUnit.MINUTES;
 				default:
-					throw new BindingException("Could not parse time unit '{}' (try ns, us, ms, s, m, h, d)", unitString);
+					throw new ConfijBindingException("Could not parse time unit '{}' (try ns, us, ms, s, m, h, d)", unitString);
 			}
 		}
 

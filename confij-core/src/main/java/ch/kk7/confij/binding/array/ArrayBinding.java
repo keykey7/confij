@@ -8,10 +8,12 @@ import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionList;
 import ch.kk7.confij.tree.NodeBindingContext;
 import ch.kk7.confij.tree.ConfijNode;
 import com.fasterxml.classmate.ResolvedType;
+import lombok.ToString;
 
 import java.lang.reflect.Array;
 import java.util.List;
 
+@ToString
 public class ArrayBinding<T> implements ConfigBinding<Object> {
 	private final ResolvedType componentType;
 	private final ConfigBinding<T> componentDescription;

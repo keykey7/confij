@@ -1,5 +1,7 @@
 package ch.kk7.confij.common;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -9,11 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import lombok.experimental.UtilityClass;
-
 @UtilityClass
 public class ServiceLoaderUtil {
-
 	private static Map<Class<?>, List<?>> serviceInstances = new ConcurrentHashMap<>();
 
 	public static <T> List<T> requireInstancesOf(Class<T> serviceClass) {
@@ -27,6 +26,7 @@ public class ServiceLoaderUtil {
 	/**
 	 * Loads and caches all instances of a given class using a {@link ServiceLoader} and
 	 * sorts them by {@link ServiceLoaderPriority} first and by class name otherwise.
+	 *
 	 * @return list of initialized singletons of given type in deterministic order
 	 */
 	@SuppressWarnings("unchecked")
