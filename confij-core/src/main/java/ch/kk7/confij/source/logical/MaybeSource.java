@@ -1,7 +1,7 @@
 package ch.kk7.confij.source.logical;
 
 import ch.kk7.confij.logging.ConfijLogger;
-import ch.kk7.confij.source.ConfigSource;
+import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.tree.ConfijNode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +9,11 @@ import lombok.ToString;
 
 @ToString
 @RequiredArgsConstructor
-public class MaybeSource implements ConfigSource {
+public class MaybeSource implements ConfijSource {
 	private static final ConfijLogger LOG = ConfijLogger.getLogger(MaybeSource.class.getName());
 
 	@NonNull
-	private final ConfigSource maybeSource;
+	private final ConfijSource maybeSource;
 
 	@Override
 	public void override(ConfijNode rootNode) {

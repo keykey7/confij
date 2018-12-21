@@ -17,7 +17,7 @@ public class PeriodMapper extends AbstractClassValueMapper<Period> {
 		 * The purpose of this function is to implement the period-related methods
 		 * in the ConfigObject interface.
 		 *
-		 * @implSpec https://github.com/lightbend/config/blob/ea45ea3767a201933eeeb9c3f0f13eacc9b51f07/config/src/main/java/com/typesafe/config/impl/SimpleConfig.java
+		 * Heavily inspired by https://github.com/lightbend/config/blob/ea45ea3767a201933eeeb9c3f0f13eacc9b51f07/config/src/main/java/com/typesafe/config/impl/SimpleConfig.java
 		 */
 		public static Period parsePeriod(String s) {
 			String unitString = DurationMapperInstance.getUnits(s);

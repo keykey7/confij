@@ -1,12 +1,12 @@
 package ch.kk7.confij.source.env;
 
-import ch.kk7.confij.source.ConfigSource;
-import ch.kk7.confij.source.file.format.PropertiesFormat;
+import ch.kk7.confij.source.ConfijSource;
+import ch.kk7.confij.source.format.PropertiesFormat;
 import ch.kk7.confij.tree.ConfijNode;
 
 import java.util.Properties;
 
-public class PropertiesSource extends PropertiesFormat implements ConfigSource {
+public class PropertiesSource extends PropertiesFormat implements ConfijSource {
 	private final Properties properties;
 
 	public PropertiesSource() {

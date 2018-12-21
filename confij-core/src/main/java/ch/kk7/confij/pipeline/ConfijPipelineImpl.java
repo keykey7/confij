@@ -1,27 +1,24 @@
 package ch.kk7.confij.pipeline;
 
 import ch.kk7.confij.binding.ConfigBinding;
-import ch.kk7.confij.tree.NodeDefinition;
-import ch.kk7.confij.source.ConfigSource;
+import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeDefinition;
 import ch.kk7.confij.validation.ConfijValidator;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.Value;
+import lombok.experimental.NonFinal;
 
 import java.util.List;
 
-@AllArgsConstructor
+@Value
+@NonFinal
 public class ConfijPipelineImpl<T> implements ConfijPipeline<T> {
-	@NonNull
-	private final List<ConfigSource> sources;
-	@NonNull
-	private final ConfigSource defaultSource;
-	@NonNull
-	private final ConfijValidator validator;
-	@NonNull
-	private final ConfigBinding<T> configBinding;
-	@NonNull
-	private final NodeDefinition format;
+	@NonNull List<ConfijSource> sources;
+	@NonNull ConfijSource defaultSource;
+	@NonNull ConfijValidator validator;
+	@NonNull ConfigBinding<T> configBinding;
+	@NonNull NodeDefinition format;
 
 	protected ConfijNode newDefaultConfig() {
 		ConfijNode defaultsOnly = ConfijNode.newRootFor(format);
@@ -31,7 +28,7 @@ public class ConfijPipelineImpl<T> implements ConfijPipeline<T> {
 
 	protected ConfijNode readConfigToNode() {
 		ConfijNode rootNode = newDefaultConfig();
-		for (ConfigSource source : sources) {
+		for (ConfijSource source : sources) {
 			source.override(rootNode);
 			// always overriding with default source to make sure new
 			// (optional) branches are filled with default values before

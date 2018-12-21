@@ -9,8 +9,8 @@ import ch.kk7.confij.pipeline.ConfijPipeline;
 import ch.kk7.confij.pipeline.ConfijPipelineImpl;
 import ch.kk7.confij.pipeline.reload.ConfijReloader;
 import ch.kk7.confij.pipeline.reload.ScheduledReloader;
-import ch.kk7.confij.source.AnySource;
-import ch.kk7.confij.source.ConfigSource;
+import ch.kk7.confij.source.any.AnySource;
+import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.defaults.DefaultSource;
 import ch.kk7.confij.source.logical.MaybeSource;
 import ch.kk7.confij.source.logical.OrSource;
@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 
 public class ConfijBuilder<T> {
 	private final Type forType;
-	private final List<ConfigSource> sources = new ArrayList<>();
+	private final List<ConfijSource> sources = new ArrayList<>();
 	private ConfijValidator validator = null;
 	private NodeBindingContext nodeBindingContext = null;
 	private BindingContext bindingContext = null;
@@ -89,7 +89,7 @@ public class ConfijBuilder<T> {
 	 * @param source list of configuration sources
 	 * @return self
 	 */
-	public ConfijBuilder<T> loadFrom(ConfigSource... source) {
+	public ConfijBuilder<T> loadFrom(ConfijSource... source) {
 		sources.addAll(Arrays.asList(source));
 		return this;
 	}

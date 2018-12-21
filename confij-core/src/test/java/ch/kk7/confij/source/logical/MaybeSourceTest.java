@@ -1,7 +1,7 @@
 package ch.kk7.confij.source.logical;
 
 import ch.kk7.confij.ConfijBuilder;
-import ch.kk7.confij.source.ConfigSource;
+import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.ConfijSourceTestBase;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MaybeSourceTest extends ConfijSourceTestBase {
 
-	private static AbstractStringAssert<?> assertThatX(ConfigSource nested) {
+	private static AbstractStringAssert<?> assertThatX(ConfijSource nested) {
 		ConfigX orConfig = ConfijBuilder.of(ConfigX.class)
 				.loadFrom(setXTo("before"))
 				.loadFrom(new MaybeSource(nested))

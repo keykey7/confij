@@ -1,6 +1,6 @@
 package ch.kk7.confij.docs;
 
-import ch.kk7.confij.source.file.resource.ClasspathResourceProvider;
+import ch.kk7.confij.source.resource.ClasspathResourceProvider;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeAll;

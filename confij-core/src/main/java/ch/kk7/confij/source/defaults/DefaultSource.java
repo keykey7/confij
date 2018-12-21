@@ -1,7 +1,7 @@
 package ch.kk7.confij.source.defaults;
 
 import ch.kk7.confij.common.Util;
-import ch.kk7.confij.source.ConfigSource;
+import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.tree.ConfijNode;
 
 import java.util.Set;
@@ -10,7 +10,7 @@ import java.util.Set;
  * This is a special ConfigSource since it does not simply override existing values.
  * It rather extends them, by introducing missing nodes and setting default values.
  */
-public class DefaultSource implements ConfigSource {
+public class DefaultSource implements ConfijSource {
 	@Override
 	public void override(ConfijNode rootNode) {
 		if (rootNode.getConfig()

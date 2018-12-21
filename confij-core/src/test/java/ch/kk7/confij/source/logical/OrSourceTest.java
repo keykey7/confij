@@ -1,7 +1,7 @@
 package ch.kk7.confij.source.logical;
 
 import ch.kk7.confij.ConfijBuilder;
-import ch.kk7.confij.source.ConfigSource;
+import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.ConfijSourceException;
 import ch.kk7.confij.source.ConfijSourceTestBase;
 import org.assertj.core.api.AbstractStringAssert;
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class OrSourceTest extends ConfijSourceTestBase {
 
-	private static AbstractStringAssert<?> assertThatX(ConfigSource one, ConfigSource or, ConfigSource... orEven) {
+	private static AbstractStringAssert<?> assertThatX(ConfijSource one, ConfijSource or, ConfijSource... orEven) {
 		ConfigX orConfig = ConfijBuilder.of(ConfigX.class)
 				.loadFrom(setXTo("before"))
 				.loadFrom(new OrSource(one, or, orEven))
