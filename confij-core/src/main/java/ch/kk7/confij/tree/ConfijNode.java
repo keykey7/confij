@@ -77,12 +77,6 @@ public class ConfijNode {
 		return clone;
 	}
 
-	@Deprecated
-	@NonNull
-	public ConfijNode resolve(String targetStr) {
-		return resolve(uri.resolve(uriEncode(targetStr)));
-	}
-
 	@NonNull
 	public ConfijNode resolve(URI target) {
 		URI absolute = uri.resolve(target);

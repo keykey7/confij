@@ -29,7 +29,7 @@ import static java.util.stream.Collectors.toMap;
 @Getter
 @ToString
 public class InterfaceProxyBuilder<T> {
-	private final static Map<Class<?>, Object> PRIMITIVE_ZEROS = Stream.of(boolean.class, byte.class, char.class, double.class, float.class,
+	private static final Map<Class<?>, Object> PRIMITIVE_ZEROS = Stream.of(boolean.class, byte.class, char.class, double.class, float.class,
 			int.class, long.class, short.class)
 			.collect(toMap(clazz -> (Class<?>) clazz, clazz -> Array.get(Array.newInstance(clazz, 1), 0)));
 	private final ResolvedInterfaceType type;
@@ -40,10 +40,55 @@ public class InterfaceProxyBuilder<T> {
 		Map<Method, Object> methodToValue();
 	}
 
+	public class ValidatingProxyBuilder {
+		private final Map<ResolvedMethod, Object> methodToValues = new HashMap<>();
+
+		public ValidatingProxyBuilder methodToValue(ResolvedMethod resolvedMethod, Object value) {
+			methodToValues.put(resolvedMethod, value);
+			return this;
+		}
+
+		public T build() {
+			Set<ResolvedMethod> inputMethods = methodToValues.keySet();
+			Set<ResolvedMethod> notAllowedMethods = new HashSet<>(inputMethods);
+			notAllowedMethods.removeAll(allowedMethods);
+			if (!notAllowedMethods.isEmpty()) {
+				throw new ConfijBindingException("cannot create instance of type '{}' with methods {}. allowed are {}", type,
+						notAllowedMethods, allowedMethods);
+			}
+			Set<ResolvedMethod> missingMandatoryMethods = new HashSet<>(mandatoryMethods);
+			missingMandatoryMethods.removeAll(inputMethods);
+			if (!missingMandatoryMethods.isEmpty()) {
+				throw new ConfijBindingException("cannot create instance of type '{}' due to missing mandatory methods {}", type,
+						missingMandatoryMethods);
+			}
+			// input methods are valid at this point
+			Map<Method, Object> fixedMethodToValue = new TreeMap<>(Comparator.comparing(Method::getName));
+			methodToValues.forEach((method, value) -> {
+				ResolvedType returnClass = method.getReturnType();
+				if (value == null && returnClass.isPrimitive()) {
+					// handle default values for primitive types and avoid NPE when accessing them
+					value = classToPrimitive(returnClass.getErasedType());
+				}
+				fixedMethodToValue.put(method.getRawMember(), value);
+			});
+			Class forInterface = type.getErasedType();
+			IntfaceInvocationHandler invocationHandler = new IntfaceInvocationHandler(forInterface.getSimpleName(), fixedMethodToValue);
+			//noinspection unchecked
+			return (T) Proxy.newProxyInstance(forInterface.getClassLoader(), new Class[]{forInterface, ConfijHandled.class},
+					invocationHandler);
+		}
+	}
+
 	public InterfaceProxyBuilder(ResolvedInterfaceType type) {
 		this.type = type;
 		allowedMethods = supportedMethods(false);
 		mandatoryMethods = supportedMethods(true);
+	}
+
+	@SuppressWarnings("unchecked")
+	protected static <T> T classToPrimitive(Class<T> primitiveClass) {
+		return (T) PRIMITIVE_ZEROS.get(primitiveClass);
 	}
 
 	protected Set<ResolvedMethod> supportedMethods(boolean mandatoryOnly) {
@@ -72,52 +117,7 @@ public class InterfaceProxyBuilder<T> {
 		return memberResolver;
 	}
 
-	@SuppressWarnings("unchecked")
-	protected static <T> T classToPrimitive(Class<T> primitiveClass) {
-		return (T) PRIMITIVE_ZEROS.get(primitiveClass);
-	}
-
 	public ValidatingProxyBuilder builder() {
 		return new ValidatingProxyBuilder();
-	}
-
-	public class ValidatingProxyBuilder {
-		private final Map<ResolvedMethod, Object> methodToValues = new HashMap<>();
-
-		public ValidatingProxyBuilder methodToValue(ResolvedMethod resolvedMethod, Object value) {
-			methodToValues.put(resolvedMethod, value);
-			return this;
-		}
-
-		public T build() {
-			Set<ResolvedMethod> inputMethods = methodToValues.keySet();
-			Set<ResolvedMethod> notAllowedMethods = new HashSet<>(inputMethods);
-			notAllowedMethods.removeAll(allowedMethods);
-			if (!notAllowedMethods.isEmpty()) {
-				throw new ConfijBindingException("cannot create instance of type '{}' with methods {}. allowed are {}", type, notAllowedMethods,
-						allowedMethods);
-			}
-			Set<ResolvedMethod> missingMandatoryMethods = new HashSet<>(mandatoryMethods);
-			missingMandatoryMethods.removeAll(inputMethods);
-			if (!missingMandatoryMethods.isEmpty()) {
-				throw new ConfijBindingException("cannot create instance of type '{}' due to missing mandatory methods {}", type,
-						missingMandatoryMethods);
-			}
-			// input methods are valid at this point
-			Map<Method, Object> fixedMethodToValue = new TreeMap<>(Comparator.comparing(Method::getName));
-			methodToValues.forEach((method, value) -> {
-				ResolvedType returnClass = method.getReturnType();
-				if (value == null && returnClass.isPrimitive()) {
-					// handle default values for primitive types and avoid NPE when accessing them
-					value = classToPrimitive(returnClass.getErasedType());
-				}
-				fixedMethodToValue.put(method.getRawMember(), value);
-			});
-			Class forInterface = type.getErasedType();
-			IntfaceInvocationHandler invocationHandler = new IntfaceInvocationHandler(forInterface.getSimpleName(), fixedMethodToValue);
-			//noinspection unchecked
-			return (T) Proxy.newProxyInstance(forInterface.getClassLoader(), new Class[]{forInterface, ConfijHandled.class},
-					invocationHandler);
-		}
 	}
 }

@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 
-@SuppressWarnings("ProhibitedExceptionDeclared")
+@SuppressWarnings("ProhibitedExceptionDeclared,squid:S00112")
 @AllArgsConstructor
 @ToString
 public class IntfaceInvocationHandler implements InvocationHandler {

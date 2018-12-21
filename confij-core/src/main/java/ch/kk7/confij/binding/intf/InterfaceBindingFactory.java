@@ -7,13 +7,14 @@ import ch.kk7.confij.binding.ConfijDefinitionException;
 import com.fasterxml.classmate.ResolvedType;
 import lombok.ToString;
 
+import java.util.Deque;
+import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Stack;
 import java.util.stream.Collectors;
 
 @ToString
 public class InterfaceBindingFactory implements ConfigBindingFactory<InterfaceBinding> {
-	private final Stack<ResolvedType> callStack = new Stack<>();
+	private final Deque<ResolvedType> callStack = new LinkedList<>();
 
 	private String stackAsString() {
 		return callStack.stream()

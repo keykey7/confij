@@ -1,5 +1,6 @@
 package ch.kk7.confij.pipeline.reload;
 
+import ch.kk7.confij.logging.ConfijLogger;
 import ch.kk7.confij.pipeline.ConfijPipeline;
 import lombok.ToString;
 
@@ -14,6 +15,8 @@ import java.util.concurrent.TimeUnit;
  */
 @ToString
 public class ScheduledReloader<T> implements ConfijReloader<T> {
+	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(ScheduledReloader.class);
+
 	private final Duration reloadEvery;
 	private final Duration initialDelay;
 	private final ScheduledExecutorService executor;
@@ -49,7 +52,7 @@ public class ScheduledReloader<T> implements ConfijReloader<T> {
 			try {
 				current = pipeline.build();
 			} catch (Exception e) {
-				// FIXME: requires log module
+				LOGGER.info("ConfiJ build pipeline failed", e);
 				throw e;
 			}
 		}, initialDelay.toMillis(), reloadEvery.toMillis(), TimeUnit.MILLISECONDS);

@@ -44,8 +44,7 @@ public class DurationMapper extends AbstractClassValueMapper<Duration> {
 			TimeUnit units = stringToTimeUnit(unitString);
 			try {
 				// if the string is purely digits, parse as an integer to avoid
-				// possible precision loss;
-				// otherwise as a double.
+				// possible precision loss otherwise as a double.
 				if (numberString.matches("[+-]?[0-9]+")) {
 					return units.toNanos(Long.parseLong(numberString));
 				} else {
