@@ -1,12 +1,11 @@
 package ch.kk7.confij.binding.values;
 
 import ch.kk7.confij.annotation.ValueMapper;
-import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.BindingType;
+import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.values.ValueMapperInstance.NullableValueMapperInstance;
 
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -14,11 +13,10 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 public class DurationMapper extends AbstractClassValueMapper<Duration> {
-	@Inherited
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.TYPE})
 	@ValueMapper(DurationMapper.class)
-	public @interface Type {
+	public @interface DurationType {
 	}
 
 	public static class DurationMapperInstance implements NullableValueMapperInstance<Duration> {
@@ -52,7 +50,7 @@ public class DurationMapper extends AbstractClassValueMapper<Duration> {
 					return (long) (Double.parseDouble(numberString) * nanosInUnit);
 				}
 			} catch (NumberFormatException e) {
-				throw new ConfijBindingException("Could not parse duration number '{}'", numberString);
+				throw new ConfijBindingException("Could not parse duration number '{}'", numberString, e);
 			}
 		}
 
