@@ -11,6 +11,4 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface ValueMapper {
 	Class<? extends ValueMapperFactory> value();
-
-	@Deprecated boolean force() default true;
 }

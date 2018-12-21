@@ -75,10 +75,10 @@ public class BindingContext {
 		return withMapperFactories(factories);
 	}
 
-	protected BindingContext withMapperFactoryFor(ValueMapper valueMapper) {
+	protected BindingContext withMapperFactoryFor(ValueMapper valueMapper, boolean forced) {
 		Class<? extends ValueMapperFactory> clazz = valueMapper.value();
 		ValueMapperFactory mapperFactory = implCache.getInstance(clazz, ValueMapperFactory.class);
-		if (valueMapper.force()) {
+		if (forced) {
 			return withForcedMapperFactory(mapperFactory);
 		}
 		return withMapperFactory(mapperFactory);
@@ -94,12 +94,12 @@ public class BindingContext {
 		return withFactoryConfigs(factoryConfigs);
 	}
 
-	public BindingContext settingsFor(AnnotatedElement element) {
+	public BindingContext settingsFor(AnnotatedElement element, boolean forced) {
 		Optional<AnnonResponse<ValueMapper>> declaration = AnnotationUtil.findAnnotationAndDeclaration(element, ValueMapper.class);
 		if (declaration.isPresent()) {
 			AnnonResponse<ValueMapper> response = declaration.get();
 			ValueMapper valueMapper = response.getAnnotationType();
-			return withFactoryConfigFor(valueMapper.value(), response.getDeclaredAnnotation()).withMapperFactoryFor(valueMapper);
+			return withFactoryConfigFor(valueMapper.value(), response.getDeclaredAnnotation()).withMapperFactoryFor(valueMapper, forced);
 		}
 		return this;
 	}
