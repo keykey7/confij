@@ -24,7 +24,7 @@ public class YamlFormat implements ConfijSourceFormat {
 	private final Yaml yaml = new Yaml(new SafeConstructor());
 
 	@Override
-	public void override(ConfijNode simpleConfig, String content) {
+	public void override(ConfijNode rootNode, String content) {
 		final Iterable<Object> yamlIterable;
 		try {
 			yamlIterable = yaml.loadAll(content);
@@ -33,14 +33,14 @@ public class YamlFormat implements ConfijSourceFormat {
 		}
 		yamlIterable.forEach(root -> {
 			Object simpleRoot = simplify(root);
-			ConfijNode newConfig = ConfijNode.newRootFor(simpleConfig.getConfig())
+			ConfijNode newConfig = ConfijNode.newRootFor(rootNode.getConfig())
 					.initializeFromMap(simpleRoot);
-			simpleConfig.overrideWith(newConfig);
+			rootNode.overrideWith(newConfig);
 		});
 	}
 
 	@SuppressWarnings("unchecked")
-	private Object simplify(Object yaml) {
+	protected Object simplify(Object yaml) {
 		if (yaml == null) {
 			return null;
 		}
