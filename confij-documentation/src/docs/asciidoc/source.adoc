@@ -5,7 +5,7 @@
 
 == Source Pipelines
 ConfiJ sources are loaded one after the other.
-Each consecutive source overrides attributes of the previous ones.
+Each consecutive source overrides (merges) attributes of the previous ones.
 Typically this is useful to load a set of default values first,
 then continue with application specifics and environment specific values
 getting more and more detailed.
@@ -16,7 +16,9 @@ Source types can be freely mixed, meaning you can load from classpath, then from
 [source]
 ----
 include::{src}[tag=interface]
-
+----
+[source]
+----
 include::{src}[tag=pipedsource]
 ----
 ====
@@ -24,21 +26,20 @@ include::{src}[tag=pipedsource]
 <2> then override with a file from the classpath root.
 [source]
 include::{resources}/generic.properties[]
-<3> then override with a file on disk
+<3> then override with a file on disk (this is the first time where `name` is defined)
 [source]
 include::{home}/server.properties[]
 <4> then override with system properties prefixed by `app`
 [source]
 -Dapp.line=3
 
-This will end up with the final configuration:
+This will result in the final configuration:
 ----
 include::{resources}/pipedsource.txt[]
 ----
 
 Validation generally only applies to the final configuration.
 It is allowed to have incomplete configurations while there are still more configuration sources to load.
-In the example above, `name` was undefined until round 3.
 
 == Default Values [[format-default]]
 
@@ -165,6 +166,32 @@ include::{home}/complex.yaml[]
 
 If the YAML source file contain multi-docs, they are loaded in order.
 Internally all values are reduced to Maps of Maps or Strings.
+
+=== HOCON/JSON Format
+
+NOTE: HOCON format requires the `{group}:confij-hocon` maven artifact.
+
+https://github.com/lightbend/config/blob/master/HOCON.md[HOCON] (Human-Optimized Config Object Notation)
+is a format for human-readable data, and a superset of JSON and .properties.
+
+HOCON can be loaded from all the <<resource-locations>>.
+The `AnySource` expects a case-insensitive file ending of `.hocon`, `.json` or `.conf`.
+
+The default behaviour will first perform substitutions according to the
+https://github.com/lightbend/config/blob/master/HOCON.md#substitutions[HOCON Specification],
+before ConfiJ's templating will kick in.
+
+.Two substitution mechanisms
+====
+[source,json]
+----
+include::../../../../confij-hocon/src/test/resources/brefa.conf[]
+----
+[source,json]
+----
+include::../../../../confij-hocon/src/test/resources/bnotrefa.conf[]
+----
+====
 
 === Properties Format
 

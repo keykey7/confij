@@ -10,20 +10,22 @@ configurations from various sources in a type-safe manner.
 This includes features such as
 
 - configuration definition as interfaces
-- most powerfull support for nested configurations
+- support for various source formats: properties, YAML, HOCON, JSON
+- load from: Git, File, Classpath, HTTP, system properties, environment variables
+- load from various sources (pipelines) with different merge strategies
+- powerfull support for nested configurations
 - even as lists/maps/arrays/... of nested configurations
-- binding support for various immutable property types
-- configuration pipelines and loading from various sources
-- support for source formats: Java properties, YAML, system properties, environment variables
+- binding support to various immutable property types like URL, DateTime, Duration, enums, Period,...
 - templating support (variable substitutions), even within paths
 - plugin support for more formats and sources
 - JSR303 bean validation
+- minimal dependencies
 
 ## Example
 
 See the full documentation at <https://keykey7.github.io/confij/>
 
-Sample configuration of a house with nested properties, defaults and validation
+Sample configuration of a house with nested properties, defaults and validation-annotations
 ```java
 interface House {
 	@Default("true")

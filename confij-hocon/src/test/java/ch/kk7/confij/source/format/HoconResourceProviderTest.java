@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class HoconResourceProviderTest implements WithAssertions {
 
 	interface Hocon {
@@ -43,5 +41,33 @@ class HoconResourceProviderTest implements WithAssertions {
 		assertThat(hocon.aFloat()).isEqualTo(3.333);
 		assertThat(hocon.aBool()).isTrue();
 		assertThat(hocon.aNull()).isNull();
+	}
+
+	@Test
+	public void hoconResolvesThis() {
+		assertThat(ConfijBuilder.of(AandB.class)
+				.loadFrom("classpath:brefa.conf")
+				.build()
+				.b()).isEqualTo("1 and two");
+
+		assertThat(ConfijBuilder.of(AandB.class)
+				.loadFrom("classpath:brefa.conf")
+				.templatingDisabled()
+				.build()
+				.b()).isEqualTo("1 and two");
+	}
+
+	@Test
+	public void confijResolvesThis() {
+		assertThat(ConfijBuilder.of(AandB.class)
+				.loadFrom("classpath:bnotrefa.conf")
+				.build()
+				.b()).isEqualTo("1 and two");
+
+		assertThat(ConfijBuilder.of(AandB.class)
+				.loadFrom("classpath:bnotrefa.conf")
+				.templatingDisabled()
+				.build()
+				.b()).isEqualTo("${a} and two");
 	}
 }

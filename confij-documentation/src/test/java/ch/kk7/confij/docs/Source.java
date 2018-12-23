@@ -30,8 +30,7 @@ public class Source extends DocTestBase {
 		@Default("1")
 		int line();
 
-		@Default("30s")
-			// <1>
+		@Default("30s") // <1>
 		Duration timeout();
 	}
 	// end::interface[]
@@ -121,7 +120,7 @@ public class Source extends DocTestBase {
 	}
 
 	// tag::yaml-interface[]
-	interface ComlexYaml {
+	interface ComplexYaml {
 		List<String> listOfStrings();
 		Map<String, Integer> mapOfIntegers();
 		Map<String, Integer> mapOfIntegersClone();
@@ -134,7 +133,7 @@ public class Source extends DocTestBase {
 
 	@Test
 	public void complexYaml() {
-		ComlexYaml yaml = ConfijBuilder.of(ComlexYaml.class)
+		ComplexYaml yaml = ConfijBuilder.of(ComplexYaml.class)
 				.loadFrom("complex.yaml")
 				.build();
 		assertThat(yaml.listOfStrings()).containsExactly("String", "String on a single line", "Double quotation marks\t");
@@ -147,6 +146,11 @@ public class Source extends DocTestBase {
 				.toOffsetDateTime());
 		assertThat(yaml.isTrue()).isTrue();
 		assertThat(yaml.isFalse()).isFalse();
+	}
+
+	// tag::hocon-interface[]
+	interface ComplexHocon {
+
 	}
 
 	@AutoService(ConfijResourceProvider.class)

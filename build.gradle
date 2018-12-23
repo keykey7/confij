@@ -62,6 +62,10 @@ subprojects {
 	sourceCompatibility = JavaVersion.VERSION_1_8
 	targetCompatibility = JavaVersion.VERSION_1_8
 
+	tasks.withType(JavaCompile) {
+		options.incremental = true
+	}
+
 	dependencies {
 		// TODO: upgrade: https://github.com/google/auto/pull/657
 		def autoServiceVersion = "1.0-rc4"
