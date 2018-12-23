@@ -1,5 +1,6 @@
 package ch.kk7.confij.source.format;
 
+import ch.kk7.confij.logging.ConfijLogger;
 import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import com.typesafe.config.ConfigFactory;
@@ -15,14 +16,28 @@ import java.util.Map;
 @ToString
 @AutoService(ConfijSourceFormat.class)
 public class HoconResourceProvider implements ConfijSourceFormat {
+	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(HoconResourceProvider.class);
+
 	@Override
 	public void override(ConfijNode rootNode, String configAsStr) {
-		Object simpleRoot = simplify(ConfigFactory.parseString(configAsStr)
-				.root()
-				.unwrapped());
+		Object simpleRoot = parse(configAsStr);
 		ConfijNode newConfig = ConfijNode.newRootFor(rootNode.getConfig())
 				.initializeFromMap(simpleRoot);
 		rootNode.overrideWith(newConfig);
+	}
+
+	protected Object parse(String configAsStr) {
+		final Object unwrapped;
+		try {
+			unwrapped = ConfigFactory.parseString(configAsStr)
+					.resolve()
+					.root()
+					.unwrapped();
+		} catch (Exception e) {
+			LOGGER.debug("parsing HOCON from failed for string:\n{}", configAsStr);
+			throw new ConfijSourceFormatException("invalid HOCON format", e);
+		}
+		return simplify(unwrapped);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -65,6 +80,6 @@ public class HoconResourceProvider implements ConfijSourceFormat {
 	@Override
 	public boolean canHandle(URI path) {
 		return path.getSchemeSpecificPart()
-				.matches("(?s).+\\.(json|hocon)$");
+				.matches("(?s).+\\.(json|hocon|conf)$");
 	}
 }

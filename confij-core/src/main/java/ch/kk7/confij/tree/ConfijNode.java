@@ -1,5 +1,6 @@
 package ch.kk7.confij.tree;
 
+import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.common.ConfijException;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -124,24 +125,24 @@ public class ConfijNode {
 	}
 
 	public String getValue() {
-		assertLeafNode();
+		if (!config.isValueHolder()) {
+			throw new ConfijException("cannot get a value from the non-leaf node {}", this);
+		}
 		return value;
 	}
 
 	public void setValue(String value) {
-		assertLeafNode();
-		this.value = value;
-	}
-
-	private void assertLeafNode() {
 		if (!config.isValueHolder()) {
-			throw new ConfijException("expected a leaf-node, but got {}", this);
+			throw new ConfijBindingException("attempted to set a value '{}' on {}, " +
+					"however this node is not a leaf-node and will never accept a value. " +
+					"Maybe you meant one of its mandatory children: {}", value, this, config.getMandatoryKeys());
 		}
+		this.value = value;
 	}
 
 	private void assertBranchNode() {
 		if (config.isValueHolder()) {
-			throw new ConfijException("expected a branch-node but got {}", this);
+			throw new ConfijException("expected a branch-node but this is {}", this);
 		}
 	}
 
