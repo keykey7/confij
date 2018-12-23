@@ -28,14 +28,14 @@ public class PropertiesFormat implements ConfijSourceFormat {
 	private String globalPrefix = "";
 
 	@Override
-	public void override(ConfijNode confijNode, String configAsStr) {
+	public void override(ConfijNode rootNode, String configAsStr) {
 		final Properties properties = new Properties();
 		try (StringReader r = new StringReader(configAsStr)) {
 			properties.load(r);
 		} catch (IOException e) {
 			throw ConfijSourceFormatException.invalidFormat("properties", "cannot load from string", e);
 		}
-		overrideWithProperties(confijNode, properties);
+		overrideWithProperties(rootNode, properties);
 	}
 
 	@SuppressWarnings("unchecked")

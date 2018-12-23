@@ -1,5 +1,6 @@
 package ch.kk7.confij.tree;
 
+import ch.kk7.confij.binding.ConfijBindingException;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.Value;
@@ -51,7 +52,7 @@ public abstract class NodeDefinition {
 		@NonNull
 		@Override
 		public NodeDefinition definitionForChild(String configKey) {
-			throw new NodeDefinitionException("a leaf node isn't allowed to have children, not even for '{}'", configKey);
+			throw new ConfijBindingException("a leaf node isn't allowed to have children, not even for '{}'", configKey);
 		}
 
 		@Override
@@ -76,10 +77,10 @@ public abstract class NodeDefinition {
 			try {
 				index = Integer.parseInt(configKey);
 			} catch (NumberFormatException e) {
-				throw new NodeDefinitionException("invalid config key, expected an integer, but found {}", configKey, e);
+				throw new ConfijBindingException("invalid config key, expected an integer, but found {}", configKey, e);
 			}
 			if (index < 0) {
-				throw new NodeDefinitionException("invalid config key, expected a positive number, but found {}", index);
+				throw new ConfijBindingException("invalid config key, expected a positive number, but found {}", index);
 			}
 			return anyChild;
 		}
@@ -122,7 +123,7 @@ public abstract class NodeDefinition {
 			if (anyChild != null) {
 				return anyChild;
 			}
-			throw new NodeDefinitionException("invalid config key: map-like format doesn't allow key '{}', allowed are: {}", configKey,
+			throw new ConfijBindingException("invalid config key: map-like format doesn't allow key '{}', allowed are: {}", configKey,
 					children.keySet());
 		}
 
