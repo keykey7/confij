@@ -94,6 +94,13 @@ subprojects {
 	test {
 		// junit5 support
 		useJUnitPlatform()
+
+		if (System.getenv('CI') != null) {
+			testLogging {
+				events "passed", "skipped", "failed"
+				exceptionFormat "full"
+			}
+		}
 	}
 }
 
