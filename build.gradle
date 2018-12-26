@@ -11,7 +11,7 @@ buildscript {
 
 plugins {
 	id 'org.ajoberstar.reckon' version '0.9.0'
-	id 'com.gradle.build-scan' version '2.0.2'
+	id 'com.gradle.build-scan' version '2.1'
 	id 'net.ltgt.apt-idea' version '0.19'
 	id 'com.github.ben-manes.versions' version '0.20.0' // task: dependencyUpdates
 	id 'org.sonarqube' version '2.6.2'
@@ -105,7 +105,7 @@ subprojects {
 }
 
 wrapper {
-	gradleVersion = '5.0'
+	gradleVersion = '5.1-rc-3'
 	distributionType = Wrapper.DistributionType.ALL
 }
 
