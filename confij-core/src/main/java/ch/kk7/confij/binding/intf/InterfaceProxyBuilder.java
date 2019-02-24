@@ -109,8 +109,8 @@ public class InterfaceProxyBuilder<T> {
 				if (rawMethod.isDefault()) {
 					return false;
 				}
-				throw new ConfijDefinitionException("expected no-arg methods only in ConfiJ-interface, but found {}. " +
-						"Only default methods are allowed to have parameters.", method);
+				throw new ConfijDefinitionException("expected no-arg methods only in ConfiJ-interface, but found '{}'. " +
+						"Only default methods are allowed to have parameters.", method.getRawMember());
 			}
 			return !mandatoryOnly || !rawMethod.isDefault();
 		});

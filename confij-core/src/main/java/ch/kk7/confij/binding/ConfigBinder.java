@@ -26,12 +26,12 @@ public class ConfigBinder {
 		bindingFactories = new ArrayList<>();
 		// @ValueMapper annotations have preferences (since they can also bind all following types)
 		bindingFactories.add(new ForcedLeafBindingFactory());
+		bindingFactories.add(new LeafBindingFactory());
 		// collection and map before interface (since they are themselves interfaces)
 		bindingFactories.add(new ArrayBindingFactory());
 		bindingFactories.add(new CollectionBindingFactory());
 		bindingFactories.add(new MapBindingFactory());
 		bindingFactories.add(new InterfaceBindingFactory());
-		bindingFactories.add(new LeafBindingFactory());
 	}
 
 	@SuppressWarnings("unchecked")
