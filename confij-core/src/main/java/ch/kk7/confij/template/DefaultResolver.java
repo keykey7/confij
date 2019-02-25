@@ -1,6 +1,7 @@
 package ch.kk7.confij.template;
 
 import ch.kk7.confij.binding.ConfijBindingException;
+import ch.kk7.confij.common.ConfijException;
 import ch.kk7.confij.tree.ConfijNode;
 import lombok.ToString;
 
@@ -83,12 +84,19 @@ public class DefaultResolver implements VariableResolver {
 		String path = targetUri.getSchemeSpecificPart();
 		switch (scheme) {
 			case "env":
-				return Optional.ofNullable(System.getenv(path));
+				return mandatory(uriStr, System.getenv(path));
 			case "sys":
-				return Optional.ofNullable(System.getProperty(path));
+				return mandatory(uriStr, System.getProperty(path));
 			default:
 				return Optional.empty();
 		}
+	}
+
+	private static Optional<String> mandatory(String uriStr, String value) {
+		if (value == null) {
+			throw new ConfijException("templating failed, since we lack a mandatory value for '{}'", uriStr);
+		}
+		return Optional.of(value);
 	}
 
 	protected void clearCache() {

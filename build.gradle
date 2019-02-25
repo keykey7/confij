@@ -26,8 +26,13 @@ if (System.getenv('CI') == null) {
 }
 task version {
 	doLast {
-		println "to release a new version run:"
-		println "CI=true ./gradlew reckonTagPush -Preckon.scope=[major,minor,patch] -Preckon.stage=[rc,final]"
+		if (project.findProperty('reckon.stage')) {
+			println "to tag and release a new version use:"
+			println "git tag -a '${project.version}' -m '${project.version}' && git push origin '${project.version}'"
+		} else {
+			println "to figure out the next version run:"
+			println "CI=true ./gradlew version -Preckon.scope=[major,minor,patch] -Preckon.stage=[rc,final]"
+		}
 	}
 }
 reckonTagCreate.dependsOn "build"

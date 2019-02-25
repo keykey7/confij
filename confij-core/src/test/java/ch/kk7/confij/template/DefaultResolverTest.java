@@ -1,11 +1,12 @@
 package ch.kk7.confij.template;
 
+import ch.kk7.confij.SysPropertyAssertions;
 import ch.kk7.confij.common.ConfijException;
+import ch.kk7.confij.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeBindingContext;
 import ch.kk7.confij.tree.NodeDefinition;
 import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionLeaf;
 import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionMap;
-import ch.kk7.confij.tree.NodeBindingContext;
-import ch.kk7.confij.tree.ConfijNode;
 import org.assertj.core.api.AbstractStringAssert;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-class DefaultResolverTest implements WithAssertions {
+class DefaultResolverTest implements WithAssertions, SysPropertyAssertions {
 
 	private static String resolve(String template, String... x) {
 		NodeBindingContext settings = NodeBindingContext.newDefaultSettings();
@@ -27,38 +28,38 @@ class DefaultResolverTest implements WithAssertions {
 		return new DefaultResolver().resolveValue(config, template);
 	}
 
-	private static AbstractStringAssert<?> assertThat(String template, String... x) {
+	private static AbstractStringAssert<?> assertResolve(String template, String... x) {
 		return org.assertj.core.api.Assertions.assertThat(resolve(template, x));
 	}
 
 	@Test
 	public void resolveStatic() {
-		assertThat("hello").isEqualTo("hello");
+		assertResolve("hello").isEqualTo("hello");
 	}
 
 	@Test
 	public void resolveEmpty() {
-		assertThat("").isEqualTo("");
+		assertResolve("").isEqualTo("");
 	}
 
 	@Test
 	public void resolveOne() {
-		assertThat("hello ${x1}", "v1").isEqualTo("hello v1");
+		assertResolve("hello ${x1}", "v1").isEqualTo("hello v1");
 	}
 
 	@Test
 	public void resolveTwo() {
-		assertThat("hello ${x1} ${x2}!", "one", "two").isEqualTo("hello one two!");
+		assertResolve("hello ${x1} ${x2}!", "one", "two").isEqualTo("hello one two!");
 	}
 
 	@Test
 	public void resolveEmbedded() {
-		assertThat("hello ${${x1}}", "x2", "yo").isEqualTo("hello yo");
+		assertResolve("hello ${${x1}}", "x2", "yo").isEqualTo("hello yo");
 	}
 
 	@Test
 	public void resolveEmbedded2() {
-		assertThat("hello ${${${x1}}}", "x2", "x3", "yo").isEqualTo("hello yo");
+		assertResolve("hello ${${${x1}}}", "x2", "x3", "yo").isEqualTo("hello yo");
 	}
 
 	@Test
@@ -68,12 +69,12 @@ class DefaultResolverTest implements WithAssertions {
 
 	@Test
 	public void resolveNested() {
-		assertThat("hello ${x1}", "one ${x2}", "two").isEqualTo("hello one two");
+		assertResolve("hello ${x1}", "one ${x2}", "two").isEqualTo("hello one two");
 	}
 
 	@Test
 	public void resolveNested2() {
-		assertThat("hello ${x1}", "one ${x2}", "two ${x3}", "three").isEqualTo("hello one two three");
+		assertResolve("hello ${x1}", "one ${x2}", "two ${x3}", "three").isEqualTo("hello one two three");
 	}
 
 	@Test
@@ -83,7 +84,7 @@ class DefaultResolverTest implements WithAssertions {
 
 	@Test
 	public void looksLikeAVariable() {
-		assertThat("${x1${${x1").isEqualTo("${x1${${x1");
+		assertResolve("${x1${${x1").isEqualTo("${x1${${x1");
 	}
 
 	@Test
@@ -98,22 +99,22 @@ class DefaultResolverTest implements WithAssertions {
 
 	@Test
 	public void escapedVariable() {
-		assertThat("hello \\${x1}", "one").isEqualTo("hello ${x1}");
+		assertResolve("hello \\${x1}", "one").isEqualTo("hello ${x1}");
 	}
 
 	@Test
 	public void escapedNothing() {
-		assertThat("hello \\${xxx", "one").isEqualTo("hello ${xxx");
+		assertResolve("hello \\${xxx", "one").isEqualTo("hello ${xxx");
 	}
 
 	@Test
 	public void doubleEscaped() {
-		assertThat("hello \\\\${x1}", "one").isEqualTo("hello \\one");
+		assertResolve("hello \\\\${x1}", "one").isEqualTo("hello \\one");
 	}
 
 	@Test
 	public void currency() {
-		assertThat("23$ 10¢").isEqualTo("23$ 10¢");
+		assertResolve("23$ 10¢").isEqualTo("23$ 10¢");
 	}
 
 	@Test
@@ -123,11 +124,31 @@ class DefaultResolverTest implements WithAssertions {
 
 	@Test
 	public void unnessessaryEscape() {
-		assertThat("hello \\!${x1}", "one").isEqualTo("hello !one");
+		assertResolve("hello \\!${x1}", "one").isEqualTo("hello !one");
 	}
 
 	@Test
 	public void escapedNested() {
-		assertThat("hello ${x1}", "~\\${x2}~", "two").isEqualTo("hello ~${x2}~");
+		assertResolve("hello ${x1}", "~\\${x2}~", "two").isEqualTo("hello ~${x2}~");
+	}
+
+	@Test
+	public void sysProperty() {
+		withSysProperty(() -> assertResolve("hello ${sys:name}").isEqualTo("hello John"), "name", "John");
+	}
+
+	@Test
+	public void sysPropertyDoesNotExist() {
+		withSysProperty(() -> assertThatThrownBy(() -> resolve("hello ${sys:name}")).isInstanceOf(ConfijException.class), "name", null);
+	}
+
+	@Test
+	public void sysPropertyEmbedded() {
+		withSysProperty(() -> assertResolve("hello ${x1}", "${sys:name}").isEqualTo("hello John"), "name", "John");
+	}
+
+	@Test
+	public void sysPropertyHome() {
+		withSysProperty(() -> assertResolve("${sys:user.home}").isEqualTo("/home/bla"), "user.home", "/home/bla");
 	}
 }
