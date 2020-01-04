@@ -124,6 +124,7 @@ task jacocoRootReport(type: JacocoReport, group: 'verification') {
 	sourceDirectories.from(subprojects.sourceSets.main.allSource.srcDirs)
 	classDirectories.from(subprojects.sourceSets.main.output)
 	executionData jacocoMerge.destinationFile
+	reports.xml.enabled true
 	doLast {
 		logger.lifecycle("report at: " + reports.html.entryPoint.toURI())
 	}
@@ -135,7 +136,7 @@ allprojects {
 			property 'sonar.host.url', 'https://sonarcloud.io'
 			property 'sonar.organization', 'keykey7-github'
 			property 'sonar.login', System.getenv('SONAR_TOKEN')
-			property 'sonar.jacoco.reportPaths', jacocoMerge.destinationFile
+			property 'sonar.coverage.jacoco.xmlReportPaths', jacocoRootReport.reports.xml.destination
 		}
 	}
 }
