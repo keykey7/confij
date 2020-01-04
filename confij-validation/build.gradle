@@ -1,8 +1,4 @@
 dependencies {
 	api project(':confij-core')
-
-	api 'org.hibernate.validator:hibernate-validator:6.1.+'
-	// transitive of hibernate-validator since snapshot doesn't declare 'em (fasterxml is already on core classpath)
-	api 'javax.validation:validation-api:2.0.1.Final'
-	implementation 'org.jboss.logging:jboss-logging:3.3.2.Final'
+	api 'org.hibernate.validator:hibernate-validator:6.1.0.Final'
 }

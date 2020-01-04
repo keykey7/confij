@@ -11,10 +11,9 @@ buildscript {
 
 plugins {
 	id 'org.ajoberstar.reckon' version '0.9.0'
-	id 'com.gradle.build-scan' version '2.1'
 	id 'net.ltgt.apt-idea' version '0.21'
-	id 'com.github.ben-manes.versions' version '0.20.0' // task: dependencyUpdates
-	id 'org.sonarqube' version '2.7'
+	id 'com.github.ben-manes.versions' version '0.27.0' // task: dependencyUpdates
+	id 'org.sonarqube' version '2.8'
 }
 
 reckon {
@@ -40,26 +39,23 @@ reckonTagCreate.dependsOn "build"
 allprojects {
 	repositories {
 		jcenter()
-
-		maven { url 'http://ci.hibernate.org/plugin/repository/project/hibernate-validator-master/LastSuccessful/repository' }
-		// broken by hibernate. We therefore use a custom (idiotic) ivy repo pattern to get a snapshot version
-		ivy {
-			url 'http://ci.hibernate.org/plugin/repository/project/hibernate-validator-master/LastSuccessful/repository'
-			patternLayout {
-				m2compatible = true
-				artifact '[organisation]/[module]/[revision]/[artifact]-[revision](.[ext])'
-			}
-		}
 	}
 	apply plugin: 'idea'
 	group 'ch.kk7'
 	version rootProject.version
-	dependencyUpdates.revision = 'release'
 }
 
-buildScan {
-	termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-	termsOfServiceAgree = 'yes'
+dependencyUpdates.resolutionStrategy {
+	componentSelection { rules ->
+		rules.all { ComponentSelection selection ->
+			boolean rejected = ['alpha', 'beta', 'rc', 'cr', 'm', 'preview', 'b', 'ea'].any { qualifier ->
+				selection.candidate.version ==~ /(?i).*[.-]$qualifier[.\d-+]*/
+			}
+			if (rejected) {
+				selection.reject('Release candidate')
+			}
+		}
+	}
 }
 
 subprojects {
@@ -73,27 +69,24 @@ subprojects {
 
 	dependencies {
 		// TODO: upgrade: https://github.com/google/auto/pull/657
-		def autoServiceVersion = "1.0-rc4"
+		def autoServiceVersion = "1.0-rc6"
 		compileOnly "com.google.auto.service:auto-service:${autoServiceVersion}"
 		annotationProcessor "com.google.auto.service:auto-service:${autoServiceVersion}"
 		testCompileOnly "com.google.auto.service:auto-service:${autoServiceVersion}"
 		testAnnotationProcessor "com.google.auto.service:auto-service:${autoServiceVersion}"
 
-		def lombokVersion = "1.18.6"
+		def lombokVersion = "1.18.10"
 		compileOnly "org.projectlombok:lombok:${lombokVersion}"
 		annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 		testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
 		testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-		def junitVersion = '5.4.0'
+		def junitVersion = '5.5.2'
 		testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-		testImplementation('org.junit-pioneer:junit-pioneer:0.3.0') {
-			exclude group: 'org.junit.jupiter'
-		}
-		testImplementation "org.assertj:assertj-core:3.12.0"
+		testImplementation "org.assertj:assertj-core:3.14.0"
 
-		testRuntime 'ch.qos.logback:logback-classic:1.2.3'
+		runtimeOnly 'ch.qos.logback:logback-classic:1.2.3'
 	}
 
 	test {
@@ -107,11 +100,6 @@ subprojects {
 			}
 		}
 	}
-}
-
-wrapper {
-	gradleVersion = '5.2.1'
-	distributionType = Wrapper.DistributionType.ALL
 }
 
 // coverage
