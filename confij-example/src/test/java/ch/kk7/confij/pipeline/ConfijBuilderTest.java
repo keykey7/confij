@@ -4,9 +4,7 @@ import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.ConfijSourceException;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.TempDirectory;
-import org.junitpioneer.jupiter.TempDirectory.TempDir;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -55,7 +53,6 @@ class ConfijBuilderTest {
 	}
 
 	@Test
-	@ExtendWith(TempDirectory.class)
 	public void fromFile(@TempDir Path tempDir) throws IOException {
 		Path configFile = tempDir.resolve("FileConfig.yml");
 		Files.copy(ClassLoader.getSystemResourceAsStream("MyConfig.yaml"), configFile);

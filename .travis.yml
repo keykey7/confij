@@ -5,15 +5,15 @@ git:
   depth: false
 
 jdk:
-  - oraclejdk8
-  - oraclejdk9
+  - openjdk8
+  - openjdk11
 
 addons:
   sonarcloud:
     organization: keykey7-github
 
 script:
-  - ./gradlew --no-daemon --scan -s build publishToMavenLocal sonarqube
+  - ./gradlew --no-daemon -s build publishToMavenLocal sonarqube
 
 deploy:
   - provider: script
@@ -38,10 +38,9 @@ deploy:
       jdk: oraclejdk8
 
 before_cache:
-- rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-- rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-  - $HOME/.gradle/caches/
-  - $HOME/.gradle/wrapper/
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
