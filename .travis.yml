@@ -21,13 +21,13 @@ deploy:
     skip-cleanup: true
     on:
       branch: master
-      jdk: oraclejdk8
+      jdk: openjdk8
   - provider: script
     script: ./gradlew -s publish
     skip-cleanup: true
     on:
       tags: true
-      jdk: oraclejdk8
+      jdk: openjdk8
   - provider: pages
     local-dir: confij-documentation/build/asciidoc/html5
     skip-cleanup: true
@@ -35,7 +35,7 @@ deploy:
     keep-history: true
     on:
       branch: master
-      jdk: oraclejdk8
+      jdk: openjdk8
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
