@@ -1,5 +1,5 @@
 apply plugin: 'base'
-apply plugin: 'org.asciidoctor.convert'
+apply plugin: 'org.asciidoctor.jvm.convert'
 
 dependencies {
 	testImplementation project(':confij-yaml')
@@ -13,25 +13,13 @@ asciidoctor {
 			'group': project.group,
 			'reproducible': 'true',
 			'attribute-missing': 'warn'
-	sources {
-		include 'index.adoc'
-	}
 
-	// workound for https://github.com/asciidoctor/asciidoctor-gradle-plugin/issues/154
-	ext.capturedOutput = [ ]
-	def listener = { ext.capturedOutput << it } as StandardOutputListener
-	doFirst {
-		logging.addStandardErrorListener(listener)
-		logging.addStandardOutputListener(listener)
-	}
-	doLast {
-		logging.removeStandardOutputListener(listener)
-		logging.removeStandardErrorListener(listener)
-		ext.capturedOutput.join('').with { output ->
-			if (output =~ /WARNING:|SEVERE:/ && !output.contains('illegal-access=warn')) {
-				throw new GradleException("Warnings found in ${name}:\n" + output)
-			}
+	asciidoctorj {
+		baseDirFollowsSourceDir()
+		sources {
+			include 'index.adoc'
 		}
+		fatalWarnings missingIncludes()
 	}
 }
 
