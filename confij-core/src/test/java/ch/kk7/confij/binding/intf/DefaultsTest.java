@@ -3,6 +3,8 @@ package ch.kk7.confij.binding.intf;
 import ch.kk7.confij.binding.intf.DefaultsTest.WithDefaults;
 import org.junit.jupiter.api.Test;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 public class DefaultsTest extends AbstractProxyBuilderTest<WithDefaults> {
@@ -36,6 +38,10 @@ public class DefaultsTest extends AbstractProxyBuilderTest<WithDefaults> {
 
 		default String aCheckedException() throws TestException {
 			throw new TestException();
+		}
+
+		default Path echoPath(Path input) {
+			return input;
 		}
 	}
 
@@ -101,6 +107,13 @@ public class DefaultsTest extends AbstractProxyBuilderTest<WithDefaults> {
 	public void aRandom() {
 		WithDefaults withDefaults = instance();
 		assertThat(withDefaults.aRandomDouble()).isNotEqualTo(withDefaults.aRandomDouble());
+	}
+
+	@Test
+	public void aPath() {
+		WithDefaults withDefaults = instance();
+		Path path = Paths.get("fuu");
+		assertThat(withDefaults.echoPath(path)).isEqualTo(path);
 	}
 
 	@Test

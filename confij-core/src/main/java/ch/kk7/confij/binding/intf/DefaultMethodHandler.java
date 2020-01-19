@@ -46,7 +46,8 @@ public class DefaultMethodHandler {
 		Class<?> forClass = method.getDeclaringClass();
 		try {
 			Lookup lookup = (Lookup) privateLookupIn.invoke(null, forClass, MethodHandles.lookup());
-			return lookup.findSpecial(forClass, method.getName(), MethodType.methodType(method.getReturnType(), new Class[0]), forClass)
+			MethodType methodType = MethodType.methodType(method.getReturnType(), method.getParameterTypes());
+			return lookup.findSpecial(forClass, method.getName(), methodType, forClass)
 					.bindTo(proxy)
 					.invokeWithArguments(args);
 		} catch (Throwable throwable) {

@@ -1,4 +1,4 @@
-= ConfiJ {revnumber} - Reference Guide
+= ConfiJ Reference Guide
 :doctype: book
 :icons: font
 :sectanchors:
