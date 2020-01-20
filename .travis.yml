@@ -29,10 +29,9 @@ deploy:
       tags: true
       jdk: openjdk8
   - provider: pages
-    local-dir: confij-documentation/build/asciidoc/html5
+    local-dir: confij-documentation/build/docs/asciidoc
     skip-cleanup: true
     github-token: $GITHUB_TOKEN
-    keep-history: true
     on:
       branch: master
       jdk: openjdk8
