@@ -1,10 +1,10 @@
 dependencies {
 	api project(':confij-core')
-	api "org.eclipse.jgit:org.eclipse.jgit:5.6.0.201912101111-r"
+	api "org.eclipse.jgit:org.eclipse.jgit:5.7.0.202003110725-r"
 
 	testImplementation("junit:junit:4.13") {
 		because 'jgit.junit depends on JUnit4'
 	}
-	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.http:5.5.1.201910021850-r"
-	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.ssh:5.5.1.201910021850-r"
+	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.http:5.6.0.201912101111-r"
+	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.ssh:5.7.0.202003110725-r"
 }
