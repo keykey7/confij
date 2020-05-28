@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 1.5.8">
+<title>ConfiJ Reference Guide</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<style>
+/* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
+/* Uncomment @import statement below to use as custom stylesheet */
+/*@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";*/
+article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section,summary{display:block}
+audio,canvas,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+script{display:none!important}
+html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+a{background:transparent}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+abbr[title]{border-bottom:1px dotted}
+b,strong{font-weight:bold}
+dfn{font-style:italic}
+hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,*::before,*::after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0;direction:ltr}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:none}
+p{font-family:inherit;font-weight:400;font-size:1em;line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #dddddf;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em;height:0}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{font-size:1em;line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0;font-size:1em}
+ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
+ul.square{list-style-type:square}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
+abbr{text-transform:none}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote cite{display:block;font-size:.9375em;color:rgba(0,0,0,.6)}
+blockquote cite::before{content:"\2014 \0020"}
+blockquote cite a,blockquote cite a:visited{color:rgba(0,0,0,.6)}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede}
+table thead,table tfoot{background:#f7f8f7}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt,table tr:nth-of-type(even){background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
+.clearfix::after,.float-group::after{clear:both}
+*:not(pre)>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background-color:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed;word-wrap:break-word}
+*:not(pre)>code.nobreak{word-wrap:normal}
+*:not(pre)>code.nowrap{white-space:nowrap}
+pre,pre>code{line-height:1.45;color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;text-rendering:optimizeSpeed}
+em em{font-style:normal}
+strong strong{font-weight:400}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background-color:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menuref{color:#000}
+.menuseq b:not(.caret),.menuref{font-weight:inherit}
+.menuseq{word-spacing:-.02em}
+.menuseq b.caret{font-size:1.25em;line-height:.8}
+.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
+b.button::before,b.button::after{position:relative;top:-1px;font-weight:400}
+b.button::before{content:"[";padding:0 3px 0 2px}
+b.button::after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin-left:auto;margin-right:auto;margin-top:0;margin-bottom:0;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header::before,#header::after,#content::before,#content::after,#footnotes::before,#footnotes::after,#footer::before,#footer::after{content:" ";display:table}
+#header::after,#content::after,#footnotes::after,#footer::after{clear:both}
+#content{margin-top:1.25em}
+#content::before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:-ms-flexbox;display:-webkit-flex;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span::before{content:"\00a0\2013\00a0"}
+#header .details br+span.author::before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark::before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber::after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #dddddf;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #e7e7e9;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+#toc.toc2{margin-top:0!important;background-color:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #e7e7e9;left:auto;right:0}}
+@media screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:100%;background-color:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:rgba(255,255,255,.8);line-height:1.44}
+#content{margin-bottom:.625em}
+.sect1{padding-bottom:.625em}
+@media screen and (min-width:768px){#content{margin-bottom:1.25em}
+.sect1{padding-bottom:1.25em}}
+.sect1:last-child{padding-bottom:0}
+.sect1+.sect1{border-top:1px solid #e7e7e9}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor::before,h2>a.anchor::before,h3>a.anchor::before,#toctitle>a.anchor::before,.sidebarblock>.content>.title>a.anchor::before,h4>a.anchor::before,h5>a.anchor::before,h6>a.anchor::before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
+.paragraph.lead>p,#preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
+table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:inherit}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
+.sidebarblock{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock pre:not(.highlight),.listingblock pre[class="highlight"],.listingblock pre[class^="highlight "],.listingblock pre.CodeRay,.listingblock pre.prettyprint{background:#f7f7f8}
+.sidebarblock .literalblock pre,.sidebarblock .listingblock pre:not(.highlight),.sidebarblock .listingblock pre[class="highlight"],.sidebarblock .listingblock pre[class^="highlight "],.sidebarblock .listingblock pre.CodeRay,.sidebarblock .listingblock pre.prettyprint{background:#f2f1f1}
+.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;overflow-x:auto;padding:1em;font-size:.8125em}
+@media screen and (min-width:768px){.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{font-size:.90625em}}
+@media screen and (min-width:1280px){.literalblock pre,.literalblock pre[class],.listingblock pre,.listingblock pre[class]{font-size:1em}}
+.literalblock pre.nowrap,.literalblock pre.nowrap pre,.listingblock pre.nowrap,.listingblock pre.nowrap pre{white-space:pre;word-wrap:normal}
+.literalblock.output pre{color:#f7f7f8;background-color:rgba(0,0,0,.9)}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;-webkit-border-radius:4px;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:#999}
+.listingblock:hover code[data-lang]::before{display:block}
+.listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:#999}
+.listingblock.terminal pre .command:not([data-prompt])::before{content:"$"}
+table.pyhltable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.pyhltable td{vertical-align:top;padding-top:0;padding-bottom:0;line-height:1.45}
+table.pyhltable td.code{padding-left:.75em;padding-right:0}
+pre.pygments .lineno,table.pyhltable td:not(.code){color:#999;padding-left:0;padding-right:.5em;border-right:1px solid #dddddf}
+pre.pygments .lineno{display:inline-block;margin-right:.25em}
+table.pyhltable .linenodiv{background:none!important;padding-right:0!important}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote::before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.75em;margin-right:.5ex;text-align:right}
+.verseblock{margin:0 1em 1.25em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract blockquote::before,.quoteblock.excerpt blockquote::before,.quoteblock .quoteblock blockquote::before{display:none}
+.quoteblock.abstract blockquote,.quoteblock.abstract p,.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{line-height:1.6;word-spacing:0}
+.quoteblock.abstract{margin:0 1em 1.25em;display:block}
+.quoteblock.abstract>.title{margin:0 0 .375em;font-size:1.15em;text-align:center}
+.quoteblock.excerpt,.quoteblock .quoteblock{margin:0 0 1.25em;padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
+.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;text-align:left;margin-right:0}
+table.tableblock{max-width:100%;border-collapse:separate}
+p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content{margin-bottom:-1.25em}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all>thead>tr>.tableblock,table.grid-all>tbody>tr>.tableblock{border-width:0 1px 1px 0}
+table.grid-all>tfoot>tr>.tableblock{border-width:1px 1px 0 0}
+table.grid-cols>*>tr>.tableblock{border-width:0 1px 0 0}
+table.grid-rows>thead>tr>.tableblock,table.grid-rows>tbody>tr>.tableblock{border-width:0 0 1px}
+table.grid-rows>tfoot>tr>.tableblock{border-width:1px 0 0}
+table.grid-all>*>tr>.tableblock:last-child,table.grid-cols>*>tr>.tableblock:last-child{border-right-width:0}
+table.grid-all>tbody>tr:last-child>.tableblock,table.grid-all>thead:last-child>tr>.tableblock,table.grid-rows>tbody>tr:last-child>.tableblock,table.grid-rows>thead:last-child>tr>.tableblock{border-bottom-width:0}
+table.frame-all{border-width:1px}
+table.frame-sides{border-width:0 1px}
+table.frame-topbot,table.frame-ends{border-width:1px 0}
+table.stripes-all tr,table.stripes-odd tr:nth-of-type(odd){background:#f8f8f7}
+table.stripes-none tr,table.stripes-odd tr:nth-of-type(even){background:none}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{display:table-cell;line-height:1.6;background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+td>div.verse{white-space:pre}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
+ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
+ul.unstyled,ol.unstyled{margin-left:0}
+ul.checklist{margin-left:.625em}
+ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
+ul.checklist li>p:first-child>input[type="checkbox"]:first-child{margin-right:.25em}
+ul.inline{display:-ms-flexbox;display:-webkit-box;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap;list-style:none;margin:0 0 .625em -1.25em}
+ul.inline>li{margin-left:1.25em}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
+.colist td:not([class]):first-child img{max-width:none}
+.colist td:not([class]):last-child{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:solid 4px #fff;-webkit-box-shadow:0 0 0 1px #ddd;box-shadow:0 0 0 1px #ddd}
+.imageblock.left{margin:.25em .625em 1.25em 0}
+.imageblock.right{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
+.gist .file-data>table td.line-data{width:99%}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background-color:#00fafa}
+.black{color:#000}
+.black-background{background-color:#000}
+.blue{color:#0000bf}
+.blue-background{background-color:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background-color:#fa00fa}
+.gray{color:#606060}
+.gray-background{background-color:#7d7d7d}
+.green{color:#006000}
+.green-background{background-color:#007d00}
+.lime{color:#00bf00}
+.lime-background{background-color:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background-color:#7d0000}
+.navy{color:#000060}
+.navy-background{background-color:#00007d}
+.olive{color:#606000}
+.olive-background{background-color:#7d7d00}
+.purple{color:#600060}
+.purple-background{background-color:#7d007d}
+.red{color:#bf0000}
+.red-background{background-color:#fa0000}
+.silver{color:#909090}
+.silver-background{background-color:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background-color:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background-color:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background-color:#fafa00}
+span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background-color:rgba(0,0,0,.8);-webkit-border-radius:100px;border-radius:100px;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]::after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,span.alt{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background-color:#fffef7;border-color:#e0e0dc;-webkit-box-shadow:0 1px 4px #e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@page{margin:1.25cm .75cm}
+@media print{*{-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}
+html{font-size:80%}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare)::after,a[href^="https:"]:not(.bare)::after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]::after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span::before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]::before{display:block}
+#footer{padding:0 .9375em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+@media print,amzn-kf8{#header>h1:first-child{margin-top:1.25rem}
+.sect1{padding:0!important}
+.sect1+.sect1{border:0}
+#footer{background:none}
+#footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
+@media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body class="book toc2 toc-left">
+<div id="header">
+<h1>ConfiJ Reference Guide</h1>
+<div class="details">
+<span id="revnumber">version 0.5.0-rc.0.4+b150f86</span>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel0">
+<li><a href="#_getting_started">Getting Started</a>
+<ul class="sectlevel1">
+<li><a href="#_repository">1. Repository</a></li>
+<li><a href="#_quick_start">2. Quick Start</a></li>
+</ul>
+</li>
+<li><a href="#_binding">Binding</a>
+<ul class="sectlevel1">
+<li><a href="#_value_mapping">3. Value Mapping</a>
+<ul class="sectlevel2">
+<li><a href="#_default_value_mapping">3.1. Default Value Mapping</a></li>
+<li><a href="#_built_in_value_mapping">3.2. Built-in Value Mapping</a>
+<ul class="sectlevel3">
+<li><a href="#base64-mapping">3.2.1. Base64 encoded</a></li>
+<li><a href="#separated-mapping">3.2.2. Comma Separated</a></li>
+</ul>
+</li>
+<li><a href="#custom-value-mapping">3.3. Custom Value Mapping</a></li>
+</ul>
+</li>
+<li><a href="#nested-configuration">4. Nested Configuration</a></li>
+</ul>
+</li>
+<li><a href="#_configuration_sources">Configuration Sources</a>
+<ul class="sectlevel1">
+<li><a href="#_source_pipelines">5. Source Pipelines</a></li>
+<li><a href="#format-default">6. Default Values</a></li>
+<li><a href="#anysource">7. The AnySource</a></li>
+<li><a href="#_sources_and_formats">8. Sources and Formats</a>
+<ul class="sectlevel2">
+<li><a href="#resource-locations">8.1. Resource Providers</a></li>
+<li><a href="#git">8.2. GIT Resource Provider</a></li>
+<li><a href="#_yaml_format">8.3. YAML Format</a></li>
+<li><a href="#_hoconjson_format">8.4. HOCON/JSON Format</a></li>
+<li><a href="#_properties_format">8.5. Properties Format</a></li>
+<li><a href="#_environment_variables_format">8.6. Environment Variables Format</a></li>
+<li><a href="#_system_properties_format">8.7. System Properties Format</a></li>
+<li><a href="#_logical_sources">8.8. Logical Sources</a></li>
+</ul>
+</li>
+<li><a href="#serviceloader">9. ConfiJ&#8217;s ServiceLoaders</a></li>
+</ul>
+</li>
+<li><a href="#variables">Templating</a>
+<ul class="sectlevel1">
+<li><a href="#_built_in_templating">10. built-in Templating</a>
+<ul class="sectlevel2">
+<li><a href="#_nested_properties">10.1. Nested Properties</a></li>
+<li><a href="#_recursive_properties">10.2. Recursive Properties</a></li>
+</ul>
+</li>
+<li><a href="#templates-custom">11. Custom Templating</a></li>
+</ul>
+</li>
+<li><a href="#_miscellaneous">Miscellaneous</a>
+<ul class="sectlevel1">
+<li><a href="#_jsr303_validator">12. JSR303 Validator</a></li>
+<li><a href="#_logging">13. Logging</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>ConfiJ is a type-safe, strongly defined, minimal-dependency Java configuration library.
+It enforces a contract on the configuration as Java-types.</p>
+</div>
+</div>
+</div>
+<h1 id="_getting_started" class="sect0"><a class="anchor" href="#_getting_started"></a>Getting Started</h1>
+<div class="openblock partintro">
+<div class="content">
+ConfiJ requires Java 1.8 or later.
+</div>
+</div>
+<div class="sect1">
+<h2 id="_repository"><a class="anchor" href="#_repository"></a>1. Repository</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ConfiJ maven artifacts are available on Bintray/JCenter.
+It is modularly organized in order to reduce the amount of dependencies.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 1. Sample Gradle setup</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">repositories {
+   jcenter()
+}
+dependencies {
+    compile 'ch.kk7:confij-core:0.5.0-rc.0.4+b150f86'
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_quick_start"><a class="anchor" href="#_quick_start"></a>2. Quick Start</h2>
+<div class="sectionbody">
+<div class="exampleblock">
+<div class="title">Example 2. Getting started with interface configuration and ConfiJ-Builder</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface ServerConfig { <i class="conum" data-value="1"></i><b>(1)</b>
+	String name();
+	URL externalUrl();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
+		.loadFrom("server.properties") <i class="conum" data-value="2"></i><b>(2)</b>
+		.build(); <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># server.properties
+name=deepthough
+externalUrl=https://example.com:8042/think</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Define your configuration type, in this case as a Java-interface</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Load from various sources, in this case from a single properties file</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Bind the source to a configuration instance of matching type</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>The corresponding properties file must have the same attributes as in the interface.
+ConfiJ will make sure that no unknown keys are present and bind all configuration strings to their configuration types.</p>
+</div>
+</div>
+</div>
+<h1 id="_binding" class="sect0"><a class="anchor" href="#_binding"></a>Binding</h1>
+<div class="openblock partintro">
+<div class="content">
+The binding defines the contract of the configuration as well as the mapping
+from string value to the actual configuration type.
+Each configuration is organized in a tree-structure and generally immutable.
+</div>
+</div>
+<div class="sect1">
+<h2 id="_value_mapping"><a class="anchor" href="#_value_mapping"></a>3. Value Mapping</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When values are read from a configuration files they are first available as Strings.
+They are then transparently mapped to Objects or pimitives to match the defined type.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 3. Value Mapping to known types in a flat configuration</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface MappedConfig {
+	String aString();
+
+	Double pi(); <i class="conum" data-value="1"></i><b>(1)</b>
+
+	@Key("int") <i class="conum" data-value="2"></i><b>(2)</b>
+	int anInt();
+
+	int[] intArray(); <i class="conum" data-value="3"></i><b>(3)</b>
+
+	@Base64 <i class="conum" data-value="4"></i><b>(4)</b>
+	byte[] base64();
+
+	Duration duration(); <i class="conum" data-value="5"></i><b>(5)</b>
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-yaml" data-lang="yaml"># mapped.yaml
+aString: a value
+pi: 3.141
+int: 42
+intArray: [1, 2, 3]
+base64: AQIDBA==
+duration: 7nanoseconds</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>mapping to primitives or java.lang objects</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>configuration keys can be changed if the attribute name doesn&#8217;t fit</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>arrays are usually mapped from lists (see <a href="#nested-configuration">Chapter 4, <em>Nested Configuration</em></a>)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>or the default behavior can be changed with a custom <code>ValueMapping</code>.</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_default_value_mapping"><a class="anchor" href="#_default_value_mapping"></a>3.1. Default Value Mapping</h3>
+<div class="paragraph">
+<p>The default mapping behavior attempts to map from string to target type in the following order:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>if the attribute is annotated with a custom <code>@ValueMapper</code> enforce that one
+(see <a href="#custom-value-mapping">Section 3.3, &#8220;Custom Value Mapping&#8221;</a>)</p>
+</li>
+<li>
+<p>primitives types, where <code>null</code> values are mapped to their empty types:
+a non-existent <code>int</code> becomes 0.
+booleans either have to be lowercase <code>true</code> or <code>false</code>,
+except for source languages enforcing another definition (like yaml).</p>
+</li>
+<li>
+<p>explicit mappings, for example:</p>
+<div class="literalblock">
+<div class="content">
+<pre>java.nio.file.Path
+java.io.File
+java.time.Duration
+java.time.Period
+...</pre>
+</div>
+</div>
+</li>
+<li>
+<p>all Enum-types based on the Enum&#8217;s name</p>
+</li>
+<li>
+<p>classes with a static method named <code>valueOf(String)</code> or <code>fromString(String)</code></p>
+</li>
+<li>
+<p>classes with a constructor taking a single String as input argument</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Arrays/Collections are not considered leafs. In order to map a comma separated
+configuration string to a <code>string[]</code> you have to annotate it with <code>@Separated</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_built_in_value_mapping"><a class="anchor" href="#_built_in_value_mapping"></a>3.2. Built-in Value Mapping</h3>
+<div class="sect3">
+<h4 id="base64-mapping"><a class="anchor" href="#base64-mapping"></a>3.2.1. Base64 encoded</h4>
+<div class="paragraph">
+<p><code>@Base64</code> expects to bind a base64-encoded string to an array or collection of bytes.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 4. Mapping base64 encoded configuration properties</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface Base64Encoded {
+	@Base64
+	byte[] base64Arr();
+
+	@Base64(decoder = Base64Decoder.RFC4648_URLSAFE)
+	List&lt;Byte&gt; base64List();
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="separated-mapping"><a class="anchor" href="#separated-mapping"></a>3.2.2. Comma Separated</h4>
+<div class="paragraph">
+<p><code>@Separated</code> expects to bind a delimited string to an array or collection of arbitrary type.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 5. @Separated as a short-form for collection types</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface SeparatedConfig {
+	@Separated
+	List&lt;String&gt; commaSeparated();
+
+	@Separated(separator = "#")
+	int[] hashSeparated();
+
+	Set&lt;String&gt; usuallyAList();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>commaSeparated=comma,separated,values
+hashSeparated=1#2#3
+usuallyAList.0=common
+usuallyAList.1=list
+usuallyAList.2=notation</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="custom-value-mapping"><a class="anchor" href="#custom-value-mapping"></a>3.3. Custom Value Mapping</h3>
+<div class="paragraph">
+<p>If the default mapping does not fit or the target type is unknown, you generally have
+two options: programmatic the ConfiJBuilder or with an annotation on the affected attribute.</p>
+</div>
+<div class="paragraph">
+<p>If a custom mapping holds for all types in the whole configuration,
+it&#8217;s easiest to set it in the builder when creating the configuration instance.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 6. Global support to map RGB codes like "#0F0F0F" to Color</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">EmptyColorHolder colorHolder = ConfijBuilder.of(EmptyColorHolder.class)
+		.bindValuesForClassWith(Color::decode, java.awt.Color.class)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>If a custom mapping should only be applied to specific attributes,
+annotate them with <code>@ValueMapper(Class)</code>.
+The mapper class must have an accessible empty constructor.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 7. Annotation based support to map RGB codes like "#0F0F0F" to Color</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">static class ColorDecoder implements ValueMapperFactory {
+	@Override
+	public Optional&lt;ValueMapperInstance&lt;?&gt;&gt; maybeForType(BindingType bindingType) {
+		return Optional.of(Color::decode);
+	}
+}
+
+interface Favourites {
+	@ValueMapper(ColorDecoder.class)
+	Color favouriteColor();
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>In order to pass compile time options to the mapper instance,
+introduce fresh custom annotation, annotated with <code>@ValueMapper(Class)</code>.
+See for example the implementation of <a href="#separated-mapping">Section 3.2.2, &#8220;Comma Separated&#8221;</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="nested-configuration"><a class="anchor" href="#nested-configuration"></a>4. Nested Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Configurations can themselves contain child configurations recursively.
+Since every configuration is organized in a tree-structure, we call them branches.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 8. Simple nested configuration</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface ServerConfig {
+	Timing timing();
+	URL url();
+}
+
+interface Timing {
+	Duration keepAlive();
+	Duration timeout();
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Typical branches contain, but are not limited to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>nested interfaces (also with generics)</p>
+</li>
+<li>
+<p>Collection of interfaces, Objects (leafs), other Collections,&#8230;&#8203;</p>
+</li>
+<li>
+<p>Array types of Objects, primitives, other Arrays,&#8230;&#8203;</p>
+</li>
+<li>
+<p>Map types where keys are Strings and values are again anything</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="title">Example 9. Nested branches of child configurations</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface DbConfig {
+	List&lt;ServerConfig&gt; dbConnections();
+	Map&lt;String, String&gt; additionalParameters();
+	byte[] privateKey();
+	Nested&lt;Timing&gt; defaultTiming();
+}
+
+interface Nested&lt;T&gt; {
+	boolean active();
+	T wrapped();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">DbConfig dbConfig = ConfijBuilder.of(DbConfig.class)
+	.loadFrom(new PropertiesSource()
+		.with("dbConnections.0.url", "https://db0.example.com")
+		.with("dbConnections.0.timing.keepAlive", "30s")
+		.with("additionalParameters.somekey", "somevalue"))
+	.build();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>If the standard <code>Collection</code> interfaces are used ConfiJ will use an immutable representation of it.
+But any instance can be used as long as it has an empty constructor (but at the loss of immutability).
+Same holds for <code>Map&lt;String,?&gt;</code> types.</p>
+</div>
+<div class="paragraph">
+<p>Interface proxies are Java-serializable if all the customized values are serializable, too.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Java Bean types (POJO) are not supported yet. Please contribute.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<h1 id="_configuration_sources" class="sect0"><a class="anchor" href="#_configuration_sources"></a>Configuration Sources</h1>
+<div class="sect1">
+<h2 id="_source_pipelines"><a class="anchor" href="#_source_pipelines"></a>5. Source Pipelines</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ConfiJ sources are loaded one after the other.
+Each consecutive source overrides (merges) attributes of the previous ones.
+Typically this is useful to load a set of default values first,
+then continue with application specifics and environment specific values
+getting more and more detailed.
+Source types can be freely mixed, meaning you can load from classpath, then from a remote file, then from envionment variables and so on.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 10. Merge multiple configuration files across all formats</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface ServerConfig {
+	String name();
+
+	URL externalUrl();
+
+	@Default("1")
+	int line();
+
+	@Default("30s") <i class="conum" data-value="1"></i><b>(1)</b>
+	Duration timeout();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
+		.loadFrom("classpath:generic.properties") <i class="conum" data-value="2"></i><b>(2)</b>
+		.loadFrom("server.properties") <i class="conum" data-value="3"></i><b>(3)</b>
+		.loadFrom("sys:app") <i class="conum" data-value="4"></i><b>(4)</b>
+		.build();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><a href="#format-default">Default values</a> are always loaded first.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>then override with a file from the classpath root.
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java"># application.properties
+name=appserver</code></pre>
+</div>
+</div></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>then override with a file on disk (this is the first time where <code>name</code> is defined)
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java"># server.properties
+name=deepthough
+externalUrl=https://example.com:8042/think</code></pre>
+</div>
+</div></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>then override with system properties prefixed by <code>app</code>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">-Dapp.line=3</code></pre>
+</div>
+</div></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>This will result in the final configuration:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>ServerConfig {
+    externalUrl=https://example.com:8042/think,
+    line=3,
+    name=deepthough,
+    timeout=PT30S
+}</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Validation generally only applies to the final configuration.
+It is allowed to have incomplete configurations while there are still more configuration sources to load.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="format-default"><a class="anchor" href="#format-default"></a>6. Default Values</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Configuration default can be defined directly in your configuration interface using the <code>@Default</code> annotation.
+For more complex scenarios where the default value is not easily stingifyable,
+use a <code>default</code> method.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 11. Default configuration values as annotations</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface HasDefaults {
+	@Default("a default value")
+	String aString();
+
+	@Default("23")
+	int aNumber();
+
+	default List&lt;Boolean&gt; aListOfBooleans() {
+		return Arrays.asList(true, false);
+	}
+
+	default int aNumberPlus1() {
+		return aNumber() + 1;
+	}
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="anysource"><a class="anchor" href="#anysource"></a>7. The AnySource</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <code>AnySource</code> simply takes a URI-string and determines resource location and type based on it.
+It is the most compact form to specify a source unless you require special settings.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 12. Load from multiple sources of dynamic type and location</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">ConfijBuilder.of(Config.class)
+		.loadFrom("nested.properties") // properties file in current working directory
+		.loadFrom(new File("nested.properties").getAbsolutePath()) // equivalent
+		.loadFrom("file:nested.properties") // equivalent
+		.loadFrom("classpath:nested${key}.yaml") // a YAML file on the classpath root
+		.loadFrom("${key}:nestedvalue.yaml") // ...with variable replacements
+		.loadFrom("sys:some.prefix") // from system properties
+		.loadFrom("env:some_prefix") // from environment variables
+		.build();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Variable substitutions are supported anywhere in the template string (see <a href="#variables">Templating</a>).
+They take into account the previously loaded configuration keys.
+Replacement keys are always absolute (relative to the configuration root).</p>
+</div>
+<div class="paragraph">
+<p>Most commonly the resource location (file, classpath,&#8230;&#8203;) is detected based on the URI scheme (see <a href="#resource-locations">Section 8.1, &#8220;Resource Providers&#8221;</a>).
+The configuration format (yaml, json,&#8230;&#8203;) is detected based on the ending.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_sources_and_formats"><a class="anchor" href="#_sources_and_formats"></a>8. Sources and Formats</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="resource-locations"><a class="anchor" href="#resource-locations"></a>8.1. Resource Providers</h3>
+<div class="paragraph">
+<p>Configuration sources that can load from a file can usually load from other input streams as well.
+For those, the source location and source format can be combined freely.</p>
+</div>
+<div class="paragraph">
+<p><a href="#anysource">Chapter 7, <em>The AnySource</em></a> usually detects the location based on the scheme:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>file:</code> - is the default scheme and loads from the local Filesystem</p>
+</li>
+<li>
+<p><code>classpath:</code> - load from classpath on the default classloader</p>
+</li>
+<li>
+<p><code>http:</code> or any other registered URL format</p>
+</li>
+<li>
+<p><code>git:</code> for GIT repositories, see <a href="#git">Section 8.2, &#8220;GIT Resource Provider&#8221;</a></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Register custom resource providers using a <a href="#serviceloader">Chapter 9, <em>ConfiJ&#8217;s ServiceLoaders</em></a> for <code>ch.kk7.confij.source.file.resource.ConfijResourceProvider</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="git"><a class="anchor" href="#git"></a>8.2. GIT Resource Provider</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+GIT resources require the <code>ch.kk7:confij-git</code> maven artifact.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Configuration sources can be fetched via GIT.
+For simple cases an <a href="#anysource">Chapter 7, <em>The AnySource</em></a> can be used with a special URL format:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>a fixed scheme 'git:'</p>
+</li>
+<li>
+<p>followed by the URI-like path to the repository.</p>
+</li>
+<li>
+<p>followed by the path to the file in the repository.
+If the repository doesn&#8217;t end with <code>.git</code>, separate the filepath with two slashes <code>//</code>.</p>
+</li>
+<li>
+<p>optionally add a refspec pointing to a commit as fragment (separated from the rest by <code>#</code>).
+The default refspec is HEAD.</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="title">Example 13. Valid AnySource-URLs specifying the path to a file in a GIT-repository</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-bash" data-lang="bash"># annonymous https GIT repository containing /some/file.yaml
+git:https://example.com/repo.git/some/file.yaml
+
+# double slash is required if not ending with .git
+git:https://example.com/repo//some/file.yaml
+
+# BasicAuth
+git:https://user:password@example.com/repo//some/file.yaml
+
+# annonymous ssh
+git:ssh://example.com/annonymous.git/some/file.yaml
+
+# annonymous native git protocol: twice 'git' (sic)
+git:git://example.com/annonymous.git/some/file.yaml
+
+# refspec of a commit as SHA1-prefix
+git:git://example.com/repo.git/file.yaml#4a4255c
+
+# previous commit of default HEAD (usually the master branch)
+git:git://example.com/repo.git/file.yaml#HEAD~1
+
+# file on a GIT-branch named 'fuu'
+git:git://example.com/repo.git/file.yaml#refs/heads/fuu
+
+# file tagged with 'v1.0.42'
+git:git://example.com/repo.git/file.yaml#refs/tags/v1.0.42</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>For more complex scenarios like custom SSL authentication consider extending
+the existing <code>GitResourceProvider</code>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_yaml_format"><a class="anchor" href="#_yaml_format"></a>8.3. YAML Format</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+YAML format requires the <code>ch.kk7:confij-yaml</code> maven artifact.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>YAML is a recommended configuration source format since it maps nicely on a tree-structure.
+Collection types can be represented as lists or as maps with numerical keys.</p>
+</div>
+<div class="paragraph">
+<p>YAML can be loaded from all the <a href="#resource-locations">Section 8.1, &#8220;Resource Providers&#8221;</a>.
+The <code>AnySource</code> expects a case-insensitive file ending of <code>.yaml</code> or <code>.yml</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 14. Load from multiple sources of dynamic type and location</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface ComplexYaml {
+	List&lt;String&gt; listOfStrings();
+	Map&lt;String, Integer&gt; mapOfIntegers();
+	Map&lt;String, Integer&gt; mapOfIntegersClone();
+	LinkedList&lt;String&gt; anotherList();
+	OffsetDateTime date();
+	@Key("true") boolean isTrue();
+	@Key("false") boolean isFalse();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-yaml" data-lang="yaml"># complex.yaml
+listOfStrings:
+  - String
+  - String on
+    a single line
+  - "Double quotation marks\t"
+mapOfIntegers: &amp;ref
+  canonical:   12345
+  decimal:     +12_345
+  sexagesimal: 3:25:45
+  octal:       030071
+  hexadecimal: 0x3039
+mapOfIntegersClone: *ref
+anotherList:
+  0: null
+  1: big
+date: 2001-12-14t21:59:43.10-05:00
+true: true
+false: off</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>If the YAML source file contain multi-docs, they are loaded in order.
+Internally all values are reduced to Maps of Maps or Strings.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_hoconjson_format"><a class="anchor" href="#_hoconjson_format"></a>8.4. HOCON/JSON Format</h3>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+HOCON format requires the <code>ch.kk7:confij-hocon</code> maven artifact.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p><a href="https://github.com/lightbend/config/blob/master/HOCON.md">HOCON</a> (Human-Optimized Config Object Notation)
+is a format for human-readable data, and a superset of JSON and .properties.</p>
+</div>
+<div class="paragraph">
+<p>HOCON can be loaded from all the <a href="#resource-locations">Section 8.1, &#8220;Resource Providers&#8221;</a>.
+The <code>AnySource</code> expects a case-insensitive file ending of <code>.hocon</code>, <code>.json</code> or <code>.conf</code>.</p>
+</div>
+<div class="paragraph">
+<p>The default behaviour will first perform substitutions according to the
+<a href="https://github.com/lightbend/config/blob/master/HOCON.md#substitutions">HOCON Specification</a>,
+before ConfiJ&#8217;s templating will kick in.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 15. Two substitution mechanisms</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-json" data-lang="json">// HOCON will resolve this ${a} internally
+a: 1
+b: ${a}" and two"</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-json" data-lang="json">// HOCON ignores ${a} but ConfiJ will substitute it
+a: 1
+b: "${a} and two"</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_properties_format"><a class="anchor" href="#_properties_format"></a>8.5. Properties Format</h3>
+<div class="paragraph">
+<p>Java properties files are part of the <code>ch.kk7:confij-core</code> due to not having any 3rd party dependencies,
+but are otherwise not recommended, since it is a flat key-value format.</p>
+</div>
+<div class="paragraph">
+<p>Properties files can be loaded from all the <a href="#resource-locations">Section 8.1, &#8220;Resource Providers&#8221;</a>.
+The <code>AnySource</code> expects a case-insensitive file ending of <code>.properties</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 16. Nested configuration loading from properties file</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface Config {
+	String key();
+	Nested nest(); <i class="conum" data-value="1"></i><b>(1)</b>
+	List&lt;Nested&gt; listOfNest(); <i class="conum" data-value="2"></i><b>(2)</b>
+	Map&lt;String, Nested&gt; mapOfNest(); <i class="conum" data-value="3"></i><b>(3)</b>
+}
+
+interface Nested {
+	int x();
+	int y();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre># nested.properties
+key=value
+<i class="conum" data-value="1"></i><b>(1)</b>
+nest.x=0
+nest.y=1
+<i class="conum" data-value="2"></i><b>(2)</b>
+listOfNest.0.x=10
+listOfNest.0.y=11
+listOfNest.1.y=20
+listOfNest.2.y=21
+<i class="conum" data-value="3"></i><b>(3)</b>
+mapOfNest.mykey.x=100
+mapOfNest.mykey.y=101
+mapOfNest.myotherkey.x=200</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Per default, nested configuration keys are separated with a dot form each other.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Collection types simply require numerical keys (starting at 0).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Map types can use any key excluding the delimiter.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_environment_variables_format"><a class="anchor" href="#_environment_variables_format"></a>8.6. Environment Variables Format</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_system_properties_format"><a class="anchor" href="#_system_properties_format"></a>8.7. System Properties Format</h3>
+
+</div>
+<div class="sect2">
+<h3 id="_logical_sources"><a class="anchor" href="#_logical_sources"></a>8.8. Logical Sources</h3>
+
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="serviceloader"><a class="anchor" href="#serviceloader"></a>9. ConfiJ&#8217;s ServiceLoaders</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ConfiJ allows to utilize Java&#8217;s <a href="https://docs.oracle.com/javase/8/docs/api/?java/util/ServiceLoader.html">ServiceLoader</a>
+mechanism to register additional services like source formats or validators.
+All you have to do is to add the file with the service-interface name to META-INF/services.
+In this service file you list the fully qualified classnames of your constraint validator classes (one per line).</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 17. Custom Resource Provider as ServiceLoader</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">// +file: META-INF/services/ch.kk7.confij.source.file.resource.ConfijResourceProvider
+public static class FooProvider implements ConfijResourceProvider {
+	@Override
+	public String read(URI path) {
+		return "foo=bar";
+	}
+
+	@Override
+	public boolean canHandle(URI path) {
+		return "foo".equals(path.getScheme());
+	}
+}
+
+interface Foo {
+	String foo();
+}
+
+	Foo foo = ConfijBuilder.of(Foo.class)
+			.loadFrom("foo:fuuuuu.properties")
+			.build();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>To change the priority of a service loader instance implement the <code>ServiceLoaderPriority</code>.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 18. Custom Resource Provider as ServiceLoader with lowered priority</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">public static class AnUnimportantFooProvider extends FooProvider implements ServiceLoaderPriority {
+	@Override
+	public String read(URI path) {
+		throw new RuntimeException("less important than " + FooProvider.class);
+	}
+
+	@Override
+	public int getPriority() {
+		return ServiceLoaderPriority.DEFAULT_PRIORITY - 1000;
+	}
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<h1 id="variables" class="sect0"><a class="anchor" href="#variables"></a>Templating</h1>
+<div class="openblock partintro">
+<div class="content">
+<div class="paragraph">
+<p>All configuration values might contain placeholders referencing other values.
+Placeholders are only resolved after all sources were loaded.
+Therefore it is possible for an unfinished configuration to contain undefined references.</p>
+</div>
+<div class="paragraph">
+<p>Additionally some source paths are subject to templating (see <a href="#anysource">Chapter 7, <em>The AnySource</em></a>).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_built_in_templating"><a class="anchor" href="#_built_in_templating"></a>10. built-in Templating</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Any property can contain placeholders wrapped in <code>${ }</code>.
+These referenced properties can themselves reference other properties.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 19. Simple Variable replacement</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface Salutation {
+	@Default("John")
+	String name();
+
+	@Default("Hi ${name}")
+	String hello();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>given:  name=
+yields: hello → Hi John
+
+given:  name=Bob
+yields: hello → Hi Bob
+
+given:  hello=Cya
+yields: hello → Cya</pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>To disable templating support, see <a href="#templates-custom">Chapter 11, <em>Custom Templating</em></a>.</p>
+</div>
+<div class="sect2">
+<h3 id="_nested_properties"><a class="anchor" href="#_nested_properties"></a>10.1. Nested Properties</h3>
+<div class="paragraph">
+<p>Variables are always relative to the node that defines them.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 20. Referencing nested properties</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface Letter {
+	Salutation salutation();
+
+	@Default("I dearly miss you, ${salutation.name}!") <i class="conum" data-value="1"></i><b>(1)</b>
+	String body();
+
+	Regards regards();
+}
+
+interface Regards {
+	@Default("${.salutation.name}'s friend") <i class="conum" data-value="2"></i><b>(2)</b>
+	String sender();
+
+	@Default("Sincierly\n${sender}")
+	String regards();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">Letter letter = ConfijBuilder.of(Letter.class).build();
+assertThat(letter.regards().sender()).isEqualTo("John's friend");
+assertThat(letter.body()).isEqualTo("I dearly miss you, John!");</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Variables can reference nested properties. Default segment separator is a dot.
+Note that the reference is still relative to where <code>body</code> is defined.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>To reference a property relative to the root configuration, prefix it with a dot.
+In this example <code>Letter</code> is the root.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_recursive_properties"><a class="anchor" href="#_recursive_properties"></a>10.2. Recursive Properties</h3>
+<div class="paragraph">
+<p>Variables themselves can be built out of other variables.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 21. Recursive Variable replacement</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface Recursive {
+	@Default("Alice")
+	String party1();
+	@Default("Bob")
+	String party2();
+	@Default("1")
+	int victimsId();
+	@Default("Poor ${party${victimsId}}!")
+	String victim();
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="templates-custom"><a class="anchor" href="#templates-custom"></a>11. Custom Templating</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>It is possible register a custom templating functionality globally or per property.
+One use case is to disable templating per property.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 22. Disable templating per property using an annotation</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface Noop {
+	@NoopVariableResolver
+	String canContainDollar();
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 23. Disable templating for interface and all its children</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">@NoopVariableResolver
+interface GlobalNoop {
+	String canContainDollar();
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="exampleblock">
+<div class="title">Example 24. Disable templating programmatically at initialization</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">ConfijBuilder.of(BuilderNoop.class).templatingDisabled()</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>A custom templating engine can be registered in the same ways.
+Every custom resolver must provide an empty constructor.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 25. Custom sample templating</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">static class FooResolver implements ch.kk7.confij.template.VariableResolver {
+	@Override
+	public String resolveValue(ConfijNode baseLeaf, String valueToResolve) {
+		return "foo";
+	}
+}
+
+interface CustomResolver {
+	@Default("everything becomes foo")
+	@VariableResolver(FooResolver.class)
+	String everyVariableIsFoo();
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<h1 id="_miscellaneous" class="sect0"><a class="anchor" href="#_miscellaneous"></a>Miscellaneous</h1>
+<div class="sect1">
+<h2 id="_jsr303_validator"><a class="anchor" href="#_jsr303_validator"></a>12. JSR303 Validator</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+JSR303 Validator format requires the <code>ch.kk7:confij-validation</code> maven artifact.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Straight forward <a href="http://hibernate.org/validator/">Hibernate-Validation</a>.
+Validation is applied to the configuration as a last step after templating.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 26. JSR303 Bean validation</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-java" data-lang="java">interface Validated {
+	@NotNull
+	String mandatory();
+	@Pattern(regexp = "[A-Z]*")
+	String uppercase();
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<code>ch.kk7:confij-validation</code> depends on <code>hibernate-validator</code> &gt;= 6.1 in order to support non-getter properties
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_logging"><a class="anchor" href="#_logging"></a>13. Logging</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ConfiJ core relies on <code>java.util.logging</code> (JUL) ony due to it&#8217;s zero-dependency strategy.
+If <code>ch.kk7:confij-slf4j</code> is found on the classpath, logging uses the slf4j-framework.
+To support a custom logging-framework, register a <a href="#serviceloader">Chapter 9, <em>ConfiJ&#8217;s ServiceLoaders</em></a> for <code>ConfijLogFactory</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
+<script>prettyPrint()</script>
+</body>
+</html>
