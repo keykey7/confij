@@ -6,10 +6,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [8, 9, 11, 13]
+        java: [8, 9, 13] # other supported JDK versions
         sonar: [false]
         include:
-          - java: 11
+          - java: 11 # usually latest LTS
             sonar: true
     steps:
       - name: checkout 📥
@@ -31,10 +31,10 @@ jobs:
           key: gradle-${{ runner.os }}-${{ matrix.java }}-pr
 
       - name: build 🔧
-        run: ./gradlew --no-daemon -s build publishToMavenLocal
+        run: ./gradlew --no-daemon -s build
 
       - name: QA ⛅️
-        run: ./gradlew --no-daemon -s sonarqube
+        run: ./gradlew --no-daemon -s publishToMavenLocal sonarqube
         if: ${{ matrix.sonar }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
