@@ -2,6 +2,7 @@ package ch.kk7.confij.source.resource;
 
 import ch.kk7.confij.source.ConfijSourceException;
 import org.assertj.core.api.WithAssertions;
+import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,15 @@ class GitResourceProviderFileTest implements WithAssertions {
 	public void initGit() throws Exception {
 		git = new GitResourceProvider();
 		testGit = new GitTestrepo();
+		StoredConfig config = testGit.getRepository()
+				.getConfig();
+		// disable all gc
+		// http://download.eclipse.org/jgit/site/5.2.1.201812262042-r/apidocs/org/eclipse/jgit/internal/storage/file/GC.html#setAuto-boolean-
+		config.setString("gc", null, "auto", "0");
+		config.setString("gc", null, "autoPackLimit", "0");
+		config.setString("receive", null, "autogc", "false");
+		config.setBoolean("receive", null, "autogc", false);
+
 		fileUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE);
 	}
 
