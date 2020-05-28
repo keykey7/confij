@@ -3,6 +3,11 @@ package ch.kk7.confij.binding.intf;
 import ch.kk7.confij.binding.intf.DefaultsTest.WithDefaults;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -58,6 +63,11 @@ public class DefaultsTest extends AbstractProxyBuilderTest<WithDefaults> {
 
 	private DefaultsTest withBoolean(Boolean value) {
 		set("aBoolean", value);
+		return this;
+	}
+
+	private DefaultsTest withDouble(double value) {
+		set("aRandomDouble", value);
 		return this;
 	}
 
@@ -138,5 +148,25 @@ public class DefaultsTest extends AbstractProxyBuilderTest<WithDefaults> {
 		assertThat(first).isEqualTo(second)
 				.isNotSameAs(second);
 		assertThat(first.hashCode()).isEqualTo(second.hashCode());
+	}
+
+	@Test
+	public void proxyIsSerializable() {
+		WithDefaults first = withString(UUID.randomUUID() + "").withDouble(1337)
+				.instance();
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		try (ObjectOutputStream out = new ObjectOutputStream(baos)) {
+			out.writeObject(first);
+		} catch (IOException e) {
+			throw new RuntimeException("isn't serializable", e);
+		}
+		WithDefaults second;
+		try(ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()))) {
+			second = (WithDefaults) in.readObject();
+		} catch (IOException | ClassNotFoundException e) {
+			throw new RuntimeException("isn't deserializable", e);
+		}
+		assertThat(first).isEqualTo(second);
+		assertThat(second.aRandomDouble()).isEqualTo(1337);
 	}
 }

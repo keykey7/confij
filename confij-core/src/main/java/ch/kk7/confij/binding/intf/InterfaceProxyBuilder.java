@@ -11,6 +11,7 @@ import com.fasterxml.classmate.types.ResolvedInterfaceType;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -32,8 +33,18 @@ public class InterfaceProxyBuilder<T> {
 	private static final Map<Class<?>, Object> PRIMITIVE_ZEROS = Stream.of(boolean.class, byte.class, char.class, double.class, float.class,
 			int.class, long.class, short.class)
 			.collect(toMap(clazz -> (Class<?>) clazz, clazz -> Array.get(Array.newInstance(clazz, 1), 0)));
+
+	/**
+	 * make comparator serializable to allow serialization of this TreeMap and thus the Proxy
+	 */
+	protected static final Comparator<Method> methodNameComparator = (Comparator<Method> & Serializable) (m1, m2) -> Comparator.comparing(
+			Method::getName)
+			.compare(m1, m2);
+
 	private final ResolvedInterfaceType type;
+
 	private final Set<ResolvedMethod> allowedMethods;
+
 	private final Set<ResolvedMethod> mandatoryMethods;
 
 	public interface ConfijHandled {
@@ -63,7 +74,7 @@ public class InterfaceProxyBuilder<T> {
 						missingMandatoryMethods);
 			}
 			// input methods are valid at this point
-			Map<Method, Object> fixedMethodToValue = new TreeMap<>(Comparator.comparing(Method::getName));
+			Map<Method, Object> fixedMethodToValue = new TreeMap<>(methodNameComparator);
 			methodToValues.forEach((method, value) -> {
 				ResolvedType returnClass = method.getReturnType();
 				if (value == null && returnClass.isPrimitive()) {
