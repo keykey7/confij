@@ -18,12 +18,23 @@ jobs:
         with:
           java-version: 11
 
+      - name: cache 🗂️
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            !~/.gradle/caches/modules-2/modules-2.lock
+            !~/.gradle/caches/*/plugin-resolution/
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ matrix.java }}-master
+
       - name: build 🔧
         run: ./gradlew --no-daemon -s build
 
       - name: QA ⛅️
         run: ./gradlew --no-daemon -s publishToMavenLocal sonarqube
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # sonar bug: shouldn't be needed
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: publish 📤
