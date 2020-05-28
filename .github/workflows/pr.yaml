@@ -1,0 +1,40 @@
+name: pr
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [8, 9, 13] # other supported JDK versions
+        sonar: [false]
+        include:
+          - java: 11 # usually latest LTS
+            sonar: true
+    steps:
+      - name: checkout 📥
+        uses: actions/checkout@v2
+
+      - name: JDK${{ matrix.java }} ☕
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+
+      - name: cache 🗂️
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            !~/.gradle/caches/modules-2/modules-2.lock
+            !~/.gradle/caches/*/plugin-resolution/
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ matrix.java }}-pr
+
+      - name: build 🔧
+        run: ./gradlew --no-daemon -s build
+
+      - name: QA ⛅️
+        run: ./gradlew --no-daemon -s publishToMavenLocal sonarqube
+        if: ${{ matrix.sonar }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

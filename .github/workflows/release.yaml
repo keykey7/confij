@@ -1,0 +1,39 @@
+name: release
+on:
+  push:
+    branches: master
+    tags: v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout 📥
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # all commits, required for propper versioning
+
+      - name: setup ☕
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: build 🔧
+        run: ./gradlew --no-daemon -s build
+
+      - name: QA ⛅️
+        run: ./gradlew --no-daemon -s publishToMavenLocal sonarqube
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: publish 📤
+        run: ./gradlew --no-daemon -s publish
+        env:
+          BINTRAY_TOKEN: ${{ secrets.BINTRAY_TOKEN }}
+
+      - name: docs 📜
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./confij-documentation/build/docs/asciidoc
+          keep_files: true

@@ -58,8 +58,16 @@ dependencyUpdates.resolutionStrategy {
 
 subprojects {
 	apply plugin: 'java-library'
-	sourceCompatibility = JavaVersion.VERSION_1_8
-	targetCompatibility = JavaVersion.VERSION_1_8
+
+	java {
+		sourceCompatibility = JavaVersion.VERSION_1_8
+		targetCompatibility = JavaVersion.VERSION_1_8
+		withSourcesJar()
+		withJavadocJar()
+	}
+	javadoc {
+		options.addStringOption('Xdoclint:none', '-quiet')
+	}
 
 	tasks.withType(JavaCompile) {
 		options.incremental = true
@@ -155,26 +163,10 @@ subprojects {
 		confijUrl = "https://github.com/${confijGithub}"
 	}
 
-	task sourcesJar(type: Jar, dependsOn: classes) {
-		classifier = 'sources'
-		from sourceSets.main.allSource
-	}
-
-	javadoc {
-		options.addStringOption('Xdoclint:none', '-quiet')
-	}
-
-	task javadocJar(type: Jar, dependsOn: javadoc) {
-		classifier = 'javadoc'
-		from javadoc.destinationDir
-	}
-
 	publishing {
 		publications {
 			mavenJava(MavenPublication) {
 				from components.java
-				artifact sourcesJar
-				artifact javadocJar
 				pom {
 					name = project.name
 					description = project.confijDescription
