@@ -1,0 +1,32 @@
+name: PR Checks
+on: pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [8, 9, 11, 13]
+    steps:
+      - name: checkout 📥
+        uses: actions/checkout@v2
+
+      - name: setup ${{ matrix.java }} ☕
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java }}
+
+      - name: cache 🗂️
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            !~/.gradle/caches/modules-2/modules-2.lock
+            !~/.gradle/caches/*/plugin-resolution/
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ matrix.java }}-pr
+
+      - name: build 🔧
+        run: ./gradlew --no-daemon -s build publishToMavenLocal sonarqube
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
