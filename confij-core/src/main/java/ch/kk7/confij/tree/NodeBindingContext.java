@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.ToString;
-import lombok.experimental.Wither;
+import lombok.With;
 
 import java.lang.reflect.AnnotatedElement;
 
@@ -19,7 +19,7 @@ import java.lang.reflect.AnnotatedElement;
  * to abstract nodes in a configuration context.
  * It's a binding-context since it can be modified using annotations.
  */
-@Wither
+@With
 @ToString
 @AllArgsConstructor
 public class NodeBindingContext {
@@ -29,7 +29,7 @@ public class NodeBindingContext {
 	@Getter
 	private final VariableResolver variableResolver;
 	@NonNull
-	@Wither(AccessLevel.NONE)
+	@With(AccessLevel.NONE)
 	private final ClassToImplCache implCache;
 
 	public static NodeBindingContext newDefaultSettings() {

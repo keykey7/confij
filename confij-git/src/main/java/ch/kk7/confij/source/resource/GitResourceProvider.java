@@ -7,8 +7,8 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.Value;
+import lombok.With;
 import lombok.experimental.NonFinal;
-import lombok.experimental.Wither;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -50,7 +50,7 @@ public class GitResourceProvider extends AbstractResourceProvider {
 	private static final String FETCH_REFSPEC = "+refs/*:refs/*";
 
 	@Value
-	@Wither
+	@With
 	@Builder
 	@NonFinal
 	public static class GitSettings {

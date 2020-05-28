@@ -17,8 +17,8 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Value;
+import lombok.With;
 import lombok.experimental.NonFinal;
-import lombok.experimental.Wither;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
@@ -35,7 +35,7 @@ import java.util.Optional;
  * It is an aggregated state over all the parent nodes, usually considering the annotations up to a node.
  */
 @Value
-@Wither
+@With
 @NonFinal
 public class BindingContext {
 	private final ValueMapperFactory forcedMapperFactory;
@@ -45,7 +45,7 @@ public class BindingContext {
 	@NonNull
 	private final Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs;
 	@NonNull
-	@Wither(AccessLevel.NONE)
+	@With(AccessLevel.NONE)
 	private final ClassToImplCache implCache;
 
 	public BindingContext(ValueMapperFactory forcedMapperFactory, @NonNull List<ValueMapperFactory> mapperFactories,
