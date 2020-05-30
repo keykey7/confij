@@ -1,7 +1,7 @@
 package ch.kk7.confij.source.format;
 
 import ch.kk7.confij.ConfijBuilder;
-import com.fasterxml.classmate.GenericType;
+import ch.kk7.confij.common.GenericType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

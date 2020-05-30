@@ -1,5 +1,6 @@
 package ch.kk7.confij.binding;
 
+import ch.kk7.confij.common.Util;
 import com.fasterxml.classmate.ResolvedType;
 import com.fasterxml.classmate.TypeResolver;
 import lombok.NonNull;
@@ -22,7 +23,7 @@ public class BindingType {
 	}
 
 	public static BindingType newBindingType(Type forType, BindingContext bindingContext) {
-		TypeResolver typeResolver = new TypeResolver();
+		TypeResolver typeResolver = Util.TYPE_RESOLVER;
 		return new BindingType(typeResolver.resolve(forType), bindingContext, typeResolver);
 	}
 
