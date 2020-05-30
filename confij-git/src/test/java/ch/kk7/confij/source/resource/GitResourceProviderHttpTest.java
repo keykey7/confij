@@ -10,11 +10,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.File;
 import java.net.URI;
 
-@ExtendWith(TempDirCleanupExtension.class)
 public class GitResourceProviderHttpTest implements WithAssertions {
 	private GitResourceProvider git;
 	private GitTestrepo testGit;
@@ -23,9 +23,9 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 	private URI httpsUri;
 
 	@BeforeEach
-	public void initServer() throws Exception {
+	public void initServer(@TempDir File tempDir) throws Exception {
 		git = new GitResourceProvider();
-		testGit = new GitTestrepo();
+		testGit = new GitTestrepo(tempDir);
 		server = new SimpleHttpServer(testGit.getRepository(), true);
 		server.start();
 		httpUri = GitResourceProvider.toUri(server.getUri()

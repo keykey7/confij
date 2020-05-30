@@ -5,7 +5,6 @@ import ch.kk7.confij.binding.ConfijDefinitionException;
 import ch.kk7.confij.common.Util;
 import com.fasterxml.classmate.MemberResolver;
 import com.fasterxml.classmate.ResolvedType;
-import com.fasterxml.classmate.TypeResolver;
 import com.fasterxml.classmate.members.ResolvedMethod;
 import com.fasterxml.classmate.types.ResolvedInterfaceType;
 import lombok.Getter;
@@ -109,8 +108,7 @@ public class InterfaceProxyBuilder<T> {
 	}
 
 	protected MemberResolver supportedMemberResolver(boolean mandatoryOnly) {
-		// TODO: use the common typeResolver
-		MemberResolver memberResolver = new MemberResolver(new TypeResolver());
+		MemberResolver memberResolver = new MemberResolver(Util.TYPE_RESOLVER);
 		memberResolver.setMethodFilter(method -> {
 			if (Util.rawObjectType.equals(method.getDeclaringType())) {
 				return false;

@@ -12,19 +12,12 @@ import java.util.UUID;
 public class GitTestrepo {
 	public static final String DEFAULT_FILE = "file.txt";
 	private int counter = 0;
-	private Git git;
+	private final Git git;
 
-	public GitTestrepo() throws Exception {
-		init();
-	}
-
-	public GitTestrepo init() throws Exception {
-		File repoDir = File.createTempFile(GitResourceProvider.TEMP_DIR_PREFIX + "test-", "");
-		repoDir.delete();
+	public GitTestrepo(File tmpDir) throws Exception {
 		git = Git.init()
-				.setDirectory(repoDir)
+				.setDirectory(tmpDir)
 				.call();
-		return this;
 	}
 
 	public void addFile(String filename, String content) throws Exception {

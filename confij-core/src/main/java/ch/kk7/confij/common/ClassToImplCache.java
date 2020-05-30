@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * given a class with an empty constructor, maintain a cache for class->instance without any guarantees.
+ * given a class with an empty constructor, maintain a cache for class→instance without any guarantees.
  */
 @ToString
 public class ClassToImplCache {

@@ -5,12 +5,14 @@ import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.values.ValueMapperFactory;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
+import ch.kk7.confij.common.GenericType;
+import ch.kk7.confij.common.Util;
 import ch.kk7.confij.pipeline.ConfijPipeline;
 import ch.kk7.confij.pipeline.ConfijPipelineImpl;
 import ch.kk7.confij.pipeline.reload.ConfijReloader;
 import ch.kk7.confij.pipeline.reload.ScheduledReloader;
-import ch.kk7.confij.source.any.AnySource;
 import ch.kk7.confij.source.ConfijSource;
+import ch.kk7.confij.source.any.AnySource;
 import ch.kk7.confij.source.defaults.DefaultSource;
 import ch.kk7.confij.source.logical.MaybeSource;
 import ch.kk7.confij.source.logical.OrSource;
@@ -20,7 +22,7 @@ import ch.kk7.confij.tree.NodeBindingContext;
 import ch.kk7.confij.tree.NodeDefinition;
 import ch.kk7.confij.validation.ConfijValidator;
 import ch.kk7.confij.validation.ServiceLoaderValidator;
-import com.fasterxml.classmate.GenericType;
+import com.fasterxml.classmate.ResolvedType;
 import lombok.NonNull;
 
 import java.lang.reflect.Type;
@@ -66,7 +68,13 @@ public class ConfijBuilder<T> {
 	 * @see GenericType
 	 */
 	public static <X> ConfijBuilder<X> of(GenericType<X> forType) {
-		return new ConfijBuilder<>(forType);
+		List<ResolvedType> typeParameters = Util.TYPE_RESOLVER.resolve(forType.getClass())
+				.findSupertype(GenericType.class)
+				.getTypeParameters();
+		if (typeParameters.size() != 1) {
+			throw new IllegalArgumentException("expected 1 typeParameter, but got " + typeParameters);
+		}
+		return new ConfijBuilder<>(typeParameters.get(0));
 	}
 
 	/**

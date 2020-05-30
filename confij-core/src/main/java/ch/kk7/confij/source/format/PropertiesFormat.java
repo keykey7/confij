@@ -64,7 +64,7 @@ public class PropertiesFormat implements ConfijSourceFormat {
 	/**
 	 * for each {@code k}:<br>
 	 * - if it is a leaf node: return the value as String (nullable)<br>
-	 * - otherwise: return the branch as Map<String, Object> (nonnull)<br>
+	 * - otherwise: return the branch as Map&lt;String, Object&gt; (nonnull)<br>
 	 */
 	protected Function<String, Object> valueMapper(NodeDefinition parentFormat, Map<String, String> map) {
 		return k -> {
