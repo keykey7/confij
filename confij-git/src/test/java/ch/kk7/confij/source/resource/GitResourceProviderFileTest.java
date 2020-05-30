@@ -6,30 +6,26 @@ import org.eclipse.jgit.lib.StoredConfig;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.net.URI;
 
-@ExtendWith(TempDirCleanupExtension.class)
 class GitResourceProviderFileTest implements WithAssertions {
 	private GitResourceProvider git;
 	private GitTestrepo testGit;
 	private URI fileUri;
 
 	@BeforeEach
-	public void initGit() throws Exception {
+	public void initGit(@TempDir File tempDir) throws Exception {
 		git = new GitResourceProvider();
-		testGit = new GitTestrepo();
+		testGit = new GitTestrepo(tempDir);
 		StoredConfig config = testGit.getRepository()
 				.getConfig();
-		// disable all gc
-		// http://download.eclipse.org/jgit/site/5.2.1.201812262042-r/apidocs/org/eclipse/jgit/internal/storage/file/GC.html#setAuto-boolean-
-		config.setString("gc", null, "auto", "0");
-		config.setString("gc", null, "autoPackLimit", "0");
-		config.setString("receive", null, "autogc", "false");
+		config.setInt("gc", null, "auto", 0);
+		config.setInt("gc", null, "autoPackLimit", 0);
 		config.setBoolean("receive", null, "autogc", false);
 
 		fileUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE);

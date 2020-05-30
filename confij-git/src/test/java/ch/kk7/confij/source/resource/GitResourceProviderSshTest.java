@@ -9,7 +9,7 @@ import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -22,7 +22,6 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@ExtendWith(TempDirCleanupExtension.class)
 public class GitResourceProviderSshTest implements WithAssertions {
 	private GitResourceProvider git;
 	private GitTestrepo testGit;
@@ -55,8 +54,8 @@ public class GitResourceProviderSshTest implements WithAssertions {
 	}
 
 	@BeforeEach
-	public void initServer() throws Exception {
-		testGit = new GitTestrepo();
+	public void initServer(@TempDir File tempDir) throws Exception {
+		testGit = new GitTestrepo(tempDir);
 		File sshDir = File.createTempFile(GitResourceProvider.TEMP_DIR_PREFIX, "_ssh");
 		assertTrue(sshDir.delete());
 		assertTrue(sshDir.mkdir());
