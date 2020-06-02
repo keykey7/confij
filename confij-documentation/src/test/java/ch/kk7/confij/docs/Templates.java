@@ -2,10 +2,10 @@ package ch.kk7.confij.docs;
 
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.annotation.VariableResolver;
-import ch.kk7.confij.template.NoopResolver.NoopVariableResolver;
+import ch.kk7.confij.template.NoopValueResolver.NoopResolver;
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.env.PropertiesSource;
-import ch.kk7.confij.tree.ConfijNode;
+import ch.kk7.confij.template.ValueResolver;import ch.kk7.confij.tree.ConfijNode;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -82,13 +82,13 @@ public class Templates implements WithAssertions {
 
 	// tag::noop[]
 	interface Noop {
-		@NoopVariableResolver
+		@NoopResolver
 		String canContainDollar();
 	}
 	// end::noop[]
 
 	// tag::global-noop[]
-	@NoopVariableResolver
+	@NoopResolver
 	interface GlobalNoop {
 		String canContainDollar();
 	}
@@ -116,7 +116,7 @@ public class Templates implements WithAssertions {
 	}
 
 	// tag::customresolver[]
-	static class FooResolver implements ch.kk7.confij.template.VariableResolver {
+	static class FooResolver implements ValueResolver {
 		@Override
 		public String resolveValue(ConfijNode baseLeaf, String valueToResolve) {
 			return "foo";

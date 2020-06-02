@@ -3,13 +3,12 @@ package ch.kk7.confij.tree;
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.common.AnnotationUtil;
 import ch.kk7.confij.common.ClassToImplCache;
-import ch.kk7.confij.template.DefaultResolver;
-import ch.kk7.confij.template.VariableResolver;
+import ch.kk7.confij.template.SimpleVariableResolver;
+import ch.kk7.confij.template.ValueResolver;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.ToString;
+import lombok.Value;
 import lombok.With;
 
 import java.lang.reflect.AnnotatedElement;
@@ -20,37 +19,40 @@ import java.lang.reflect.AnnotatedElement;
  * It's a binding-context since it can be modified using annotations.
  */
 @With
-@ToString
-@AllArgsConstructor
+@Value
 public class NodeBindingContext {
-	@Getter
-	private final String defaultValue;
+	AnnotatedElement annotatedElement;
+
+	String defaultValue;
+
 	@NonNull
-	@Getter
-	private final VariableResolver variableResolver;
+	ValueResolver valueResolver;
+
 	@NonNull
 	@With(AccessLevel.NONE)
-	private final ClassToImplCache implCache;
+	@Getter(AccessLevel.NONE)
+	ClassToImplCache implCache;
 
 	public static NodeBindingContext newDefaultSettings() {
 		ClassToImplCache implCache = new ClassToImplCache();
-		return new NodeBindingContext( null, implCache.getInstance(DefaultResolver.class), implCache);
+		return new NodeBindingContext( null, null, implCache.getInstance(SimpleVariableResolver.class), implCache);
 	}
 
-	protected NodeBindingContext withVariableResolverFor(AnnotatedElement element) {
-		return withVariableResolver(AnnotationUtil.findAnnotation(element, ch.kk7.confij.annotation.VariableResolver.class)
+	protected NodeBindingContext withValueResolverFor(AnnotatedElement element) {
+		return withValueResolver(AnnotationUtil.findAnnotation(element, ch.kk7.confij.annotation.VariableResolver.class)
 				.map(ch.kk7.confij.annotation.VariableResolver::value)
-				.map(x -> implCache.getInstance(x, VariableResolver.class))
-				.orElse(variableResolver));
+				.map(x -> implCache.getInstance(x, ValueResolver.class))
+				.orElse(valueResolver));
 	}
 
 	protected NodeBindingContext withDefaultValueFor(AnnotatedElement element) {
 		return withDefaultValue(AnnotationUtil.findAnnotation(element, Default.class)
-				.map(Default::value)
+				.map(x -> x.isNull() ? null : x.value())
 				.orElse(defaultValue));
 	}
 
 	public NodeBindingContext settingsFor(AnnotatedElement element) {
-		return withDefaultValueFor(element).withVariableResolverFor(element);
+		return withAnnotatedElement(element).withDefaultValueFor(element)
+				.withValueResolverFor(element);
 	}
 }

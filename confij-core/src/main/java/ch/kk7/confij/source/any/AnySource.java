@@ -4,7 +4,7 @@ import ch.kk7.confij.common.ServiceLoaderUtil;
 import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.ConfijSourceBuilder;
 import ch.kk7.confij.source.ConfijSourceException;
-import ch.kk7.confij.template.VariableResolver;
+import ch.kk7.confij.template.ValueResolver;
 import ch.kk7.confij.tree.ConfijNode;
 import lombok.Data;
 
@@ -31,10 +31,10 @@ public class AnySource implements ConfijSource {
 		sourceBuilders = ServiceLoaderUtil.requireInstancesOf(ConfijSourceBuilder.class);
 	}
 
-	protected VariableResolver getResolver(ConfijNode rootNode) {
+	protected ValueResolver getResolver(ConfijNode rootNode) {
 		return rootNode.getConfig()
 				.getNodeBindingContext()
-				.getVariableResolver();
+				.getValueResolver();
 	}
 
 	protected URI resolveUri(ConfijNode rootNode) {

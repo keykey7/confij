@@ -24,7 +24,7 @@ public class LeafBinding<T> implements ConfigBinding<T> {
 	public T bind(ConfijNode leaf) {
 		String value = leaf.getConfig()
 				.getNodeBindingContext()
-				.getVariableResolver()
+				.getValueResolver()
 				.resolveLeaf(leaf);
 		return valueMapper.fromString(value);
 	}

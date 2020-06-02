@@ -17,12 +17,12 @@ import java.util.Set;
 public class AnnotationUtil {
 
 	@Value
-	public static class AnnonResponse<A extends Annotation> {
+	public class AnnonResponse<A extends Annotation> {
 		Annotation declaredAnnotation;
 		A annotationType;
 	}
 
-	public static <A extends Annotation> Optional<AnnonResponse<A>>
+	public <A extends Annotation> Optional<AnnonResponse<A>>
 			findAnnotationAndDeclaration(AnnotatedElement annotatedElement, Class<A> annotationType) {
 		A annotation = annotatedElement.getDeclaredAnnotation(annotationType);
 		if (annotation != null) {
@@ -41,12 +41,16 @@ public class AnnotationUtil {
 		return Optional.empty();
 	}
 
-	public static <A extends Annotation> Optional<A> findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
+	/**
+	 * Find a single Annotation of annotationType on the supplied AnnotatedElement.
+	 * Meta-annotations will be searched if the annotation is not directly present on the supplied element.
+	 */
+	public <A extends Annotation> Optional<A> findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
 		// TODO: cache the result
 		return Optional.ofNullable(findAnnotation(annotatedElement, annotationType, new HashSet<>()));
 	}
 
-	private static <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType,
+	private <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType,
 			Set<Annotation> visited) {
 		A annotation = annotatedElement.getDeclaredAnnotation(annotationType);
 		if (annotation != null) {
@@ -64,11 +68,11 @@ public class AnnotationUtil {
 		return null;
 	}
 
-	static boolean isInJavaLangAnnotationPackage(Class<? extends Annotation> annotationType) {
+	boolean isInJavaLangAnnotationPackage(Class<? extends Annotation> annotationType) {
 		return (annotationType != null && isInJavaLangAnnotationPackage(annotationType.getName()));
 	}
 
-	public static boolean isInJavaLangAnnotationPackage(String annotationType) {
+	public boolean isInJavaLangAnnotationPackage(String annotationType) {
 		return (annotationType != null && annotationType.startsWith("java.lang.annotation"));
 	}
 }

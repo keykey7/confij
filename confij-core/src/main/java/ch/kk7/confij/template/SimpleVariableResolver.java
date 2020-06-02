@@ -5,6 +5,11 @@ import ch.kk7.confij.common.ConfijException;
 import ch.kk7.confij.tree.ConfijNode;
 import lombok.ToString;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,7 +22,15 @@ import java.util.stream.Collectors;
 
 // TODO: make ThreadSafe
 @ToString
-public class DefaultResolver implements VariableResolver {
+public class SimpleVariableResolver implements ValueResolver {
+
+	@Inherited
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ElementType.METHOD, ElementType.TYPE})
+	@ch.kk7.confij.annotation.VariableResolver(SimpleVariableResolver.class)
+	public @interface SimpleResolver {
+	}
+
 	private char escapeChar = '\\';
 	private String pathSeparator = ".";
 	private final Map<ConfijNode, String> resolvedLeaves = new HashMap<>();

@@ -8,7 +8,8 @@ import java.util.Set;
 
 /**
  * This is a special ConfigSource since it does not simply override existing values.
- * It rather extends them, by introducing missing nodes and setting default values.
+ * It rather extends them, by introducing missing nodes and setting default values
+ * (all taken from code and not from external).
  */
 public class DefaultSource implements ConfijSource {
 	@Override

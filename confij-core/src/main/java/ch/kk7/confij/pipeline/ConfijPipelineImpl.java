@@ -46,7 +46,7 @@ public class ConfijPipelineImpl<T> implements ConfijPipeline<T> {
 	public T build() {
 		ConfijNode simpleConfig = readConfigToNode();
 		T config = bind(simpleConfig);
-		validator.validate(config);
+		validator.validate(config, simpleConfig);
 		return config;
 	}
 }

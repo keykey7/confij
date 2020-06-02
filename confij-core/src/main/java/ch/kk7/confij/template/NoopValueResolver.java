@@ -8,12 +8,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-public class NoopResolver implements VariableResolver {
+public class NoopValueResolver implements ValueResolver {
 	@Inherited
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.TYPE})
-	@ch.kk7.confij.annotation.VariableResolver(NoopResolver.class)
-	public @interface NoopVariableResolver {
+	@ch.kk7.confij.annotation.VariableResolver(NoopValueResolver.class)
+	public @interface NoopResolver {
 	}
 
 	@Override

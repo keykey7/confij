@@ -16,8 +16,8 @@ import ch.kk7.confij.source.any.AnySource;
 import ch.kk7.confij.source.defaults.DefaultSource;
 import ch.kk7.confij.source.logical.MaybeSource;
 import ch.kk7.confij.source.logical.OrSource;
-import ch.kk7.confij.template.NoopResolver;
-import ch.kk7.confij.template.VariableResolver;
+import ch.kk7.confij.template.NoopValueResolver;
+import ch.kk7.confij.template.ValueResolver;
 import ch.kk7.confij.tree.NodeBindingContext;
 import ch.kk7.confij.tree.NodeDefinition;
 import ch.kk7.confij.validation.ConfijValidator;
@@ -162,15 +162,16 @@ public class ConfijBuilder<T> {
 		return this;
 	}
 
-	public ConfijBuilder<T> templatingWith(@NonNull VariableResolver variableResolver) {
-		nodeBindingContext = getNodeBindingContext().withVariableResolver(variableResolver);
+	public ConfijBuilder<T> templatingWith(@NonNull ValueResolver valueResolver) {
+		nodeBindingContext = getNodeBindingContext().withValueResolver(valueResolver);
 		return this;
 	}
 
 	public ConfijBuilder<T> templatingDisabled() {
-		return templatingWith(new NoopResolver());
+		return templatingWith(new NoopValueResolver());
 	}
 
+	@Deprecated
 	public ConfijBuilder<T> globalDefaultValue(String defaultValue) {
 		nodeBindingContext = getNodeBindingContext().withDefaultValue(defaultValue);
 		return this;
