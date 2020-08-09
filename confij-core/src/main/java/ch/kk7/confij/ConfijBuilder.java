@@ -21,6 +21,7 @@ import ch.kk7.confij.template.ValueResolver;
 import ch.kk7.confij.tree.NodeBindingContext;
 import ch.kk7.confij.tree.NodeDefinition;
 import ch.kk7.confij.validation.ConfijValidator;
+import ch.kk7.confij.validation.NonNullValidator;
 import ch.kk7.confij.validation.ServiceLoaderValidator;
 import com.fasterxml.classmate.ResolvedType;
 import lombok.NonNull;
@@ -140,6 +141,10 @@ public class ConfijBuilder<T> {
 	public ConfijBuilder<T> validateWith(@NonNull ConfijValidator validator) {
 		this.validator = validator;
 		return this;
+	}
+
+	public ConfijBuilder<T> validateNonNull() {
+		return validateWith(new NonNullValidator());
 	}
 
 	public ConfijBuilder<T> validationDisabled() {

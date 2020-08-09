@@ -12,9 +12,15 @@ import java.lang.annotation.Target;
 import java.lang.reflect.AnnotatedElement;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Value
-public class NonNullValidator implements ConfijValidator{
+public class NonNullValidator implements ConfijValidator {
+	Set<String> nullableNames = Stream.of(Nullable.class.getSimpleName(), "Null")
+			.map(String::toLowerCase)
+			.collect(Collectors.toSet());
+
 	@Inherited
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.TYPE})
@@ -34,18 +40,27 @@ public class NonNullValidator implements ConfijValidator{
 	protected void validateNode(ConfijNode node) {
 		if (node.getConfig()
 				.isValueHolder()) {
-			node.getConfig().getNodeBindingContext().getAnnotatedElement()
-
-			String value = node.getValue();
-			if (value == null) {
-
+			if (node.getValue() == null) {
+				AnnotatedElement annotatedElement = node.getConfig()
+						.getNodeBindingContext()
+						.getAnnotatedElement();
+				if (!isNullable(annotatedElement)) {
+					throw new ConfijValidationException("unexpected null-value at {}", node);
+				}
+			}
+		} else {
+			for (ConfijNode child : node.getChildren()
+					.values()) {
+				validateNode(child);
 			}
 		}
 	}
 
-	protected final Set<String>
-
-	protected void isNullable(AnnotatedElement element) {
-		Arrays.stream(element.getDeclaredAnnotations()).filter(x -> x.annotationType().getSimpleName().toLowerCase())
+	protected boolean isNullable(AnnotatedElement element) {
+		return Arrays.stream(element.getDeclaredAnnotations())
+				.map(x -> x.annotationType()
+						.getSimpleName()
+						.toLowerCase())
+				.anyMatch(getNullableNames()::contains);
 	}
 }

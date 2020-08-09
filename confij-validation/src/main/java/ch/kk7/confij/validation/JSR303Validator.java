@@ -1,6 +1,7 @@
 package ch.kk7.confij.validation;
 
 import com.google.auto.service.AutoService;
+import lombok.Value;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 
@@ -10,13 +11,10 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import java.util.Set;
 
+@Value
 @AutoService(ConfijValidator.class)
 public class JSR303Validator implements ConfijValidator {
-	private final Validator validator;
-
-	public JSR303Validator() {
-		validator = newValidator();
-	}
+	Validator validator = newValidator();
 
 	protected Validator newValidator() {
 		return Validation.byProvider(HibernateValidator.class)
@@ -30,9 +28,9 @@ public class JSR303Validator implements ConfijValidator {
 	@Override
 	public void validate(Object config) {
 		final Set<ConstraintViolation<Object>> constraintViolations = validator.validate(config);
-		// TODO: patch rootBeanClass from rootBeanClass=class com.sun.proxy.$Proxy16 to something readable
 		if (!constraintViolations.isEmpty()) {
-			throw new ConstraintViolationException(constraintViolations);
+			ConstraintViolationException originalException = new ConstraintViolationException(constraintViolations);
+			throw new ConfijValidationException("validation failed for {} with {}", config, constraintViolations, originalException);
 		}
 	}
 }

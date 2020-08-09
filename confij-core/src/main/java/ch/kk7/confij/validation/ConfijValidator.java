@@ -11,5 +11,5 @@ public interface ConfijValidator {
 		validate(config);
 	}
 
-	void validate(Object config);
+	void validate(Object config) throws ConfijValidationException;
 }

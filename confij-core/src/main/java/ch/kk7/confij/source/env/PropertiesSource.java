@@ -18,6 +18,10 @@ public class PropertiesSource extends PropertiesFormat implements ConfijSource {
 		setSeparator(".");
 	}
 
+	public static PropertiesSource of(String key, String value) {
+		return new PropertiesSource().with(key, value);
+	}
+
 	public PropertiesSource with(String key, String value) {
 		if (value == null) {
 			properties.remove(key);
