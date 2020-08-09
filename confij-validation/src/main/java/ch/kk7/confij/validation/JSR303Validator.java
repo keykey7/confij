@@ -19,6 +19,7 @@ public class JSR303Validator implements ConfijValidator {
 	protected Validator newValidator() {
 		return Validation.byProvider(HibernateValidator.class)
 				.configure()
+				.failFast(false)
 				.getterPropertySelectionStrategy(new NoPrefixGetterPropertySelectionStrategy())
 				.messageInterpolator(new ParameterMessageInterpolator())
 				.buildValidatorFactory()

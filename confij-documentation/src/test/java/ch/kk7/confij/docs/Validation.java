@@ -1,6 +1,7 @@
 package ch.kk7.confij.docs;
 
 import ch.kk7.confij.ConfijBuilder;
+import ch.kk7.confij.validation.ConfijValidationException;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -22,6 +23,7 @@ public class Validation implements WithAssertions {
 	@Test
 	public void isValidated() {
 		assertThatThrownBy(() -> ConfijBuilder.of(Validated.class)
-				.build()).isInstanceOf(ConstraintViolationException.class);
+				.build()).isInstanceOf(ConfijValidationException.class)
+				.hasCauseExactlyInstanceOf(ConstraintViolationException.class);
 	}
 }

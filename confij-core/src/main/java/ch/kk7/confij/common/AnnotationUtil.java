@@ -17,7 +17,7 @@ import java.util.Set;
 public class AnnotationUtil {
 
 	@Value
-	public class AnnonResponse<A extends Annotation> {
+	public static class AnnonResponse<A extends Annotation> {
 		Annotation declaredAnnotation;
 		A annotationType;
 	}
