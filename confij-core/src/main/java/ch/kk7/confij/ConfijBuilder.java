@@ -21,6 +21,7 @@ import ch.kk7.confij.template.ValueResolver;
 import ch.kk7.confij.tree.NodeBindingContext;
 import ch.kk7.confij.tree.NodeDefinition;
 import ch.kk7.confij.validation.ConfijValidator;
+import ch.kk7.confij.validation.MultiValidator;
 import ch.kk7.confij.validation.NonNullValidator;
 import ch.kk7.confij.validation.ServiceLoaderValidator;
 import com.fasterxml.classmate.ResolvedType;
@@ -38,6 +39,7 @@ public class ConfijBuilder<T> {
 	private final Type forType;
 	private final List<ConfijSource> sources = new ArrayList<>();
 	private ConfijValidator validator = null;
+	private boolean validateNotNull = false;
 	private NodeBindingContext nodeBindingContext = null;
 	private BindingContext bindingContext = null;
 	private ConfijReloader<T> reloader = null;
@@ -144,7 +146,8 @@ public class ConfijBuilder<T> {
 	}
 
 	public ConfijBuilder<T> validateNonNull() {
-		return validateWith(new NonNullValidator());
+		validateNotNull = true;
+		return this;
 	}
 
 	public ConfijBuilder<T> validationDisabled() {
@@ -214,7 +217,7 @@ public class ConfijBuilder<T> {
 
 	protected ConfijPipeline<T> buildPipeline() {
 		validator = Optional.ofNullable(validator)
-				.orElseGet(ServiceLoaderValidator::new);
+				.orElseGet(() -> MultiValidator.of(new ServiceLoaderValidator(), new NonNullValidator(!validateNotNull)));
 		ConfigBinder configBinder = new ConfigBinder();
 		@SuppressWarnings("unchecked")
 		ConfigBinding<T> configBinding = (ConfigBinding<T>) configBinder.toRootConfigBinding(forType, getBindingContext());

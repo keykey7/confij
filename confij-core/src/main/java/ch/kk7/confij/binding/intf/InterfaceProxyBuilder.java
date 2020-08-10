@@ -31,7 +31,7 @@ import static java.util.stream.Collectors.toMap;
 public class InterfaceProxyBuilder<T> {
 	private static final Map<Class<?>, Object> PRIMITIVE_ZEROS = Stream.of(boolean.class, byte.class, char.class, double.class, float.class,
 			int.class, long.class, short.class)
-			.collect(toMap(clazz -> (Class<?>) clazz, clazz -> Array.get(Array.newInstance(clazz, 1), 0)));
+			.collect(toMap(clazz -> clazz, clazz -> Array.get(Array.newInstance(clazz, 1), 0)));
 
 	/**
 	 * make comparator serializable to allow serialization of this TreeMap and thus the Proxy

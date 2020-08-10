@@ -24,6 +24,7 @@ public class ConfijNode {
 	private final Map<String, ConfijNode> children = new LinkedHashMap<>();
 	@NonNull
 	private final ConfijNode root;
+	@Getter
 	@NonNull
 	@ToString.Include
 	@EqualsAndHashCode.Include

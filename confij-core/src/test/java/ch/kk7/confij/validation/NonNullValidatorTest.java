@@ -3,6 +3,7 @@ package ch.kk7.confij.validation;
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.validation.NonNullValidator.NotNull;
 import ch.kk7.confij.validation.NonNullValidator.Nullable;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
@@ -21,29 +22,38 @@ public class NonNullValidatorTest implements WithAssertions {
 	}
 
 	interface WithNulls {
-		String nothing();
+		String aField();
 
 		@Default("a default")
-		String hasDefault();
+		String hasDefaultValue();
 
 		@Nullable
-		String nullalbe();
+		String nullablePreDefinedAnnotation();
 
 		@Null
-		String customNull();
+		String customNullAnnotationIsOk();
 	}
 
-	private static final String FIELD_NAME = "nothing";
+	@NotNull
+	interface WithNullsAnnotated {
+		String aField();
+	}
+
+	interface WithNullsNested {
+		WithNullsAnnotated nested();
+	}
+
+	private static final String FIELD_NAME = "aField";
 
 	@Test
 	public void defaultBuilderAllowsNull() {
 		assertThat(ConfijBuilder.of(WithNulls.class)
 				.build()
-				.nothing()).isNull();
+				.aField()).isNull();
 	}
 
 	@Test
-	public void nullNotAllowed() {
+	public void nullNotAllowedAsDefinedInBuilder() {
 		assertThatThrownBy(() -> ConfijBuilder.of(WithNulls.class)
 				.validateNonNull()
 				.build()).hasMessageContaining("null")
@@ -51,12 +61,36 @@ public class NonNullValidatorTest implements WithAssertions {
 	}
 
 	@Test
-	public void okIfNotNull() {
+	public void okIfNotNullAsDefinedInBuilder() {
 		String value = UUID.randomUUID() + "";
 		assertThat(ConfijBuilder.of(WithNulls.class)
 				.validateNonNull()
 				.loadFrom(PropertiesSource.of(FIELD_NAME, value))
 				.build()
-				.nothing()).isEqualTo(value);
+				.aField()).isEqualTo(value);
+	}
+
+	@Test
+	public void nullNotAllowedAsDefinedInCode() {
+		assertThatThrownBy(() -> ConfijBuilder.of(WithNullsAnnotated.class)
+				.build()).hasMessageContaining("null")
+				.hasMessageContaining(FIELD_NAME);
+	}
+
+	@Test
+	public void okIfNotNullAsDefinedInCode() {
+		String value = UUID.randomUUID() + "";
+		assertThat(ConfijBuilder.of(WithNullsAnnotated.class)
+				.loadFrom(PropertiesSource.of(FIELD_NAME, value))
+				.build()
+				.aField()).isEqualTo(value);
+	}
+
+	@Test
+	public void nestedNotNullalbe() {
+		// a bit of an edge case: nested configs are never nullable. only the ones that hold a value are
+		assertThatThrownBy(() -> ConfijBuilder.of(WithNullsNested.class)
+				.build()).hasMessageContaining("null")
+				.hasMessageContaining(FIELD_NAME);
 	}
 }
