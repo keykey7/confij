@@ -5,6 +5,7 @@ import ch.kk7.confij.binding.values.DateTimeMapper;
 import ch.kk7.confij.binding.values.DurationMapper;
 import ch.kk7.confij.binding.values.EnumMapper;
 import ch.kk7.confij.binding.values.ExplicitMapper;
+import ch.kk7.confij.binding.values.OptionalMapper;
 import ch.kk7.confij.binding.values.PeriodMapper;
 import ch.kk7.confij.binding.values.PrimitiveMapperFactory;
 import ch.kk7.confij.binding.values.SoloConstructorMapper;
@@ -16,6 +17,7 @@ import ch.kk7.confij.common.ClassToImplCache;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.Value;
 import lombok.With;
 import lombok.experimental.NonFinal;
@@ -38,15 +40,16 @@ import java.util.Optional;
 @With
 @NonFinal
 public class BindingContext {
-	private final ValueMapperFactory forcedMapperFactory;
+	ValueMapperFactory forcedMapperFactory;
 	@Getter
 	@NonNull
-	private final List<ValueMapperFactory> mapperFactories;
+	List<ValueMapperFactory> mapperFactories;
 	@NonNull
-	private final Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs;
+	Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs;
 	@NonNull
+	@ToString.Exclude
 	@With(AccessLevel.NONE)
-	private final ClassToImplCache implCache;
+	ClassToImplCache implCache;
 
 	public BindingContext(ValueMapperFactory forcedMapperFactory, @NonNull List<ValueMapperFactory> mapperFactories,
 			@NonNull Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs, @NonNull ClassToImplCache implCache) {
@@ -58,8 +61,8 @@ public class BindingContext {
 
 	public static BindingContext newDefaultContext() {
 		List<ValueMapperFactory> mapperFactories = Arrays.asList(ExplicitMapper.forString(), new PrimitiveMapperFactory(),
-				ExplicitMapper.forFile(), ExplicitMapper.forPath(), new EnumMapper(), new DurationMapper(), new PeriodMapper(),
-				new DateTimeMapper(), new StaticFunctionMapper(), new SoloConstructorMapper());
+				new OptionalMapper(), ExplicitMapper.forFile(), ExplicitMapper.forPath(), new EnumMapper(), new DurationMapper(),
+				new PeriodMapper(), new DateTimeMapper(), new StaticFunctionMapper(), new SoloConstructorMapper());
 		return new BindingContext(null, mapperFactories, Collections.emptyMap(), new ClassToImplCache());
 	}
 

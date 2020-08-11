@@ -10,6 +10,8 @@ import java.util.Optional;
 
 @ToString
 public class LeafBindingFactory implements ConfigBindingFactory<LeafBinding> {
+
+	// TODO: drop this static method and use the current non-static LeafBindingFactory instead
 	public static Optional<ValueMapperInstance> firstValueMapper(BindingType bindingType) {
 		return bindingType.getBindingContext()
 				.getMapperFactories()
