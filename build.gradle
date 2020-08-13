@@ -163,7 +163,7 @@ subprojects {
 
 	publishing {
 		publications {
-			mavenJava(MavenPublication) {
+			java(MavenPublication) {
 				from components.java
 				pom {
 					name = project.name
