@@ -59,7 +59,7 @@ public class NonNullValidatorTest implements WithAssertions {
 	@Test
 	public void nullNotAllowedAsDefinedInBuilder() {
 		assertThatThrownBy(() -> ConfijBuilder.of(WithNulls.class)
-				.validateNonNull()
+				.validateOnlyWith(NonNullValidator.initiallyNotNull())
 				.build()).hasMessageContaining("null")
 				.hasMessageContaining(FIELD_NAME);
 	}
@@ -68,7 +68,7 @@ public class NonNullValidatorTest implements WithAssertions {
 	public void okIfNotNullAsDefinedInBuilder() {
 		String value = UUID.randomUUID() + "";
 		assertThat(ConfijBuilder.of(WithNulls.class)
-				.validateNonNull()
+				.validateOnlyWith(NonNullValidator.initiallyNotNull())
 				.loadFrom(PropertiesSource.of(FIELD_NAME, value))
 				.build()
 				.aField()).isEqualTo(value);

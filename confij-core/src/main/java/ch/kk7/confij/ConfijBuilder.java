@@ -37,11 +37,17 @@ import java.util.stream.Stream;
 
 public class ConfijBuilder<T> {
 	private final Type forType;
+
 	private final List<ConfijSource> sources = new ArrayList<>();
-	private ConfijValidator validator = null;
-	private boolean validateNotNull = false;
+
+	private ConfijValidator<T> validator = null;
+
+	private ConfijValidator<T> nonNullValidator = null;
+
 	private NodeBindingContext nodeBindingContext = null;
+
 	private BindingContext bindingContext = null;
+
 	private ConfijReloader<T> reloader = null;
 
 	protected ConfijBuilder(@NonNull Type forType) {
@@ -127,7 +133,7 @@ public class ConfijBuilder<T> {
 	 * Ignore all configurations before and after the first successful read.
 	 * Usefull if a set of configurations should be ignored if another one is present.
 	 *
-	 * @param firstSource an optional source
+	 * @param firstSource  an optional source
 	 * @param secondSource an optional source
 	 * @param otherSources more optional sources, only read if not an earlier one existed
 	 * @return self
@@ -140,18 +146,18 @@ public class ConfijBuilder<T> {
 				.toArray(new AnySource[]{})));
 	}
 
-	public ConfijBuilder<T> validateWith(@NonNull ConfijValidator validator) {
+	public ConfijBuilder<T> validateOnlyWith(@NonNull ConfijValidator<T> validator) {
 		this.validator = validator;
 		return this;
 	}
 
-	public ConfijBuilder<T> validateNonNull() {
-		validateNotNull = true;
+	public ConfijBuilder<T> validationAllowsNull() {
+		nonNullValidator = ConfijValidator.noopValidator();
 		return this;
 	}
 
 	public ConfijBuilder<T> validationDisabled() {
-		return validateWith(ConfijValidator.NOOP);
+		return validateOnlyWith(ConfijValidator.noopValidator());
 	}
 
 	@NonNull
@@ -217,7 +223,8 @@ public class ConfijBuilder<T> {
 
 	protected ConfijPipeline<T> buildPipeline() {
 		validator = Optional.ofNullable(validator)
-				.orElseGet(() -> MultiValidator.of(new ServiceLoaderValidator(), new NonNullValidator(!validateNotNull)));
+				.orElseGet(() -> MultiValidator.of(new ServiceLoaderValidator<>(), Optional.ofNullable(nonNullValidator)
+						.orElseGet(NonNullValidator::initiallyNullable)));
 		ConfigBinder configBinder = new ConfigBinder();
 		@SuppressWarnings("unchecked")
 		ConfigBinding<T> configBinding = (ConfigBinding<T>) configBinder.toRootConfigBinding(forType, getBindingContext());
@@ -227,6 +234,7 @@ public class ConfijBuilder<T> {
 
 	/**
 	 * finalize the configuration pipeline and build a single instance of it
+	 *
 	 * @return a fully initialized configuration instance
 	 */
 	public T build() {

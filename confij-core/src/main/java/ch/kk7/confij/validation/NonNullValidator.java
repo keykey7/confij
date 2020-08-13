@@ -43,10 +43,16 @@ public class NonNullValidator<T> implements ConfijValidator<T> {
 	public @interface NotNull {
 	}
 
+	/**
+	 * implicit {@link Nullable} at configuration root
+	 */
 	public static <T> NonNullValidator<T> initiallyNullable() {
 		return new NonNullValidator<>(true);
 	}
 
+	/**
+	 * implicit {@link NotNull} at configuration root
+	 */
 	public static <T> NonNullValidator<T> initiallyNotNull() {
 		return new NonNullValidator<>(false);
 	}
