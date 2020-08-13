@@ -2,6 +2,7 @@ package ch.kk7.confij.binding.intf;
 
 import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.binding.BindingContext;
+import ch.kk7.confij.binding.BindingResult;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
@@ -16,8 +17,10 @@ import lombok.ToString;
 import lombok.Value;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
@@ -62,22 +65,26 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 	}
 
 	@Override
-	public T bind(ConfijNode config) {
+	public BindingResult<T> bind(ConfijNode config) {
 		Map<String, ConfijNode> childConfigs = config.getChildren();
-		InterfaceProxyBuilder<T>.ValidatingProxyBuilder builder = interfaceBuilder.builder();
+		List<BindingResult<?>> bindingResultChildren = new ArrayList<>();
+		InterfaceProxyBuilder<T>.ValidatingProxyBuilder proxyBuilder = interfaceBuilder.builder();
 		siblingsByName.forEach((key, siblingDescription) -> {
-			Object siblingValue = siblingDescription.getDescription()
+			BindingResult<?> siblingBindingResult = siblingDescription.getDescription()
 					.bind(childConfigs.get(key));
+			Object siblingValue = siblingBindingResult.getValue();
 			// TODO: what does it mean when a siblingValue is null/empty for a default method? should it be called or simply return null?
-			//       -> maybe make the behavior configurable
+			//       -> maybe make the behavior configurable. For now the default method is called for null end empty collection-likes.
 			ResolvedMethod method = siblingDescription.getMethod();
 			if (method.getRawMember()
 					.isDefault() && isEmpty(siblingValue)) {
 				return;
 			}
-			builder.methodToValue(method, siblingValue);
+			proxyBuilder.methodToValue(method, siblingValue);
+			bindingResultChildren.add(siblingBindingResult);
 		});
-		return builder.build();
+		T result = proxyBuilder.build();
+		return BindingResult.of(result, config, bindingResultChildren);
 	}
 
 	protected boolean isEmpty(Object value) {

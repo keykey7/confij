@@ -54,15 +54,16 @@ class JSR303ValidatorTest implements WithAssertions {
 	public void testOneInvalid() {
 		ConfijBuilder<ValidatedConfig> builder = ConfijBuilder.of(ValidatedConfig.class)
 				.loadFrom(new PropertiesSource().with("anInt", "23"));
-		assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(builder::build)
-				.satisfies(e -> assertThat(e.getConstraintViolations()).hasSize(1));
+		assertThatExceptionOfType(ConfijValidationException.class).isThrownBy(builder::build)
+				.withCauseExactlyInstanceOf(ConstraintViolationException.class)
+				.satisfies(e -> assertThat(((ConstraintViolationException) e.getCause()).getConstraintViolations()).hasSize(1));
 	}
 
 	@Test
 	public void testNestedInvalid() {
 		ConfijBuilder<ValidatedConfig> builder = ConfijBuilder.of(ValidatedConfig.class)
 				.loadFrom(new PropertiesSource().with("nested.aString", ""));
-		assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(builder::build);
+		assertThatExceptionOfType(ConfijValidationException.class).isThrownBy(builder::build);
 	}
 
 	@Test
@@ -79,8 +80,8 @@ class JSR303ValidatorTest implements WithAssertions {
 						.with("aSet.0.aString", "")
 						.with("aSet.1.aString", "I'm valid")
 						.with("aSet.2.aString", ""));
-		assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(builder::build);
-		// TODO: actually not? .satisfies(e -> assertThat(e.getConstraintViolations()).hasSize(2));
+		assertThatExceptionOfType(ConfijValidationException.class).isThrownBy(builder::build)
+				.withCauseExactlyInstanceOf(ConstraintViolationException.class);
 	}
 
 	@Test

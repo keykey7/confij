@@ -1,9 +1,13 @@
 package ch.kk7.confij.validation;
 
-@FunctionalInterface
-public interface ConfijValidator {
-	ConfijValidator NOOP = config -> {
-	};
+import ch.kk7.confij.binding.BindingResult;
 
-	void validate(Object config);
+@FunctionalInterface
+public interface ConfijValidator<T> {
+	static <T> ConfijValidator<T> noopValidator() {
+		return config -> {
+		};
+	}
+
+	void validate(BindingResult<T> bindingResult) throws ConfijValidationException;
 }

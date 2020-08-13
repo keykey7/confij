@@ -43,6 +43,7 @@ The default mapping behavior attempts to map from string to target type in the f
   java.io.File
   java.time.Duration
   java.time.Period
+  java.util.Optional
   ...
 
 . all Enum-types based on the Enum's name
@@ -69,7 +70,6 @@ include::{src}[tag=base64-mapping]
 ==== Comma Separated [[separated-mapping]]
 
 `@Separated` expects to bind a delimited string to an array or collection of arbitrary type.
-
 
 .@Separated as a short-form for collection types
 ====

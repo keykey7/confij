@@ -1,12 +1,14 @@
 package ch.kk7.confij.binding.collection;
 
+import ch.kk7.confij.binding.BindingResult;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
-import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionList;
-import ch.kk7.confij.tree.NodeBindingContext;
 import ch.kk7.confij.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeBindingContext;
+import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionList;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -26,15 +28,16 @@ public class CollectionBinding<T> implements ConfigBinding<Collection<T>> {
 	}
 
 	@Override
-	public Collection<T> bind(ConfijNode config) {
-		// we use a map here to allow for sparse array implementations
-		// TODO: add config to enforce continuous indexes
+	public BindingResult<Collection<T>> bind(ConfijNode config) {
+		List<BindingResult<?>> bindingResultChildren = new ArrayList<>();
+		// TODO: add config to enforce continuous indexes as we currently allow sparse collection types
 		List<ConfijNode> childNodes = CollectionUtil.childrenAsContinuousList(config);
 		Collection<T> collection = builder.newInstance();
 		for (ConfijNode childNode : childNodes) {
-			T listItem = componentDescription.bind(childNode);
-			collection.add(listItem);
+			BindingResult<T> listItem = componentDescription.bind(childNode);
+			collection.add(listItem.getValue());
+			bindingResultChildren.add(listItem);
 		}
-		return builder.tryHarden(collection);
+		return BindingResult.of(builder.tryHarden(collection), config, bindingResultChildren);
 	}
 }

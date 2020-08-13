@@ -32,7 +32,7 @@ artifacts {
 project.afterEvaluate {
 	publishing {
 		publications {
-			mavenJava {
+			shadow(MavenPublication) {
 				artifact shadowJar
 			}
 		}

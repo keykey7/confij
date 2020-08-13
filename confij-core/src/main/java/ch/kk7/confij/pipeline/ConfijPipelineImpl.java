@@ -1,5 +1,6 @@
 package ch.kk7.confij.pipeline;
 
+import ch.kk7.confij.binding.BindingResult;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.tree.ConfijNode;
@@ -38,15 +39,15 @@ public class ConfijPipelineImpl<T> implements ConfijPipeline<T> {
 		return rootNode;
 	}
 
-	protected T bind(ConfijNode rootNode) {
+	protected BindingResult<T> bind(ConfijNode rootNode) {
 		return configBinding.bind(rootNode);
 	}
 
 	@Override
 	public T build() {
 		ConfijNode simpleConfig = readConfigToNode();
-		T config = bind(simpleConfig);
-		validator.validate(config);
-		return config;
+		BindingResult<T> bindingResult = bind(simpleConfig);
+		validator.validate(bindingResult);
+		return bindingResult.getValue();
 	}
 }

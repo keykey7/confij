@@ -1,8 +1,39 @@
-= Miscellaneous
+= Post-Processing
 :src: ../../test/java/ch/kk7/confij/docs/Validation.java
 :home: ../../test/home
 
-== JSR303 Validator
+== Non-Null Validator [[non-null-validator]]
+
+A recursive non-null validator is part of core. It verifies that the final configuration has all values set.
+It will not complain about null-values per default. To activate it add any `@NotNull` or `@NonNull` annotation to your config definition.
+Add such an annotation to your configuration root to apply it everywhere as non-null is enforced in all child-configuration values as well.
+To again allow for null values, use the opposite `@Nullable`.
+Any annotation named alike will do as long as it is available at runtime.
+
+.Non-Null Validator activation
+====
+[source]
+----
+include::{src}[tag=notnull-interface]
+----
+====
+
+TIP: It is recommended to use `Optional<>` to explicitly mark optional configuration values instead of `@Nullable`.
+
+Core provides a `@NonNullValidator.Nullable` annotation but you can also restrict yourself to Hibernate annotations in case you are
+using the <<jsr303-validator>> already.
+
+This validator can be disabled for the whole configuration:
+
+.Disable the Non-Null Validator globally
+====
+[source]
+----
+include::{src}[tag=notnull-disabled-builder]
+----
+====
+
+== JSR303 Validator [[jsr303-validator]]
 
 NOTE: JSR303 Validator format requires the `{group}:confij-validation` maven artifact.
 
@@ -17,10 +48,13 @@ include::{src}[tag=jsr303-interface]
 ----
 ====
 
-WARNING: `{group}:confij-validation` depends on `hibernate-validator` >= 6.1 in order to support non-getter properties
+The JSR303 validator works together with the <<non-null-validator>>, however this means that the semantics of `@NonNull` is applied
+recursively to all child-nodes, which is usually desirable for configurations.
+
+WARNING: `{group}:confij-validation` depends on `hibernate-validator` >= 6.1 in order to support non-getter properties, too.
 
 == Logging
 
-ConfiJ core relies on `java.util.logging` (JUL) ony due to it's zero-dependency strategy.
+ConfiJ core relies on `java.util.logging` (JUL) only due to it's zero-dependency strategy.
 If `{group}:confij-slf4j` is found on the classpath, logging uses the slf4j-framework.
 To support a custom logging-framework, register a <<serviceloader>> for `ConfijLogFactory`.

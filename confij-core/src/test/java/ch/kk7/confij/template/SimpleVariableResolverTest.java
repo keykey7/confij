@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashMap;
 import java.util.Map;
 
-class DefaultResolverTest implements WithAssertions, SysPropertyAssertions {
+class SimpleVariableResolverTest implements WithAssertions, SysPropertyAssertions {
 
 	private static String resolve(String template, String... x) {
 		NodeBindingContext settings = NodeBindingContext.newDefaultSettings();
@@ -25,7 +25,7 @@ class DefaultResolverTest implements WithAssertions, SysPropertyAssertions {
 		}
 		ConfijNode config = ConfijNode.newRootFor(format)
 				.initializeFromMap(map);
-		return new DefaultResolver().resolveValue(config, template);
+		return new SimpleVariableResolver().resolveValue(config, template);
 	}
 
 	private static AbstractStringAssert<?> assertResolve(String template, String... x) {
