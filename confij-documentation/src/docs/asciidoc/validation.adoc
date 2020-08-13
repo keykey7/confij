@@ -6,7 +6,8 @@
 
 A recursive non-null validator is part of core. It verifies that the final configuration has all values set.
 It will not complain about null-values per default. To activate it add any `@NotNull` or `@NonNull` annotation to your config definition.
-Add such an annotation to your configuration root to apply it everywhere.
+Add such an annotation to your configuration root to apply it everywhere as non-null is enforced in all child-configuration values as well.
+To again allow for null values, use the opposite `@Nullable`.
 Any annotation named alike will do as long as it is available at runtime.
 
 .Non-Null Validator activation
@@ -17,10 +18,12 @@ include::{src}[tag=notnull-interface]
 ----
 ====
 
-Non-null is enforced for all child-configuration values as well. To again allow for null values, use the opposite `@Nullable`.
-Core provides the `@NonNullValidator.NotNull` but you can also restrict yourself to Hibernate annotations.
+TIP: It is recommended to use `Optional<>` to explicitly mark optional configuration values instead of `@Nullable`.
 
-HINT: It is recommended to use `Optional<>` to explicitly mark optional configuration values instead of `@Nullable`.
+Core provides a `@NonNullValidator.Nullable` annotation but you can also restrict yourself to Hibernate annotations in case you are
+using the <<jsr303-validator>> already.
+
+This validator can be disabled for the whole configuration:
 
 .Disable the Non-Null Validator globally
 ====
@@ -30,7 +33,7 @@ include::{src}[tag=notnull-disabled-builder]
 ----
 ====
 
-== JSR303 Validator
+== JSR303 Validator [[jsr303-validator]]
 
 NOTE: JSR303 Validator format requires the `{group}:confij-validation` maven artifact.
 
