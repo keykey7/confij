@@ -1,12 +1,15 @@
 package ch.kk7.confij.binding.map;
 
+import ch.kk7.confij.binding.BindingResult;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
-import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionMap;
-import ch.kk7.confij.tree.NodeBindingContext;
 import ch.kk7.confij.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeBindingContext;
+import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionMap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class MapBinding<T> implements ConfigBinding<Map<String, T>> {
@@ -25,9 +28,15 @@ public class MapBinding<T> implements ConfigBinding<Map<String, T>> {
 	}
 
 	@Override
-	public Map<String, T> bind(ConfijNode config) {
+	public BindingResult<Map<String, T>> bind(ConfijNode config) {
+		List<BindingResult<?>> bindingResultChildren = new ArrayList<>();
 		Map<String, T> map = builder.newInstance();
-		config.getChildren().forEach((key,childConfig) -> map.put(key, componentDescription.bind(childConfig)));
-		return builder.tryHarden(map);
+		config.getChildren().forEach((key,childConfig) -> {
+			BindingResult<T> childValue = componentDescription.bind(childConfig);
+			map.put(key, childValue.getValue());
+			bindingResultChildren.add(childValue);
+		});
+		Map<String, T> hardenedMap = builder.tryHarden(map);
+		return BindingResult.of(hardenedMap, config, bindingResultChildren);
 	}
 }

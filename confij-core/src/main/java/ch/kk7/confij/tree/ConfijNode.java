@@ -14,6 +14,10 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Builds and navigates the configurations tree structure out of {@link NodeDefinition}s,
+ * indexes each node with a URI and links it to the configured String-value.
+ */
 @ToString(onlyExplicitlyIncluded = true, doNotUseGetters = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class ConfijNode {

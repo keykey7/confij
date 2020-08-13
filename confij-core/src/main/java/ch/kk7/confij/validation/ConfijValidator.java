@@ -1,15 +1,11 @@
 package ch.kk7.confij.validation;
 
-import ch.kk7.confij.tree.ConfijNode;
+import ch.kk7.confij.binding.BindingResult;
 
 @FunctionalInterface
-public interface ConfijValidator {
-	ConfijValidator NOOP = config -> {
+public interface ConfijValidator<T> {
+	ConfijValidator<?> NOOP = config -> {
 	};
 
-	default void validate(Object config, ConfijNode confijNode) {
-		validate(config);
-	}
-
-	void validate(Object config) throws ConfijValidationException;
+	void validate(BindingResult<T> bindingResult) throws ConfijValidationException;
 }

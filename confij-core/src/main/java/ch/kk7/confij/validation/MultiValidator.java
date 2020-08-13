@@ -1,6 +1,6 @@
 package ch.kk7.confij.validation;
 
-import ch.kk7.confij.tree.ConfijNode;
+import ch.kk7.confij.binding.BindingResult;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
@@ -9,20 +9,16 @@ import java.util.List;
 
 @Value
 @NonFinal
-public class MultiValidator implements ConfijValidator {
-	List<ConfijValidator> validators;
+public class MultiValidator<T> implements ConfijValidator<T> {
+	List<ConfijValidator<T>> validators;
 
-	public static MultiValidator of(ConfijValidator... validators) {
-		return new MultiValidator(Arrays.asList(validators));
+	@SafeVarargs
+	public static <T> MultiValidator<T> of(ConfijValidator<T>... validators) {
+		return new MultiValidator<>(Arrays.asList(validators));
 	}
 
 	@Override
-	public void validate(Object config, ConfijNode confijNode) {
-		validators.forEach(x -> x.validate(config, confijNode));
-	}
-
-	@Override
-	public void validate(Object config) throws ConfijValidationException {
-		validators.forEach(x -> x.validate(config));
+	public void validate(BindingResult<T> bindingResult) {
+		validators.forEach(x -> x.validate(bindingResult));
 	}
 }

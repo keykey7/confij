@@ -35,6 +35,7 @@ public class OptionalMapperTest implements WithAssertions {
 
 	@Test
 	public void complex() {
+		// TODO: would be desirable to work with complex types, too... here we just verify the exception type
 		assertThatThrownBy(() -> ConfijBuilder.of(Complex.class)
 				.build()).isInstanceOf(ConfijBindingException.class)
 				.hasMessageContaining(WithOptional.class.getSimpleName());

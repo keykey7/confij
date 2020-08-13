@@ -1,5 +1,6 @@
 package ch.kk7.confij.binding.leaf;
 
+import ch.kk7.confij.binding.BindingResult;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
 import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionLeaf;
@@ -21,11 +22,11 @@ public class LeafBinding<T> implements ConfigBinding<T> {
 	}
 
 	@Override
-	public T bind(ConfijNode leaf) {
-		String value = leaf.getConfig()
+	public BindingResult<T> bind(ConfijNode leafNode) {
+		String strValue = leafNode.getConfig()
 				.getNodeBindingContext()
 				.getValueResolver()
-				.resolveLeaf(leaf);
-		return valueMapper.fromString(value);
+				.resolveLeaf(leafNode);
+		return BindingResult.ofLeaf(valueMapper.fromString(strValue), leafNode);
 	}
 }

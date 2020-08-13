@@ -1,5 +1,6 @@
 package ch.kk7.confij.binding.array;
 
+import ch.kk7.confij.binding.BindingResult;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
@@ -11,6 +12,7 @@ import com.fasterxml.classmate.ResolvedType;
 import lombok.ToString;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 @ToString
@@ -33,14 +35,17 @@ public class ArrayBinding<T> implements ConfigBinding<Object> {
 	 * binds to Object instead of T[] since it also handles primitive arrays
 	 */
 	@Override
-	public Object bind(ConfijNode config) {
+	public BindingResult<Object> bind(ConfijNode config) {
+		List<BindingResult<?>> bindingResultChildren = new ArrayList<>();
 		// TODO: add config to allow null values in array
 		List<ConfijNode> childNodes = CollectionUtil.childrenAsContinuousList(config);
 		Object result = Array.newInstance(componentType.getErasedType(), childNodes.size());
 		int i = 0;
 		for (ConfijNode childNode : childNodes) {
-			Array.set(result, i++, componentDescription.bind(childNode));
+			BindingResult<?> item = componentDescription.bind(childNode);
+			Array.set(result, i++, item.getValue());
+			bindingResultChildren.add(item);
 		}
-		return result;
+		return BindingResult.of(result, config, bindingResultChildren);
 	}
 }

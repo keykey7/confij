@@ -12,6 +12,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.Optional;
 import java.util.UUID;
 
 public class NonNullValidatorTest implements WithAssertions {
@@ -32,6 +33,8 @@ public class NonNullValidatorTest implements WithAssertions {
 
 		@Null
 		String customNullAnnotationIsOk();
+
+		Optional<String> anOptional();
 	}
 
 	@NotNull
@@ -47,9 +50,10 @@ public class NonNullValidatorTest implements WithAssertions {
 
 	@Test
 	public void defaultBuilderAllowsNull() {
-		assertThat(ConfijBuilder.of(WithNulls.class)
-				.build()
-				.aField()).isNull();
+		WithNulls test = ConfijBuilder.of(WithNulls.class)
+				.build();
+		assertThat(test.aField()).isNull();
+		assertThat(test.anOptional()).isEmpty();
 	}
 
 	@Test

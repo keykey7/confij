@@ -1,7 +1,9 @@
 package ch.kk7.confij.validation;
 
+import ch.kk7.confij.binding.BindingResult;
 import ch.kk7.confij.common.ConfijException;
 import ch.kk7.confij.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeDefinition;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
@@ -18,7 +20,7 @@ import java.util.stream.Stream;
 
 @NonFinal
 @Value
-public class NonNullValidator implements ConfijValidator {
+public class NonNullValidator<T> implements ConfijValidator<T> {
 	Set<String> nullableNames = Stream.of(Nullable.class.getSimpleName(), "Null")
 			.map(String::toLowerCase)
 			.collect(Collectors.toSet());
@@ -28,14 +30,6 @@ public class NonNullValidator implements ConfijValidator {
 			.collect(Collectors.toSet());
 
 	boolean rootIsNullable;
-
-	public static NonNullValidator initiallyNullable() {
-		return new NonNullValidator(true);
-	}
-
-	public static NonNullValidator initiallyNotNull() {
-		return new NonNullValidator(false);
-	}
 
 	@Inherited
 	@Retention(RetentionPolicy.RUNTIME)
@@ -49,9 +43,16 @@ public class NonNullValidator implements ConfijValidator {
 	public @interface NotNull {
 	}
 
-	protected static boolean hasAnnotationAsIn(ConfijNode node, Set<String> listToCheck) {
-		AnnotatedElement element = node.getConfig()
-				.getNodeBindingContext()
+	public static <T> NonNullValidator<T> initiallyNullable() {
+		return new NonNullValidator<>(true);
+	}
+
+	public static <T> NonNullValidator<T> initiallyNotNull() {
+		return new NonNullValidator<>(false);
+	}
+
+	protected static boolean hasAnnotationAsIn(NodeDefinition nodeDefinition, Set<String> listToCheck) {
+		AnnotatedElement element = nodeDefinition.getNodeBindingContext()
 				.getAnnotatedElement();
 		if (element == null) { // is the case for example for GenericType<Whatever>
 			return false;
@@ -64,48 +65,46 @@ public class NonNullValidator implements ConfijValidator {
 	}
 
 	@Override
-	public void validate(Object config) {
-		throw new ConfijException("not to be called without ConfijNode");
+	public void validate(BindingResult<T> bindingResult) {
+		validateNode(bindingResult, rootIsNullable);
 	}
 
-	@Override
-	public void validate(Object config, ConfijNode rootNode) {
-		validateNode(rootNode, rootIsNullable);
-	}
-
-	protected void validateNode(ConfijNode node, boolean defaultIsNullable) {
-		final boolean isNullable;
-		if (isNullable(node)) {
-			if (isNonNullable(node)) {
-				throw new ConfijException("conflicting annotations on {}: {}, as it matches both {} and {}", node, node.getConfig()
-						.getNodeBindingContext()
-						.getAnnotatedElement(), getNullableNames(), getNotNullableNames());
+	protected boolean isNullableWithHistory(BindingResult<?> bindingResult, boolean defaultIsNullable) {
+		NodeDefinition nodeDefinition = bindingResult.getNode()
+				.getConfig();
+		if (isNullable(nodeDefinition)) {
+			if (isNonNullable(nodeDefinition)) {
+				throw new ConfijException("conflicting annotations on {}: {}, as it matches both {} and {}", bindingResult.getNode(),
+						nodeDefinition.getNodeBindingContext()
+								.getAnnotatedElement(), getNullableNames(), getNotNullableNames());
 			}
-			isNullable = true;
-		} else if (isNonNullable(node)) {
-			isNullable = false;
-		} else {
-			isNullable = defaultIsNullable;
+			return true;
+		} else if (isNonNullable(nodeDefinition)) {
+			return false;
 		}
+		return defaultIsNullable;
+	}
 
+	protected void validateNode(BindingResult<?> bindingResult, boolean defaultIsNullable) {
+		boolean isNullable = isNullableWithHistory(bindingResult, defaultIsNullable);
+		ConfijNode node = bindingResult.getNode();
 		if (!isNullable &&
 				node.getConfig()
 						.isValueHolder() &&
-				node.getValue() == null) {
+				bindingResult.getValue() == null) {
 			throw new ConfijValidationException("unexpected null-value at {}", node.getUri());
 		} else {
-			for (ConfijNode child : node.getChildren()
-					.values()) {
+			for (BindingResult<?> child : bindingResult.getChildren()) {
 				validateNode(child, isNullable);
 			}
 		}
 	}
 
-	protected boolean isNonNullable(ConfijNode node) {
-		return hasAnnotationAsIn(node, getNotNullableNames());
+	protected boolean isNonNullable(NodeDefinition nodeDefinition) {
+		return hasAnnotationAsIn(nodeDefinition, getNotNullableNames());
 	}
 
-	protected boolean isNullable(ConfijNode node) {
-		return hasAnnotationAsIn(node, getNullableNames());
+	protected boolean isNullable(NodeDefinition nodeDefinition) {
+		return hasAnnotationAsIn(nodeDefinition, getNullableNames());
 	}
 }

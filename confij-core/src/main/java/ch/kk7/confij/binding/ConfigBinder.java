@@ -31,6 +31,7 @@ public class ConfigBinder {
 		bindingFactories.add(new ArrayBindingFactory());
 		bindingFactories.add(new CollectionBindingFactory());
 		bindingFactories.add(new MapBindingFactory());
+		// interface binding last (since everything before is an interface, too)
 		bindingFactories.add(new InterfaceBindingFactory());
 	}
 

@@ -13,7 +13,7 @@ import java.util.Set;
 
 /**
  * The definition of how the config must look like on a high level, like
- * what children it can and must contain.
+ * what children it can and must contain. No link to actual config values.
  */
 @Value
 @NonFinal
