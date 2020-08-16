@@ -1,17 +1,20 @@
 package ch.kk7.confij.docs;
 
+import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.common.ServiceLoaderPriority;
 import ch.kk7.confij.common.ServiceLoaderUtil;
-import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.resource.ConfijResourceProvider;
+import com.github.stefanbirkner.systemlambda.SystemLambda;
 import com.google.auto.service.AutoService;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -19,6 +22,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public class Source extends DocTestBase {
 	// tag::interface[]
@@ -117,6 +121,45 @@ public class Source extends DocTestBase {
 				.loadFrom("env:some_prefix") // from environment variables
 				.build();
 		// end::anysource[]
+	}
+
+	// tag::envvarsyspropsource[]
+	interface Configs {
+		String fromEnvvar();
+
+		String fromSysprop();
+
+		@Default("${env:HOME}")
+		Path myHome();
+
+		@Default("${sys:file.separator}")
+		String fileSep();
+	}
+	// end::envvarsyspropsource[]
+
+	@Test
+	public void envvarsAndSyspropSource() throws Exception {
+		String value1 = UUID.randomUUID() + "";
+		String value2 = UUID.randomUUID() + "";
+		/*
+		// tag::set-envvarsyspropsource[]
+		> export A_PREFIX_fromEnvvar='some value'
+		> java -Danother.prefix.fromSysprop="another value" ...
+		// end::set-envvarsyspropsource[]
+		*/
+		SystemLambda.withEnvironmentVariable("A_PREFIX_fromEnvvar", value1).execute(() -> {
+			SystemLambda.restoreSystemProperties(() -> {
+				System.setProperty("another.prefix.fromSysprop", value2);
+				Configs configs = ConfijBuilder.of(Configs.class)
+						.loadFrom("env:A_PREFIX")
+						.loadFrom("sys:another.prefix")
+						.build();
+				assertThat(configs.fromEnvvar()).isEqualTo(value1);
+				assertThat(configs.fromSysprop()).isEqualTo(value2);
+				assertThat(configs.myHome()).isEqualTo(Paths.get(System.getenv("HOME")));
+				assertThat(configs.fileSep()).isEqualTo(File.separator);
+			});
+		});
 	}
 
 	// tag::yaml-interface[]

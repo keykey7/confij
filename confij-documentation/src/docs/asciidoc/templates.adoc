@@ -9,7 +9,7 @@ Therefore it is possible for an unfinished configuration to contain undefined re
 
 Additionally some source paths are subject to templating (see <<anysource>>).
 
-== built-in Templating
+== built-in Templating [[templating]]
 
 Any property can contain placeholders wrapped in `${ }`.
 These referenced properties can themselves reference other properties.

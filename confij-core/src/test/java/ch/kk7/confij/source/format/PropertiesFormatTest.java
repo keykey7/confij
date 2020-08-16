@@ -39,8 +39,8 @@ class PropertiesFormatTest implements WithAssertions {
 
 	@Test
 	public void flatmapSoloKey() {
-		assertThat(flatmapPrefixedBy("", "")).isEmpty();
-		assertThat(flatmapPrefixedBy("a.b.c=value", "")).containsOnlyKeys("a.b.c")
+		assertThat(flatmapPrefixedBy("", null)).isEmpty();
+		assertThat(flatmapPrefixedBy("a.b.c=value", null)).containsOnlyKeys("a.b.c")
 				.containsValue("value");
 		assertThat(flatmapPrefixedBy("a.b.c=value", "a")).containsOnlyKeys("b.c")
 				.containsValue("value");
@@ -56,17 +56,9 @@ class PropertiesFormatTest implements WithAssertions {
 	}
 
 	@Test
-	public void flatmapInvalidSoloKey() {
-		assertThatThrownBy(() -> flatmapPrefixedBy("a=value", null));
-		assertThatThrownBy(() -> flatmapPrefixedBy(null, "a"));
-		assertThatThrownBy(() -> flatmapPrefixedBy("a=value", "a"));
-		assertThatThrownBy(() -> flatmapPrefixedBy("a=value|a.b.c=value", "a"));
-	}
-
-	@Test
 	public void flatmapMultiKey() {
 		String testString = "a.b.c=value|a.x.y=value2|fuu=bar";
-		assertThat(flatmapPrefixedBy(testString, "")).containsOnlyKeys("a.b.c", "a.x.y", "fuu");
+		assertThat(flatmapPrefixedBy(testString, null)).containsOnlyKeys("a.b.c", "a.x.y", "fuu");
 		assertThat(flatmapPrefixedBy(testString, "a")).containsOnlyKeys("b.c", "x.y");
 		assertThat(flatmapPrefixedBy(testString, "a.b")).containsOnlyKeys("c");
 	}

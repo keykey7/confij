@@ -1,6 +1,5 @@
 package ch.kk7.confij.source.format;
 
-import ch.kk7.confij.tree.NodeDefinition;
 import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import lombok.Getter;
@@ -14,9 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.function.Function;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 @Setter
 @Getter
@@ -24,8 +21,18 @@ import java.util.stream.Collectors;
 public class PropertiesFormat implements ConfijSourceFormat {
 	@NonNull
 	private String separator = ".";
-	@NonNull
-	private String globalPrefix = "";
+
+	private String globalPrefix = null;
+
+	public static final String NOOP_PREFIX = "-";
+
+	public PropertiesFormat setGlobalPrefix(String prefix) {
+		if (NOOP_PREFIX.equals(prefix)) {
+			prefix = null;
+		}
+		globalPrefix = prefix;
+		return this;
+	}
 
 	@Override
 	public void override(ConfijNode rootNode, String configAsStr) {
@@ -44,63 +51,65 @@ public class PropertiesFormat implements ConfijSourceFormat {
 	}
 
 	protected void overrideWithFlatMap(ConfijNode simpleConfig, Map<String, String> map) {
-		Object deepMap = flatToNestedMapWithPrefix(simpleConfig.getConfig(), map);
+		Object deepMap = flatToNestedMapWithPrefix(map);
 		overrideWithDeepMap(simpleConfig, deepMap);
 	}
 
 	protected void overrideWithDeepMap(ConfijNode node, Object deepMap) {
+		MapAndStringValidator.validateDefinition(deepMap, node);
 		ConfijNode newConfig = ConfijNode.newRootFor(node.getConfig())
 				.initializeFromMap(deepMap);
 		node.overrideWith(newConfig);
 	}
 
-	protected Object flatToNestedMapWithPrefix(NodeDefinition format, Map<String, String> globalMap) {
-		if (format.isValueHolder()) {
-			return globalMap.get(globalPrefix);
-		}
-		return flatToNestedMap(format, flatmapPrefixedBy(globalMap, globalPrefix));
+	protected Object flatToNestedMapWithPrefix(Map<String, String> globalMap) {
+		return flatToNestedMap(flatmapPrefixedBy(globalMap, getGlobalPrefix()));
 	}
 
-	/**
-	 * for each {@code k}:<br>
-	 * - if it is a leaf node: return the value as String (nullable)<br>
-	 * - otherwise: return the branch as Map&lt;String, Object&gt; (nonnull)<br>
-	 */
-	protected Function<String, Object> valueMapper(NodeDefinition parentFormat, Map<String, String> map) {
-		return k -> {
-			NodeDefinition childFormat = parentFormat.definitionForChild(k);
-			if (childFormat.isValueHolder()) {
-				return map.get(k);
-			}
-			Map<String, String> childMap = flatmapPrefixedBy(map, k);
-			return flatToNestedMap(childFormat, childMap);
-		};
-	}
-
-	@NonNull
-	protected Object flatToNestedMap(NodeDefinition format, Map<String, String> map) {
-		return map.keySet()
-				.stream()
-				.map(key -> key.split(Pattern.quote(separator), 2)[0]) // extract all prefixes
-				.distinct() // handle each prefix only once
-				.collect(Collectors.toMap(k -> k, valueMapper(format, map)));
-	}
-
-	@NonNull
-	protected Map<String, String> flatmapPrefixedBy(@NonNull Map<String, String> map, @NonNull String prefix) {
-		if (prefix.isEmpty()) {
+	protected Map<String, String> flatmapPrefixedBy(@NonNull Map<String, String> map, String prefix) {
+		if (prefix == null) {
 			return map;
 		}
-		String prefixAndSep = prefix + separator;
-		if (map.containsKey(prefix)) {
-			throw new ConfijSourceFormatException("invalid key '{}' in map {}. Expected are only keys like '{}*'", prefix, map, prefixAndSep);
+		String prefixAndSep = prefix + getSeparator();
+		Map<String, String> result = new HashMap<>();
+		map.forEach((k, v) -> {
+			if (k.startsWith(prefixAndSep)) {
+				result.put(k.substring(prefixAndSep.length()), v);
+			}
+		});
+		return result;
+	}
+
+	@NonNull
+	protected Object flatToNestedMap(@NonNull Map<String, String> map) {
+		Map<String, Object> result = new HashMap<>();
+		for (Entry<String, String> entry : map.entrySet()) {
+			String fullKey = entry.getKey();
+			Map<String, Object> current = result;
+			String[] keyParts = fullKey.split(Pattern.quote(getSeparator()), -1);
+			String keySoFar = null;
+			for (int i = 0; i < keyParts.length - 1; i++) {
+				keySoFar = keySoFar == null ? keyParts[i] : keySoFar + getSeparator() + keyParts[i];
+				Object child = current.computeIfAbsent(keyParts[i], s -> new HashMap<>());
+				if (child instanceof String) {
+					throw keyConflict(fullKey, keySoFar);
+				}
+				current = (Map<String, Object>) child;
+			}
+			String lastKeyPart = keyParts[keyParts.length - 1];
+			if (current.containsKey(lastKeyPart)) {
+				throw keyConflict(fullKey, fullKey + getSeparator() + "*");
+			}
+			current.put(lastKeyPart, entry.getValue());
 		}
-		return map.entrySet()
-				.stream()
-				.filter(e -> e.getKey()
-						.startsWith(prefixAndSep))
-				.collect(Collectors.toMap(e -> e.getKey()
-						.substring(prefixAndSep.length()), Entry::getValue, (x, y) -> x, HashMap::new));
+		return result;
+	}
+
+	protected ConfijSourceFormatException keyConflict(String key1, String key2) {
+		String prefixStr = getGlobalPrefix() == null ? "" : getGlobalPrefix() + getSeparator();
+		return new ConfijSourceFormatException(
+				"key '{}' conflicts with key '{}'. each key must start with an unique string to map it into a config-tree structure.",
+				prefixStr + key1, prefixStr + key2);
 	}
 
 	@Override
