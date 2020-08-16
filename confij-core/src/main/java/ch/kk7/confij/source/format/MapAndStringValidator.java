@@ -17,7 +17,8 @@ public class MapAndStringValidator {
 		validateObj(null, src, node.getConfig());
 	}
 
-	protected void validateObj(String path, Object src, @NonNull NodeDefinition definition) {
+	@SuppressWarnings("unchecked")
+	protected void validateObj(String path, Object src, NodeDefinition definition) {
 		if (src instanceof String || src == null) {
 			validateDefinition(path, (String) src, definition);
 		} else if (src instanceof Map) {
@@ -27,7 +28,7 @@ public class MapAndStringValidator {
 		}
 	}
 
-	protected void validateDefinition(String path, @NonNull Map<String, Object> src, @NonNull NodeDefinition definition) {
+	protected void validateDefinition(String path, Map<String, Object> src, NodeDefinition definition) {
 		// note: the src is not required to have all mandatory keys
 		for (Entry<String, Object> entry: src.entrySet()) {
 			String childPath = (path==null ? "" : path + SEP) + entry.getKey();
@@ -42,9 +43,9 @@ public class MapAndStringValidator {
 		}
 	}
 
-	protected void validateDefinition(String path, String src, @NonNull NodeDefinition definition) {
+	protected void validateDefinition(String path, String src, NodeDefinition definition) {
 		if (!definition.isValueHolder()) {
-			throw new ConfijBindingException("unexpected leaf-value at {} ({}). expected a key instead. mandatory keys are {}",
+			throw new ConfijBindingException("unexpected leaf-value at key '{}' (value: {}). expected a Map instead. mandatory keys are {}",
 					path == null ? SEP : path, src, definition.getMandatoryKeys());
 
 		}

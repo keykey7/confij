@@ -51,7 +51,7 @@ class EnvvarSourceTest implements WithAssertions {
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {"PRE_", "PRE_xy_", "PRE__", "PRE_others_cannot_map_this", "PRE_others__"})
+	@ValueSource(strings = {"PRE_", "PRE_xy_", "PRE__", "PRE_others_cannot_map_this", "PRE_others__", "PRE_xy_invalid", "PRE_others"})
 	public void keysCannotBindToConfigStructure(String envvar) throws Exception {
 		SystemLambda.withEnvironmentVariable(envvar, "whatever")
 				.execute(() -> {

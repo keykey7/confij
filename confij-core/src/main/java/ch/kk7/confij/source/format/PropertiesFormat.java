@@ -24,16 +24,6 @@ public class PropertiesFormat implements ConfijSourceFormat {
 
 	private String globalPrefix = null;
 
-	public static final String NOOP_PREFIX = "-";
-
-	public PropertiesFormat setGlobalPrefix(String prefix) {
-		if (NOOP_PREFIX.equals(prefix)) {
-			prefix = null;
-		}
-		globalPrefix = prefix;
-		return this;
-	}
-
 	@Override
 	public void override(ConfijNode rootNode, String configAsStr) {
 		final Properties properties = new Properties();
