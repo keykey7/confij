@@ -7,6 +7,7 @@ import ch.kk7.confij.source.ConfijSourceException;
 import ch.kk7.confij.template.ValueResolver;
 import ch.kk7.confij.tree.ConfijNode;
 import lombok.Data;
+import lombok.ToString;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -23,6 +24,7 @@ import java.util.Optional;
  */
 @Data
 public class AnySource implements ConfijSource {
+	@ToString.Exclude
 	private final List<ConfijSourceBuilder> sourceBuilders;
 	private final String pathTemplate;
 
@@ -62,8 +64,9 @@ public class AnySource implements ConfijSource {
 		try {
 			confijSource.override(rootNode);
 		} catch (ConfijSourceException e) {
-			throw new ConfijSourceException("The {} write a new configuration using the {} {}", this, ConfijSource.class.getSimpleName(),
-					confijSource, e);
+			throw new ConfijSourceException("Failed reading source from path `{}` using {} (" +
+					"either fix the content of this source or write a new ServiceLoader implementing {}): {}", path, this,
+					ConfijSource.class.getSimpleName(), e.getMessage(), e);
 		}
 	}
 }

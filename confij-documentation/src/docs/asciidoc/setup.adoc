@@ -3,10 +3,11 @@
 :home: ../../test/home
 
 ConfiJ requires Java 1.8 or later.
+It is modularly organized in order to reduce the amount of dependencies.
+`confij-core` itself has no external dependencies.
 
 == Repository
 ConfiJ maven artifacts are available on Bintray/JCenter.
-It is modularly organized in order to reduce the amount of dependencies.
 
 .Sample Gradle setup
 ====
@@ -17,10 +18,14 @@ repositories {
    jcenter()
 }
 dependencies {
-    compile '{group}:confij-core:{revnumber}'
+    implementation '{group}:confij-core:{revnumberstable}'
 }
 ----
 ====
+
+ifeval::[{revnumberstable}!={revnumber}]
+The latest snapshot version `{revnumber}` will be removed after 30 days.
+endif::[]
 
 == Quick Start
 .Getting started with interface configuration and ConfiJ-Builder
@@ -42,4 +47,4 @@ include::{home}/server.properties[]
 <3> Bind the source to a configuration instance of matching type
 
 The corresponding properties file must have the same attributes as in the interface.
-ConfiJ will make sure that no unknown keys are present and bind all configuration strings to their configuration types.
+ConfiJ will make sure no unknown keys are present and bind all configuration strings to their configuration types.

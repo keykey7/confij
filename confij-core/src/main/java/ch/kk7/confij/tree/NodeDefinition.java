@@ -33,7 +33,7 @@ public abstract class NodeDefinition {
 	 * @return an instance of self for a given named child node.
 	 */
 	@NonNull
-	public abstract NodeDefinition definitionForChild(String configKey);
+	public abstract NodeDefinition definitionForChild(String configKey) throws ConfijBindingException;
 
 	/**
 	 * @return a set of required names/keys for child nodes
@@ -52,7 +52,7 @@ public abstract class NodeDefinition {
 		@NonNull
 		@Override
 		public NodeDefinition definitionForChild(String configKey) {
-			throw new ConfijBindingException("a leaf node isn't allowed to have children, not even for '{}'", configKey);
+			throw new ConfijBindingException("a leaf node isn't allowed to have children. this key named '{}' is invalid.", configKey);
 		}
 
 		@Override

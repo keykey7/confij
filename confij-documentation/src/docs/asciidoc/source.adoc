@@ -4,9 +4,9 @@
 :home: ../../test/home
 
 == Source Pipelines
-ConfiJ sources are loaded one after the other.
+ConfiJ loads sources one after the other.
 Each consecutive source overrides (merges) attributes of the previous ones.
-Typically this is useful to load a set of default values first,
+Typically, this is useful to load a set of default values first,
 then continue with application specifics and environment specific values
 getting more and more detailed.
 Source types can be freely mixed, meaning you can load from classpath, then from a remote file, then from envionment variables and so on.
@@ -193,12 +193,12 @@ include::../../../../confij-hocon/src/test/resources/bnotrefa.conf[]
 ----
 ====
 
-=== Properties Format
+=== Properties Format [[properties-format]]
 
 Java properties files are part of the `{group}:confij-core` due to not having any 3rd party dependencies,
 but are otherwise not recommended, since it is a flat key-value format.
 
-Properties files can be loaded from all the <<resource-locations>>.
+Property files can be loaded from all <<resource-locations>>.
 The `AnySource` expects a case-insensitive file ending of `.properties`.
 
 .Nested configuration loading from properties file
@@ -212,19 +212,37 @@ include::{home}/nested.properties[]
 ----
 ====
 
-<1> Per default, nested configuration keys are separated with a dot form each other.
+<1> Per default, nested configuration keys are separated with a dot from each other.
 <2> Collection types simply require numerical keys (starting at 0).
 <3> Map types can use any key excluding the delimiter.
 
-=== Environment Variables Format
+=== Environment Variables and System Properties Format
 
-=== System Properties Format
+Environment variables and system properties work similar to the file based <<properties-format>>.
+System properties have to be dot separated, whereas envvars are underline separated.
+To read an envvar specify a URI like `env:<prefix>`, where every envvar to be considered
+must start with that prefix and will have that prefix stripped away.
+For example an envvar `FUU_bar_xy` with a prefix `FUU` is mapped to a property called `bar.xy` (case-sensitive).
 
-=== Logical Sources
+.Read configuration values from envvars and Java sys props
+====
+[source]
+----
+include::{src}[tag=envvarsyspropsource]
+----
+[source,bash]
+----
+include::{src}[tag=set-envvarsyspropsource]
+----
+====
+
+An often used alternative is to rely on <<templating>> to read specific envvars.
+
+// TODO: === Logical Sources
 
 == ConfiJ's ServiceLoaders [[serviceloader]]
 
-ConfiJ allows to utilize Java's https://docs.oracle.com/javase/8/docs/api/?java/util/ServiceLoader.html[ServiceLoader]
+ConfiJ allows utilizing Java's https://docs.oracle.com/javase/8/docs/api/?java/util/ServiceLoader.html[ServiceLoader]
 mechanism to register additional services like source formats or validators.
 All you have to do is to add the file with the service-interface name to META-INF/services.
 In this service file you list the fully qualified classnames of your constraint validator classes (one per line).

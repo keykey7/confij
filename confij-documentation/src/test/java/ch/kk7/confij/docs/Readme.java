@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 public class Readme extends DocTestBase {
 
-	interface House {
+	interface HouseConfiguration {
 		@Default("true")
 		boolean hasRoof();
 
@@ -45,7 +45,7 @@ public class Readme extends DocTestBase {
 
 	@Test
 	public void houseTest() {
-		House johnsHouse = ConfijBuilder.of(House.class)
+		HouseConfiguration johnsHouse = ConfijBuilder.of(HouseConfiguration.class)
 				.loadFrom("classpath:house.properties", "johnshouse.yaml")
 				.build();
 		assertThat(johnsHouse.chimneyCheckEvery()).isEqualTo(Period.ofYears(2));

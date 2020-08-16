@@ -14,12 +14,16 @@ asciidoctor {
 			'reproducible': 'true',
 			'attribute-missing': 'warn'
 
+	doFirst {
+		attributes 'revnumberstable': "git tag -l --sort=-v:refname".execute().in.readLines().find {it ==~ /\d+\.\d+\.\d+/}
+	}
+
 	asciidoctorj {
 		baseDirFollowsSourceDir()
 		sources {
 			include 'index.adoc'
 		}
-		fatalWarnings missingIncludes()
+		fatalWarnings missingIncludes(), ~/missing attribute/
 	}
 }
 
@@ -27,4 +31,5 @@ tasks.assemble.dependsOn 'asciidoctor'
 
 test {
 	workingDir file('src/test/home')
+
 }

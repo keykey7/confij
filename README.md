@@ -12,22 +12,21 @@ configurations from various sources in a type-safe manner.
 This includes features such as
 
 - configuration definition as interfaces
-- support for various source formats: properties, YAML, HOCON, JSON
-- load from: Git, File, Classpath, HTTP, system properties, environment variables
-- load from various sources (pipelines) with different merge strategies
-- powerfull support for nested configurations
 - even as lists/maps/arrays/... of nested configurations
+- support for various source formats: properties, YAML, HOCON, JSON
+- load from various sources at once with different merge strategies
+- load from: Git, File, Classpath, HTTP, system properties, environment variables
 - binding support to various immutable property types like URL, DateTime, Duration, enums, Period,...
 - templating support (variable substitutions), even within paths
 - plugin support for more formats and sources
 - JSR303 bean validation
-- minimal dependencies
+- no dependencies
 
 ## Example
 
 Sample configuration of a house with nested properties, defaults and validation-annotations
 ```java
-interface House {
+interface HouseConfiguration {
 	@Default("true")
 	boolean hasRoof();
 
@@ -57,7 +56,7 @@ Load an immutable configuration instance with base settings from
 a property file on the classpath and override it with a YAML configuration from
 the local filesystem.
 ```java
-House johnsHouse = ConfijBuilder.of(House.class)
+HouseConfiguration johnsHouse = ConfijBuilder.of(HouseConfiguration.class)
 	.loadFrom("classpath:house.properties", "johnshouse.yaml")
 	.build();
 ```
