@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <h1>ConfiJ Reference Guide</h1>
 <div class="details">
-<span id="revnumber">version 0.5.0</span>
+<span id="revnumber">version 0.6.0-rc.0.1+973a291</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -480,10 +480,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#git">8.2. GIT Resource Provider</a></li>
 <li><a href="#_yaml_format">8.3. YAML Format</a></li>
 <li><a href="#_hoconjson_format">8.4. HOCON/JSON Format</a></li>
-<li><a href="#_properties_format">8.5. Properties Format</a></li>
-<li><a href="#_environment_variables_format">8.6. Environment Variables Format</a></li>
-<li><a href="#_system_properties_format">8.7. System Properties Format</a></li>
-<li><a href="#_logical_sources">8.8. Logical Sources</a></li>
+<li><a href="#properties-format">8.5. Properties Format</a></li>
+<li><a href="#_environment_variables_and_system_properties_format">8.6. Environment Variables and System Properties Format</a></li>
 </ul>
 </li>
 <li><a href="#serviceloader">9. ConfiJ&#8217;s ServiceLoaders</a></li>
@@ -491,7 +489,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 <li><a href="#variables">Templating</a>
 <ul class="sectlevel1">
-<li><a href="#_built_in_templating">10. built-in Templating</a>
+<li><a href="#templating">10. built-in Templating</a>
 <ul class="sectlevel2">
 <li><a href="#_nested_properties">10.1. Nested Properties</a></li>
 <li><a href="#_recursive_properties">10.2. Recursive Properties</a></li>
@@ -523,14 +521,15 @@ It enforces a contract on the configuration as Java-types.</p>
 <div class="openblock partintro">
 <div class="content">
 ConfiJ requires Java 1.8 or later.
+It is modularly organized in order to reduce the amount of dependencies.
+<code>confij-core</code> itself has no external dependencies.
 </div>
 </div>
 <div class="sect1">
 <h2 id="_repository"><a class="anchor" href="#_repository"></a>1. Repository</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>ConfiJ maven artifacts are available on Bintray/JCenter.
-It is modularly organized in order to reduce the amount of dependencies.</p>
+<p>ConfiJ maven artifacts are available on Bintray/JCenter.</p>
 </div>
 <div class="exampleblock">
 <div class="title">Example 1. Sample Gradle setup</div>
@@ -541,11 +540,14 @@ It is modularly organized in order to reduce the amount of dependencies.</p>
    jcenter()
 }
 dependencies {
-    compile 'ch.kk7:confij-core:0.5.0'
+    implementation 'ch.kk7:confij-core:0.5.0'
 }</code></pre>
 </div>
 </div>
 </div>
+</div>
+<div class="paragraph">
+<p>The latest snapshot version <code>0.6.0-rc.0.1+973a291</code> will be removed after 30 days.</p>
 </div>
 </div>
 </div>
@@ -597,7 +599,7 @@ externalUrl=https://example.com:8042/think</code></pre>
 </div>
 <div class="paragraph">
 <p>The corresponding properties file must have the same attributes as in the interface.
-ConfiJ will make sure that no unknown keys are present and bind all configuration strings to their configuration types.</p>
+ConfiJ will make sure no unknown keys are present and bind all configuration strings to their configuration types.</p>
 </div>
 </div>
 </div>
@@ -939,9 +941,9 @@ Java Bean types (POJO) are not supported yet. Please contribute.
 <h2 id="_source_pipelines"><a class="anchor" href="#_source_pipelines"></a>5. Source Pipelines</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>ConfiJ sources are loaded one after the other.
+<p>ConfiJ loads sources one after the other.
 Each consecutive source overrides (merges) attributes of the previous ones.
-Typically this is useful to load a set of default values first,
+Typically, this is useful to load a set of default values first,
 then continue with application specifics and environment specific values
 getting more and more detailed.
 Source types can be freely mixed, meaning you can load from classpath, then from a remote file, then from envionment variables and so on.</p>
@@ -1326,13 +1328,13 @@ b: "${a} and two"</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_properties_format"><a class="anchor" href="#_properties_format"></a>8.5. Properties Format</h3>
+<h3 id="properties-format"><a class="anchor" href="#properties-format"></a>8.5. Properties Format</h3>
 <div class="paragraph">
 <p>Java properties files are part of the <code>ch.kk7:confij-core</code> due to not having any 3rd party dependencies,
 but are otherwise not recommended, since it is a flat key-value format.</p>
 </div>
 <div class="paragraph">
-<p>Properties files can be loaded from all the <a href="#resource-locations">Section 8.1, &#8220;Resource Providers&#8221;</a>.
+<p>Property files can be loaded from all <a href="#resource-locations">Section 8.1, &#8220;Resource Providers&#8221;</a>.
 The <code>AnySource</code> expects a case-insensitive file ending of <code>.properties</code>.</p>
 </div>
 <div class="exampleblock">
@@ -1377,7 +1379,7 @@ mapOfNest.myotherkey.x=200</code></pre>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Per default, nested configuration keys are separated with a dot form each other.</td>
+<td>Per default, nested configuration keys are separated with a dot from each other.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -1391,16 +1393,43 @@ mapOfNest.myotherkey.x=200</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_environment_variables_format"><a class="anchor" href="#_environment_variables_format"></a>8.6. Environment Variables Format</h3>
-
+<h3 id="_environment_variables_and_system_properties_format"><a class="anchor" href="#_environment_variables_and_system_properties_format"></a>8.6. Environment Variables and System Properties Format</h3>
+<div class="paragraph">
+<p>Environment variables and system properties work similar to the file based <a href="#properties-format">Section 8.5, &#8220;Properties Format&#8221;</a>.
+System properties have to be dot separated, whereas envvars are underline separated.
+To read an envvar specify a URI like <code>env:&lt;prefix&gt;</code>, where every envvar to be considered
+must start with that prefix and will have that prefix stripped away.
+For example an envvar <code>FUU_bar_xy</code> with a prefix <code>FUU</code> is mapped to a property called <code>bar.xy</code> (case-sensitive).</p>
 </div>
-<div class="sect2">
-<h3 id="_system_properties_format"><a class="anchor" href="#_system_properties_format"></a>8.7. System Properties Format</h3>
+<div class="exampleblock">
+<div class="title">Example 17. Read configuration values from envvars and Java sys props</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">interface Configs {
+	String fromEnvvar();
 
+	String fromSysprop();
+
+	@Default("${env:HOME}")
+	Path myHome();
+
+	@Default("${sys:file.separator}")
+	String fileSep();
+}</code></pre>
 </div>
-<div class="sect2">
-<h3 id="_logical_sources"><a class="anchor" href="#_logical_sources"></a>8.8. Logical Sources</h3>
-
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="bash">&gt; export A_PREFIX_fromEnvvar='some value'
+&gt; java -Danother.prefix.fromSysprop="another value" ...</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>An often used alternative is to rely on <a href="#templating">Chapter 10, <em>built-in Templating</em></a> to read specific envvars.</p>
+</div>
 </div>
 </div>
 </div>
@@ -1408,13 +1437,13 @@ mapOfNest.myotherkey.x=200</code></pre>
 <h2 id="serviceloader"><a class="anchor" href="#serviceloader"></a>9. ConfiJ&#8217;s ServiceLoaders</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>ConfiJ allows to utilize Java&#8217;s <a href="https://docs.oracle.com/javase/8/docs/api/?java/util/ServiceLoader.html">ServiceLoader</a>
+<p>ConfiJ allows utilizing Java&#8217;s <a href="https://docs.oracle.com/javase/8/docs/api/?java/util/ServiceLoader.html">ServiceLoader</a>
 mechanism to register additional services like source formats or validators.
 All you have to do is to add the file with the service-interface name to META-INF/services.
 In this service file you list the fully qualified classnames of your constraint validator classes (one per line).</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 17. Custom Resource Provider as ServiceLoader</div>
+<div class="title">Example 18. Custom Resource Provider as ServiceLoader</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1446,7 +1475,7 @@ interface Foo {
 <p>To change the priority of a service loader instance implement the <code>ServiceLoaderPriority</code>.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 18. Custom Resource Provider as ServiceLoader with lowered priority</div>
+<div class="title">Example 19. Custom Resource Provider as ServiceLoader with lowered priority</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1481,14 +1510,14 @@ Therefore it is possible for an unfinished configuration to contain undefined re
 </div>
 </div>
 <div class="sect1">
-<h2 id="_built_in_templating"><a class="anchor" href="#_built_in_templating"></a>10. built-in Templating</h2>
+<h2 id="templating"><a class="anchor" href="#templating"></a>10. built-in Templating</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Any property can contain placeholders wrapped in <code>${ }</code>.
 These referenced properties can themselves reference other properties.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 19. Simple Variable replacement</div>
+<div class="title">Example 20. Simple Variable replacement</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1524,7 +1553,7 @@ yields: hello → Cya</code></pre>
 <p>Variables are always relative to the node that defines them.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 20. Referencing nested properties</div>
+<div class="title">Example 21. Referencing nested properties</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1576,7 +1605,7 @@ In this example <code>Letter</code> is the root.</td>
 <p>Variables themselves can be built out of other variables.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 21. Recursive Variable replacement</div>
+<div class="title">Example 22. Recursive Variable replacement</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1605,7 +1634,7 @@ In this example <code>Letter</code> is the root.</td>
 One use case is to disable templating per property.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 22. Disable templating per property using an annotation</div>
+<div class="title">Example 23. Disable templating per property using an annotation</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1618,7 +1647,7 @@ One use case is to disable templating per property.</p>
 </div>
 </div>
 <div class="exampleblock">
-<div class="title">Example 23. Disable templating for interface and all its children</div>
+<div class="title">Example 24. Disable templating for interface and all its children</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1631,7 +1660,7 @@ interface GlobalNoop {
 </div>
 </div>
 <div class="exampleblock">
-<div class="title">Example 24. Disable templating programmatically at initialization</div>
+<div class="title">Example 25. Disable templating programmatically at initialization</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1645,7 +1674,7 @@ interface GlobalNoop {
 Every custom resolver must provide an empty constructor.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 25. Custom sample templating</div>
+<div class="title">Example 26. Custom sample templating</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1679,7 +1708,7 @@ To again allow for null values, use the opposite <code>@Nullable</code>.
 Any annotation named alike will do as long as it is available at runtime.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 26. Non-Null Validator activation</div>
+<div class="title">Example 27. Non-Null Validator activation</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1713,7 +1742,7 @@ using the <a href="#jsr303-validator">Chapter 13, <em>JSR303 Validator</em></a> 
 <p>This validator can be disabled for the whole configuration:</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 27. Disable the Non-Null Validator globally</div>
+<div class="title">Example 28. Disable the Non-Null Validator globally</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1744,7 +1773,7 @@ JSR303 Validator format requires the <code>ch.kk7:confij-validation</code> maven
 Validation is applied to the configuration as a last step after templating.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 28. JSR303 Bean validation</div>
+<div class="title">Example 29. JSR303 Bean validation</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
