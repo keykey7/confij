@@ -2,6 +2,7 @@ package ch.kk7.confij.pipeline;
 
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.ConfijSourceException;
+import com.github.stefanbirkner.systemlambda.SystemLambda;
 import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -9,10 +10,10 @@ import org.junit.jupiter.api.io.TempDir;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class ConfijBuilderTest {
 	private static AbstractStringAssert<?> assertSourceBecomes(String source, String expectedValue) {
@@ -30,19 +31,21 @@ class ConfijBuilderTest {
 	@Test
 	public void propertiesFromClasspath() {
 		assertSourceBecomes("classpath:MyConfig.properties", "iamfromproperties");
+		assertSourceBecomes("classpath:./MyConfig.properties", "iamfromproperties");
 	}
 
 	@Test
-	public void fromEnvvar() {
-		// TODO: set system env before test
-		assumeTrue("envvalue".equals(System.getenv("cfgprefix_aString")));
-		assertSourceBecomes("env:cfgprefix", "envvalue");
+	public void fromEnvvar() throws Exception {
+		SystemLambda.withEnvironmentVariable("cfgprefix_aString", "envvalue")
+				.execute(() -> assertSourceBecomes("env:cfgprefix", "envvalue"));
 	}
 
 	@Test
-	public void fromSysprops() {
-		System.setProperty("sysprefix.a.1.xxx.aString", "sysvalue");
-		assertSourceBecomes("sys:sysprefix.a.1.xxx", "sysvalue");
+	public void fromSysprops() throws Exception {
+		SystemLambda.restoreSystemProperties(() -> {
+			System.setProperty("sysprefix.a.1.xxx.aString", "sysvalue");
+			assertSourceBecomes("sys:sysprefix.a.1.xxx", "sysvalue");
+		});
 	}
 
 	@Test
@@ -54,8 +57,9 @@ class ConfijBuilderTest {
 
 	@Test
 	public void fromFile(@TempDir Path tempDir) throws IOException {
-		Path configFile = tempDir.resolve("FileConfig.yml");
-		Files.copy(ClassLoader.getSystemResourceAsStream("MyConfig.yaml"), configFile);
+		Path configFile = tempDir.resolve("with spaces/FileConfig!%.yml");
+		Files.createDirectory(configFile.getParent());
+		Files.copy(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream("MyConfig.yaml")), configFile);
 		assertSourceBecomes(configFile.toAbsolutePath()
 				.toString(), "iamfromyaml");
 	}

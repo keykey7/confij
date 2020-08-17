@@ -17,7 +17,7 @@ import java.util.List;
 public class ConfijPipelineImpl<T> implements ConfijPipeline<T> {
 	@NonNull List<ConfijSource> sources;
 	@NonNull ConfijSource defaultSource;
-	@NonNull ConfijValidator validator;
+	@NonNull ConfijValidator<T> validator;
 	@NonNull ConfigBinding<T> configBinding;
 	@NonNull NodeDefinition format;
 

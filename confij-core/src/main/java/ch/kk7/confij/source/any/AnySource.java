@@ -41,8 +41,27 @@ public class AnySource implements ConfijSource {
 
 	protected URI resolveUri(ConfijNode rootNode) {
 		String actualPath = getResolver(rootNode).resolveValue(rootNode, pathTemplate);
+		// this part is a workaround to escape the URI instead of new URI(actualPath)
+		final String scheme;
+		String path;
+		final String fragment;
+		String[] schemeParts = actualPath.split(":", 2);
+		if (schemeParts.length == 1) {
+			scheme = null;
+			path = schemeParts[0];
+		} else {
+			scheme = schemeParts[0];
+			path = schemeParts[1];
+		}
+		String[] pathParts = path.split("#", 2);
+		if (pathParts.length == 1) {
+			fragment = null;
+		} else {
+			path = pathParts[0];
+			fragment = pathParts[1];
+		}
 		try {
-			return new URI(actualPath);
+			return new URI(scheme, path, fragment);
 		} catch (URISyntaxException e) {
 			throw new ConfijSourceException("The {} failed to resolve the path-template '{}' into a valid URI", this, pathTemplate, e);
 		}
