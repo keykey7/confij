@@ -2,21 +2,27 @@ package ch.kk7.confij.pipeline;
 
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.ConfijSourceException;
-import org.assertj.core.api.AbstractStringAssert;
+import com.github.stefanbirkner.systemlambda.SystemLambda;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 class ConfijBuilderTest {
-	private static AbstractStringAssert<?> assertSourceBecomes(String source, String expectedValue) {
-		return assertThat(ConfijBuilder.of(MyConfig.class)
+	public interface MyConfig {
+		String aString();
+	}
+
+	private static void assertSourceBecomes(String source, String expectedValue) {
+		assertThat(ConfijBuilder.of(MyConfig.class)
 				.loadFrom(source)
 				.build()
 				.aString()).isEqualTo(expectedValue);
@@ -30,37 +36,37 @@ class ConfijBuilderTest {
 	@Test
 	public void propertiesFromClasspath() {
 		assertSourceBecomes("classpath:MyConfig.properties", "iamfromproperties");
+		assertSourceBecomes("classpath:./MyConfig.properties", "iamfromproperties");
 	}
 
 	@Test
-	public void fromEnvvar() {
-		// TODO: set system env before test
-		assumeTrue("envvalue".equals(System.getenv("cfgprefix_aString")));
-		assertSourceBecomes("env:cfgprefix", "envvalue");
+	public void fromEnvvar() throws Exception {
+		SystemLambda.withEnvironmentVariable("cfgprefix_aString", "envvalue")
+				.execute(() -> assertSourceBecomes("env:cfgprefix", "envvalue"));
 	}
 
 	@Test
-	public void fromSysprops() {
-		System.setProperty("sysprefix.a.1.xxx.aString", "sysvalue");
-		assertSourceBecomes("sys:sysprefix.a.1.xxx", "sysvalue");
+	public void fromSysprops() throws Exception {
+		SystemLambda.restoreSystemProperties(() -> {
+			System.setProperty("sysprefix.a.1.xxx.aString", "sysvalue");
+			assertSourceBecomes("sys:sysprefix.a.1.xxx", "sysvalue");
+		});
 	}
 
-	@Test
-	public void unknownScheme() {
-		ConfijBuilder builder = ConfijBuilder.of(MyConfig.class)
-				.loadFrom("unknown:whatever");
+	@ParameterizedTest
+	@ValueSource(strings = {"unknown:whatever", "file:", ":", "#", "\0", "unknown:${env:PATH}"})
+	public void unknownScheme(String invalidPath) {
+		ConfijBuilder<MyConfig> builder = ConfijBuilder.of(MyConfig.class)
+				.loadFrom(invalidPath);
 		assertThrows(ConfijSourceException.class, builder::build);
 	}
 
 	@Test
 	public void fromFile(@TempDir Path tempDir) throws IOException {
-		Path configFile = tempDir.resolve("FileConfig.yml");
-		Files.copy(ClassLoader.getSystemResourceAsStream("MyConfig.yaml"), configFile);
+		Path configFile = tempDir.resolve("with spaces/FileConfig!%.yml");
+		Files.createDirectory(configFile.getParent());
+		Files.copy(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream("MyConfig.yaml")), configFile);
 		assertSourceBecomes(configFile.toAbsolutePath()
 				.toString(), "iamfromyaml");
-	}
-
-	public interface MyConfig {
-		String aString();
 	}
 }
