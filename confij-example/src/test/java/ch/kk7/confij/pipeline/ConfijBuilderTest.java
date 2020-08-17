@@ -3,9 +3,10 @@ package ch.kk7.confij.pipeline;
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.ConfijSourceException;
 import com.github.stefanbirkner.systemlambda.SystemLambda;
-import org.assertj.core.api.AbstractStringAssert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,8 +17,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ConfijBuilderTest {
-	private static AbstractStringAssert<?> assertSourceBecomes(String source, String expectedValue) {
-		return assertThat(ConfijBuilder.of(MyConfig.class)
+	public interface MyConfig {
+		String aString();
+	}
+
+	private static void assertSourceBecomes(String source, String expectedValue) {
+		assertThat(ConfijBuilder.of(MyConfig.class)
 				.loadFrom(source)
 				.build()
 				.aString()).isEqualTo(expectedValue);
@@ -48,10 +53,11 @@ class ConfijBuilderTest {
 		});
 	}
 
-	@Test
-	public void unknownScheme() {
-		ConfijBuilder builder = ConfijBuilder.of(MyConfig.class)
-				.loadFrom("unknown:whatever");
+	@ParameterizedTest
+	@ValueSource(strings = {"unknown:whatever", "file:", ":", "#", "\0", "unknown:${env:PATH}"})
+	public void unknownScheme(String invalidPath) {
+		ConfijBuilder<MyConfig> builder = ConfijBuilder.of(MyConfig.class)
+				.loadFrom(invalidPath);
 		assertThrows(ConfijSourceException.class, builder::build);
 	}
 
@@ -62,9 +68,5 @@ class ConfijBuilderTest {
 		Files.copy(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream("MyConfig.yaml")), configFile);
 		assertSourceBecomes(configFile.toAbsolutePath()
 				.toString(), "iamfromyaml");
-	}
-
-	public interface MyConfig {
-		String aString();
 	}
 }

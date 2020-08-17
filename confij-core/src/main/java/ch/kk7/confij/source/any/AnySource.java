@@ -33,7 +33,7 @@ public class AnySource implements ConfijSource {
 		sourceBuilders = ServiceLoaderUtil.requireInstancesOf(ConfijSourceBuilder.class);
 	}
 
-	protected ValueResolver getResolver(ConfijNode rootNode) {
+	protected static ValueResolver getResolver(ConfijNode rootNode) {
 		return rootNode.getConfig()
 				.getNodeBindingContext()
 				.getValueResolver();
