@@ -1,7 +1,9 @@
 package ch.kk7.confij.pipeline.reload;
 
 import ch.kk7.confij.pipeline.ConfijPipeline;
+import lombok.ToString;
 
+@ToString
 public class AlwaysReloader<T> implements ConfijReloader<T> {
 	private ConfijPipeline<T> pipeline;
 
@@ -15,6 +17,9 @@ public class AlwaysReloader<T> implements ConfijReloader<T> {
 
 	@Override
 	public T get() {
+		if (pipeline == null) {
+			throw new IllegalStateException("not initialized");
+		}
 		return pipeline.build();
 	}
 }

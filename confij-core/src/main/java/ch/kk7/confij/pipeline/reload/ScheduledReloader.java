@@ -2,12 +2,15 @@ package ch.kk7.confij.pipeline.reload;
 
 import ch.kk7.confij.logging.ConfijLogger;
 import ch.kk7.confij.pipeline.ConfijPipeline;
+import lombok.NonNull;
+import lombok.Synchronized;
 import lombok.ToString;
 
 import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Spawns a new thread to reload configuration periodically. Never blocks.
@@ -21,7 +24,7 @@ public class ScheduledReloader<T> implements ConfijReloader<T> {
 	private final Duration initialDelay;
 	private final ScheduledExecutorService executor;
 	private boolean isInitialized = false;
-	private T current;
+	private final AtomicReference<T> current = new AtomicReference<>();
 
 	public ScheduledReloader() {
 		this(Duration.ofSeconds(30));
@@ -38,28 +41,29 @@ public class ScheduledReloader<T> implements ConfijReloader<T> {
 	}
 
 	@Override
-	public void initialize(ConfijPipeline<T> pipeline) {
-		synchronized (this) {
-			if (isInitialized) {
-				throw new IllegalStateException("already initialized");
-			}
-			isInitialized = true;
+	@Synchronized
+	public void initialize(@NonNull ConfijPipeline<T> pipeline) {
+		if (isInitialized) {
+			throw new IllegalStateException("already initialized");
 		}
-		current = pipeline.build();
+		current.set(pipeline.build());
+		isInitialized = true;
 		executor.scheduleWithFixedDelay(() -> {
 			Thread.currentThread()
 					.setName("ConfijReload");
 			try {
-				current = pipeline.build();
+				current.set(pipeline.build());
 			} catch (Exception e) {
-				LOGGER.info("ConfiJ build pipeline failed", e);
-				throw e;
+				LOGGER.info("configuration reloading failed, will retry in {}ms", reloadEvery.toMillis(), e);
 			}
 		}, initialDelay.toMillis(), reloadEvery.toMillis(), TimeUnit.MILLISECONDS);
 	}
 
 	@Override
 	public T get() {
-		return current;
+		if (!isInitialized) {
+			throw new IllegalStateException("not initialized");
+		}
+		return current.get();
 	}
 }
