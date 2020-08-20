@@ -18,10 +18,6 @@ public class BindingType {
 	@ToString.Exclude
 	@NonNull TypeResolver typeResolver;
 
-	public static BindingType newBindingType(Type forType) {
-		return newBindingType(forType, BindingContext.newDefaultContext());
-	}
-
 	public static BindingType newBindingType(Type forType, BindingContext bindingContext) {
 		TypeResolver typeResolver = Util.TYPE_RESOLVER;
 		return new BindingType(typeResolver.resolve(forType), bindingContext, typeResolver);

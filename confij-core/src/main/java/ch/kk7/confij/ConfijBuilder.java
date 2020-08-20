@@ -9,14 +9,17 @@ import ch.kk7.confij.common.GenericType;
 import ch.kk7.confij.common.Util;
 import ch.kk7.confij.pipeline.ConfijPipeline;
 import ch.kk7.confij.pipeline.ConfijPipelineImpl;
-import ch.kk7.confij.pipeline.reload.ConfijReloader;
-import ch.kk7.confij.pipeline.reload.ScheduledReloader;
+import ch.kk7.confij.pipeline.reload.ConfijReloadNotifier;
+import ch.kk7.confij.pipeline.reload.ConfijReloadNotifier.ReloadHandler;
+import ch.kk7.confij.pipeline.reload.ConfijReloadStrategy;
+import ch.kk7.confij.pipeline.reload.NeverReloadStrategy;
 import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.any.AnySource;
 import ch.kk7.confij.source.defaults.DefaultSource;
 import ch.kk7.confij.source.logical.MaybeSource;
 import ch.kk7.confij.source.logical.OrSource;
 import ch.kk7.confij.template.NoopValueResolver;
+import ch.kk7.confij.template.SimpleVariableResolver;
 import ch.kk7.confij.template.ValueResolver;
 import ch.kk7.confij.tree.NodeBindingContext;
 import ch.kk7.confij.tree.NodeDefinition;
@@ -26,12 +29,15 @@ import ch.kk7.confij.validation.NonNullValidator;
 import ch.kk7.confij.validation.ServiceLoaderValidator;
 import com.fasterxml.classmate.ResolvedType;
 import lombok.NonNull;
+import lombok.Value;
+import lombok.experimental.NonFinal;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,11 +50,23 @@ public class ConfijBuilder<T> {
 
 	private ConfijValidator<T> nonNullValidator = null;
 
-	private NodeBindingContext nodeBindingContext = null;
+	private ValueResolver valueResolver = null;
 
-	private BindingContext bindingContext = null;
+	private final List<ValueMapperFactory> valueMapperFactories = new ArrayList<>(ValueMapperFactory.defaultFactories());
 
-	private ConfijReloader<T> reloader = null;
+	private ConfijReloadStrategy<T> reloadStrategy = null;
+
+	private ConfijReloadNotifier<T> reloadNotifier = new ConfijReloadNotifier<>();
+
+	protected void lazySetDefaults() {
+		validator = Optional.ofNullable(validator)
+				.orElseGet(() -> MultiValidator.of(new ServiceLoaderValidator<>(), Optional.ofNullable(nonNullValidator)
+						.orElseGet(NonNullValidator::initiallyNullable)));
+		valueResolver = Optional.ofNullable(valueResolver)
+				.orElseGet(SimpleVariableResolver::new);
+		reloadStrategy = Optional.ofNullable(reloadStrategy)
+				.orElseGet(NeverReloadStrategy::new);
+	}
 
 	protected ConfijBuilder(@NonNull Type forType) {
 		this.forType = forType;
@@ -160,24 +178,8 @@ public class ConfijBuilder<T> {
 		return validateOnlyWith(ConfijValidator.noopValidator());
 	}
 
-	@NonNull
-	protected NodeBindingContext getNodeBindingContext() {
-		if (nodeBindingContext == null) {
-			nodeBindingContext = NodeBindingContext.newDefaultSettings();
-		}
-		return nodeBindingContext;
-	}
-
-	public ConfijBuilder<T> nodeBindingContext(NodeBindingContext nodeBindingContext) {
-		if (this.nodeBindingContext != null) {
-			throw new IllegalStateException("unsafe usage of NodeBindingContext after it has been modified already");
-		}
-		this.nodeBindingContext = nodeBindingContext;
-		return this;
-	}
-
 	public ConfijBuilder<T> templatingWith(@NonNull ValueResolver valueResolver) {
-		nodeBindingContext = getNodeBindingContext().withValueResolver(valueResolver);
+		this.valueResolver = valueResolver;
 		return this;
 	}
 
@@ -185,30 +187,8 @@ public class ConfijBuilder<T> {
 		return templatingWith(new NoopValueResolver());
 	}
 
-	@Deprecated
-	public ConfijBuilder<T> globalDefaultValue(String defaultValue) {
-		nodeBindingContext = getNodeBindingContext().withDefaultValue(defaultValue);
-		return this;
-	}
-
-	@NonNull
-	protected BindingContext getBindingContext() {
-		if (bindingContext == null) {
-			bindingContext = BindingContext.newDefaultContext();
-		}
-		return bindingContext;
-	}
-
-	public ConfijBuilder<T> bindingContext(BindingContext bindingContext) {
-		if (this.bindingContext != null) {
-			throw new IllegalStateException("unsafe usage of BindingContext after it has been modified already");
-		}
-		this.bindingContext = bindingContext;
-		return this;
-	}
-
 	public ConfijBuilder<T> bindValuesWith(ValueMapperFactory valueMapperFactory) {
-		this.bindingContext = getBindingContext().withMapperFactory(valueMapperFactory);
+		valueMapperFactories.add(valueMapperFactory);
 		return this;
 	}
 
@@ -216,20 +196,28 @@ public class ConfijBuilder<T> {
 		return bindValuesWith(ValueMapperFactory.forClass(valueMapper, forClass));
 	}
 
-	public ConfijBuilder<T> withReloader(@NonNull ConfijReloader<T> reloader) {
-		this.reloader = reloader;
+	public ConfijBuilder<T> withReloadStrategy(@NonNull ConfijReloadStrategy<T> reloadStrategy) {
+		this.reloadStrategy = reloadStrategy;
 		return this;
 	}
 
-	protected ConfijPipeline<T> buildPipeline() {
-		validator = Optional.ofNullable(validator)
-				.orElseGet(() -> MultiValidator.of(new ServiceLoaderValidator<>(), Optional.ofNullable(nonNullValidator)
-						.orElseGet(NonNullValidator::initiallyNullable)));
+	@NonNull
+	protected BindingContext newBindingContext() {
+		return BindingContext.newDefaultContext(valueMapperFactories, reloadStrategy);
+	}
+
+	@NonNull
+	protected NodeBindingContext newNodeBindingContext() {
+		return NodeBindingContext.newDefaultSettings(valueResolver);
+	}
+
+	@NonNull
+	protected ConfijPipeline<T> newPipeline() {
 		ConfigBinder configBinder = new ConfigBinder();
 		@SuppressWarnings("unchecked")
-		ConfigBinding<T> configBinding = (ConfigBinding<T>) configBinder.toRootConfigBinding(forType, getBindingContext());
-		NodeDefinition nodeDefinition = configBinding.describe(getNodeBindingContext());
-		return new ConfijPipelineImpl<>(sources, new DefaultSource(), validator, configBinding, nodeDefinition);
+		ConfigBinding<T> configBinding = (ConfigBinding<T>) configBinder.toRootConfigBinding(forType, newBindingContext());
+		NodeDefinition nodeDefinition = configBinding.describe(newNodeBindingContext());
+		return new ConfijPipelineImpl<>(sources, new DefaultSource(), validator, configBinding, nodeDefinition, reloadNotifier);
 	}
 
 	/**
@@ -238,13 +226,40 @@ public class ConfijBuilder<T> {
 	 * @return a fully initialized configuration instance
 	 */
 	public T build() {
-		return buildPipeline().build();
+		return buildWrapper().get();
 	}
 
-	public ConfijReloader<T> buildReloadable() {
-		reloader = Optional.ofNullable(reloader)
-				.orElseGet(ScheduledReloader::new);
-		reloader.initialize(buildPipeline());
-		return reloader;
+	public ConfijWrapper<T> buildWrapper() {
+		lazySetDefaults();
+		ConfijPipeline<T> pipeline = newPipeline();
+		T initialConfig = pipeline.build();
+		reloadStrategy.register(pipeline);
+		return new ConfijWrapper<T>(initialConfig, reloadNotifier);
+	}
+
+	@Value
+	@NonFinal
+	public static class ConfijWrapper<T> {
+		AtomicReference<T> reference;
+
+		ConfijReloadNotifier<T> reloadNotifier;
+
+		public ConfijWrapper(T initialValue, ConfijReloadNotifier<T> reloadNotifier) {
+			reference = new AtomicReference<>(initialValue);
+			this.reloadNotifier = reloadNotifier;
+			registerRootReloadHandler(x -> reference.set(x.getNewValue()));
+		}
+
+		public T get() {
+			return reference.get();
+		}
+
+		public void registerRootReloadHandler(ReloadHandler<T> reloadHandler) {
+			reloadNotifier.registerRootReloadHandler(reloadHandler);
+		}
+
+		public <X> void registerReloadHandler(X onConfig, ReloadHandler<X> reloadHandler) {
+			reloadNotifier.registerReloadHandler(onConfig, reloadHandler);
+		}
 	}
 }

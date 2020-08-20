@@ -1,5 +1,6 @@
 package ch.kk7.confij.common;
 
+import lombok.NonNull;
 import lombok.ToString;
 
 import java.lang.reflect.Constructor;
@@ -26,6 +27,10 @@ public class ClassToImplCache {
 				throw new ConfijException("unable to instantiate: " + k, e);
 			}
 		});
+	}
+
+	public void put(@NonNull Object instance) {
+		instances.put(instance.getClass(), instance);
 	}
 
 	public <T> T getInstance(Class<? extends T> clazz, Class<T> asClass) {

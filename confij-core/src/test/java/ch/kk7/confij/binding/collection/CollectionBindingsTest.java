@@ -1,8 +1,11 @@
 package ch.kk7.confij.binding.collection;
 
+import ch.kk7.confij.binding.BindingContext;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
+import ch.kk7.confij.binding.values.ValueMapperFactory;
 import ch.kk7.confij.common.ConfijException;
+import ch.kk7.confij.pipeline.reload.NeverReloadStrategy;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -64,7 +67,8 @@ class CollectionBindingsTest implements WithAssertions {
 		return Arrays.stream(clazz.getMethods())
 				.sorted(Comparator.comparing(Method::getName))
 				.map(Method::getGenericReturnType)
-				.map(BindingType::newBindingType);
+				.map(x -> BindingType.newBindingType(x,
+						BindingContext.newDefaultContext(ValueMapperFactory.defaultFactories(), new NeverReloadStrategy<>())));
 	}
 
 	private static Stream<BindingType> validCollectionTypes() {

@@ -7,34 +7,37 @@ import lombok.Synchronized;
 import lombok.ToString;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Spawns a new thread to reload configuration periodically. Never blocks.
+ *
  * @param <T>
  */
 @ToString
-public class ScheduledReloader<T> implements ConfijReloader<T> {
-	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(ScheduledReloader.class);
+public class ScheduledReloadStrategy<T> implements ConfijReloadStrategy<T> {
+	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(ScheduledReloadStrategy.class);
 
 	private final Duration reloadEvery;
-	private final Duration initialDelay;
-	private final ScheduledExecutorService executor;
-	private boolean isInitialized = false;
-	private final AtomicReference<T> current = new AtomicReference<>();
 
-	public ScheduledReloader() {
+	private final Duration initialDelay;
+
+	private final ScheduledExecutorService executor;
+
+	private boolean isInitialized = false;
+
+	public ScheduledReloadStrategy() {
 		this(Duration.ofSeconds(30));
 	}
 
-	public ScheduledReloader(Duration reloadEvery) {
+	public ScheduledReloadStrategy(Duration reloadEvery) {
 		this(reloadEvery, Duration.ofSeconds(60));
 	}
 
-	public ScheduledReloader(Duration reloadEvery, Duration initialDelay) {
+	public ScheduledReloadStrategy(Duration reloadEvery, Duration initialDelay) {
 		this.reloadEvery = reloadEvery;
 		this.initialDelay = initialDelay;
 		executor = Executors.newScheduledThreadPool(1);
@@ -42,28 +45,23 @@ public class ScheduledReloader<T> implements ConfijReloader<T> {
 
 	@Override
 	@Synchronized
-	public void initialize(@NonNull ConfijPipeline<T> pipeline) {
+	public void register(@NonNull ConfijPipeline<T> pipeline) {
 		if (isInitialized) {
 			throw new IllegalStateException("already initialized");
 		}
-		current.set(pipeline.build());
 		isInitialized = true;
 		executor.scheduleWithFixedDelay(() -> {
 			Thread.currentThread()
 					.setName("ConfijReload");
+			Instant start = Instant.now();
+			LOGGER.debug("starting to reload ConfiJ configuration...");
 			try {
-				current.set(pipeline.build());
+				pipeline.build();
+				Duration dt = Duration.between(start, Instant.now());
+				LOGGER.info("successfully reloaded ConfiJ config within {}ms", dt);
 			} catch (Exception e) {
 				LOGGER.info("configuration reloading failed, will retry in {}ms", reloadEvery.toMillis(), e);
 			}
 		}, initialDelay.toMillis(), reloadEvery.toMillis(), TimeUnit.MILLISECONDS);
-	}
-
-	@Override
-	public T get() {
-		if (!isInitialized) {
-			throw new IllegalStateException("not initialized");
-		}
-		return current.get();
 	}
 }
