@@ -5,8 +5,6 @@ import ch.kk7.confij.common.AnnotationUtil;
 import ch.kk7.confij.common.ClassToImplCache;
 import ch.kk7.confij.template.SimpleVariableResolver;
 import ch.kk7.confij.template.ValueResolver;
-import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NonNull;
 import lombok.Value;
 import lombok.With;
@@ -28,20 +26,14 @@ public class NodeBindingContext {
 	@NonNull
 	ValueResolver valueResolver;
 
-	@NonNull
-	@With(AccessLevel.NONE)
-	@Getter(AccessLevel.NONE)
-	ClassToImplCache implCache;
-
 	public static NodeBindingContext newDefaultSettings() {
-		ClassToImplCache implCache = new ClassToImplCache();
-		return new NodeBindingContext( null, null, implCache.getInstance(SimpleVariableResolver.class), implCache);
+		return new NodeBindingContext( null, null, ClassToImplCache.getInstance(SimpleVariableResolver.class));
 	}
 
 	protected NodeBindingContext withValueResolverFor(AnnotatedElement element) {
 		return withValueResolver(AnnotationUtil.findAnnotation(element, ch.kk7.confij.annotation.VariableResolver.class)
 				.map(ch.kk7.confij.annotation.VariableResolver::value)
-				.map(x -> implCache.getInstance(x, ValueResolver.class))
+				.map(x -> ClassToImplCache.getInstance(x, ValueResolver.class))
 				.orElse(valueResolver));
 	}
 

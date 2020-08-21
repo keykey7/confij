@@ -5,6 +5,7 @@ import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.values.ValueMapperFactory;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
+import ch.kk7.confij.common.ClassToImplCache;
 import ch.kk7.confij.common.GenericType;
 import ch.kk7.confij.common.Util;
 import ch.kk7.confij.pipeline.ConfijPipeline;
@@ -238,7 +239,11 @@ public class ConfijBuilder<T> {
 	 * @return a fully initialized configuration instance
 	 */
 	public T build() {
-		return buildPipeline().build();
+		T config = buildPipeline().build();
+		// Clean the class reflection cache.
+		ClassToImplCache.clear();
+
+		return config;
 	}
 
 	public ConfijReloader<T> buildReloadable() {

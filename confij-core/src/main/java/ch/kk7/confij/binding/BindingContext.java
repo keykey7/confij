@@ -14,10 +14,8 @@ import ch.kk7.confij.binding.values.ValueMapperFactory;
 import ch.kk7.confij.common.AnnotationUtil;
 import ch.kk7.confij.common.AnnotationUtil.AnnonResponse;
 import ch.kk7.confij.common.ClassToImplCache;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.ToString;
 import lombok.Value;
 import lombok.With;
 import lombok.experimental.NonFinal;
@@ -46,24 +44,19 @@ public class BindingContext {
 	List<ValueMapperFactory> mapperFactories;
 	@NonNull
 	Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs;
-	@NonNull
-	@ToString.Exclude
-	@With(AccessLevel.NONE)
-	ClassToImplCache implCache;
 
 	public BindingContext(ValueMapperFactory forcedMapperFactory, @NonNull List<ValueMapperFactory> mapperFactories,
-			@NonNull Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs, @NonNull ClassToImplCache implCache) {
+			@NonNull Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs) {
 		this.forcedMapperFactory = forcedMapperFactory;
 		this.mapperFactories = Collections.unmodifiableList(mapperFactories);
 		this.factoryConfigs = Collections.unmodifiableMap(factoryConfigs);
-		this.implCache = implCache;
 	}
 
 	public static BindingContext newDefaultContext() {
 		List<ValueMapperFactory> mapperFactories = Arrays.asList(ExplicitMapper.forString(), new PrimitiveMapperFactory(),
 				new OptionalMapper(), ExplicitMapper.forFile(), ExplicitMapper.forPath(), new EnumMapper(), new DurationMapper(),
 				new PeriodMapper(), new DateTimeMapper(), new StaticFunctionMapper(), new SoloConstructorMapper());
-		return new BindingContext(null, mapperFactories, Collections.emptyMap(), new ClassToImplCache());
+		return new BindingContext(null, mapperFactories, Collections.emptyMap());
 	}
 
 	public Optional<ValueMapperFactory> getForcedMapperFactory() {
@@ -80,7 +73,7 @@ public class BindingContext {
 
 	protected BindingContext withMapperFactoryFor(ValueMapper valueMapper, boolean forced) {
 		Class<? extends ValueMapperFactory> clazz = valueMapper.value();
-		ValueMapperFactory mapperFactory = implCache.getInstance(clazz, ValueMapperFactory.class);
+		ValueMapperFactory mapperFactory = ClassToImplCache.getInstance(clazz, ValueMapperFactory.class);
 		if (forced) {
 			return withForcedMapperFactory(mapperFactory);
 		}
