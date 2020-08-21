@@ -13,8 +13,8 @@ class GenericTypeTest implements WithAssertions {
 	public void asd() {
 		List<Integer> listConfig = ConfijBuilder.of(new GenericType<List<Integer>>() {
 		})
-				.loadFrom(new PropertiesSource().with("0", "42")
-						.with("1", "1337"))
+				.loadFrom(new PropertiesSource().set("0", "42")
+						.set("1", "1337"))
 				.build();
 		assertThat(listConfig).containsExactly(42, 1337);
 	}

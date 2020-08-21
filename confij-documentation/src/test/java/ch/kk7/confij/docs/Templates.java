@@ -24,11 +24,11 @@ public class Templates implements WithAssertions {
 	@Test
 	public void simple() {
 		Salutation salutation = ConfijBuilder.of(Salutation.class)
-				.loadFrom(new PropertiesSource().with("name", "Bob"))
+				.loadFrom(new PropertiesSource().set("name", "Bob"))
 				.build();
 		assertThat(salutation.hello()).isEqualTo("Hi Bob");
 		salutation = ConfijBuilder.of(Salutation.class)
-				.loadFrom(new PropertiesSource().with("hello", "Cya"))
+				.loadFrom(new PropertiesSource().set("hello", "Cya"))
 				.build();
 		assertThat(salutation.hello()).isEqualTo("Cya");
 	}
@@ -101,17 +101,17 @@ public class Templates implements WithAssertions {
 	@Test
 	public void noop() {
 		assertThat(ConfijBuilder.of(Noop.class)
-				.loadFrom(new PropertiesSource().with("canContainDollar", "${variable}"))
+				.loadFrom(new PropertiesSource().set("canContainDollar", "${variable}"))
 				.build().canContainDollar()).isEqualTo("${variable}");
 		assertThat(ConfijBuilder.of(GlobalNoop.class)
-				.loadFrom(new PropertiesSource().with("canContainDollar", "${variable}"))
+				.loadFrom(new PropertiesSource().set("canContainDollar", "${variable}"))
 				.build().canContainDollar()).isEqualTo("${variable}");
 
 		assertThat(
 				// tag::builder-noop[]
 		ConfijBuilder.of(BuilderNoop.class).templatingDisabled()
 				// end::builder-noop[]
-				.loadFrom(new PropertiesSource().with("canContainDollar", "${variable}"))
+				.loadFrom(new PropertiesSource().set("canContainDollar", "${variable}"))
 				.build().canContainDollar()).isEqualTo("${variable}");
 	}
 

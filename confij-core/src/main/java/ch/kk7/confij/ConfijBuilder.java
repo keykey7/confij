@@ -10,7 +10,6 @@ import ch.kk7.confij.common.Util;
 import ch.kk7.confij.pipeline.ConfijPipeline;
 import ch.kk7.confij.pipeline.ConfijPipelineImpl;
 import ch.kk7.confij.pipeline.reload.ConfijReloadNotifier;
-import ch.kk7.confij.pipeline.reload.ConfijReloadNotifier.ReloadHandler;
 import ch.kk7.confij.pipeline.reload.ConfijReloadStrategy;
 import ch.kk7.confij.pipeline.reload.NeverReloadStrategy;
 import ch.kk7.confij.source.ConfijSource;
@@ -247,19 +246,11 @@ public class ConfijBuilder<T> {
 		public ConfijWrapper(T initialValue, ConfijReloadNotifier<T> reloadNotifier) {
 			reference = new AtomicReference<>(initialValue);
 			this.reloadNotifier = reloadNotifier;
-			registerRootReloadHandler(x -> reference.set(x.getNewValue()));
+			reloadNotifier.registerRootReloadHandler(x -> reference.set(x.getNewValue()));
 		}
 
 		public T get() {
 			return reference.get();
-		}
-
-		public void registerRootReloadHandler(ReloadHandler<T> reloadHandler) {
-			reloadNotifier.registerRootReloadHandler(reloadHandler);
-		}
-
-		public <X> void registerReloadHandler(X onConfig, ReloadHandler<X> reloadHandler) {
-			reloadNotifier.registerReloadHandler(onConfig, reloadHandler);
 		}
 	}
 }

@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Value
@@ -33,8 +34,6 @@ public class ConfijReloadNotifier<T> {
 	BindingResult<T> lastBindingResult = null;
 
 	Map<URI, List<ReloadHandler<?>>> registeredHandlers = new LinkedHashMap<>();
-
-	Object $lockBindingResult = new Object();
 
 	@FunctionalInterface
 	public interface ReloadHandler<X> {
@@ -87,7 +86,8 @@ public class ConfijReloadNotifier<T> {
 						.getUri(), x -> x, (x1, x2) -> x1, LinkedHashMap::new));
 	}
 
-	@Synchronized("$lockBindingResult")
+	// TODO: maybe worth an idea: if the config did NOT change, we could keep the old instance
+	@Synchronized
 	public Optional<ReloadEvent<T>> configReloaded(@NonNull BindingResult<T> newBindingResult) {
 		final Optional<ReloadEvent<T>> result;
 		if(lastBindingResult == null) { // this is the first config ever
@@ -105,7 +105,7 @@ public class ConfijReloadNotifier<T> {
 				.ifPresent(x -> x.forEach(handler -> handler.onReload(reloadEvent)));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	protected <X> Optional<ReloadEvent<X>> notifyAllChangedValues(BindingResult<X> oldBindingResult, BindingResult<X> newBindingResult) {
 		if (oldBindingResult.getNode()
 				.getConfig()
@@ -145,20 +145,47 @@ public class ConfijReloadNotifier<T> {
 		return Optional.of(combinedReloadEvent);
 	}
 
-	@Synchronized("$lockBindingResult")
+	@Synchronized
 	public void registerRootReloadHandler(@NonNull ReloadHandler<T> reloadHandler) {
-		registerReloadHandlerInternal(lastBindingResult.getNode()
+		registerReloadHandlerOnUri(lastBindingResult.getNode()
 				.getUri(), reloadHandler);
 	}
 
-	@Synchronized("$lockBindingResult")
-	public <X> void registerReloadHandler(@NonNull X onConfigObject, @NonNull ReloadHandler<X> reloadHandler) {
+	@Synchronized
+	public <X> AtomicReference<X> wrapInAtomicReference(@NonNull X onConfigObject) {
+		AtomicReferenceReloadHandler<X> handler = new AtomicReferenceReloadHandler<>(onConfigObject);
+		registerReloadHandler(onConfigObject, handler);
+		return handler.getReference();
+	}
+
+	@Value
+	@NonFinal
+	public static class AtomicReferenceReloadHandler<X> implements ReloadHandler<X> {
+		AtomicReference<X> reference;
+
+		public AtomicReferenceReloadHandler(X obj) {
+			reference = new AtomicReference<>(obj);
+		}
+
+		@Override
+		public void onReload(ReloadEvent<X> reloadEvent) {
+			reference.set(reloadEvent.getNewValue());
+		}
+	}
+
+	public <X> void registerReloadHandler(X onConfigObject, ReloadHandler<X> reloadHandler) {
+		registerReloadHandlerInternal(onConfigObject, reloadHandler, false);
+	}
+
+	@Synchronized
+	protected <X> void registerReloadHandlerInternal(@NonNull X onConfigObject, @NonNull ReloadHandler<X> reloadHandler, boolean useEquals) {
 		Set<BindingResult<X>> results = new LinkedHashSet<>();
-		findSameValue(lastBindingResult, onConfigObject, results);
+		findSameValue(lastBindingResult, onConfigObject, results, useEquals);
 		if (results.isEmpty()) {
-			throw new ConfijException(
-					"unknown configuration Object {}. cannot register a reload handler on this. Is this an object you got using {}?",
-					onConfigObject, ConfijBuilder.class + ".build()");
+			throw new ConfijException("unknown configuration object: {} (type {}). " +
+					"cannot register a reload handler on this since {} object cannot be found. " +
+					"Is must be an object you got using {}?", onConfigObject, onConfigObject.getClass()
+					.getName(), useEquals ? "an equal" : "the same", ConfijBuilder.class + "#build()");
 		}
 		if (results.size() > 1) {
 			throw new ConfijException(
@@ -168,13 +195,13 @@ public class ConfijReloadNotifier<T> {
 									.getUri())
 							.collect(Collectors.toList()));
 		}
-		registerReloadHandlerInternal(results.iterator()
+		registerReloadHandlerOnUri(results.iterator()
 				.next()
 				.getNode()
 				.getUri(), reloadHandler);
 	}
 
-	protected <X> void registerReloadHandlerInternal(@NonNull URI nodeURI, @NonNull ReloadHandler<X> reloadHandler) {
+	protected <X> void registerReloadHandlerOnUri(@NonNull URI nodeURI, @NonNull ReloadHandler<X> reloadHandler) {
 		List<ReloadHandler<?>> registered = registeredHandlers.computeIfAbsent(nodeURI, x -> new ArrayList<>());
 		if (registered.contains(reloadHandler)) {
 			throw new ConfijException("this {} is already registered on path '{}': {}", ReloadHandler.class.getSimpleName(), nodeURI,
@@ -183,11 +210,11 @@ public class ConfijReloadNotifier<T> {
 		registered.add(reloadHandler);
 	}
 
-	protected <X> void findSameValue(BindingResult<?> current, @NonNull X onConfigObject, Set<BindingResult<X>> results) {
+	protected <X> void findSameValue(BindingResult<?> current, @NonNull X onConfigObject, Set<BindingResult<X>> results, boolean useEquals) {
 		for (BindingResult<?> child : current.getChildren()) {
-			findSameValue(child, onConfigObject, results);
+			findSameValue(child, onConfigObject, results, useEquals);
 		}
-		if (current.getValue() == onConfigObject) { // NOT equals: we want exactly the same instance
+		if (useEquals ? Objects.equals(current.getValue(), onConfigObject) : current.getValue() == onConfigObject) {
 			//noinspection unchecked
 			results.add((BindingResult<X>) current);
 		} else if (!results.isEmpty() &&

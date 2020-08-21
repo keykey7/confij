@@ -84,9 +84,9 @@ public class Binding extends DocTestBase {
 		// tag::nestedBuild[]
 		DbConfig dbConfig = ConfijBuilder.of(DbConfig.class)
 			.loadFrom(new PropertiesSource()
-				.with("dbConnections.0.url", "https://db0.example.com")
-				.with("dbConnections.0.timing.keepAlive", "30s")
-				.with("additionalParameters.somekey", "somevalue"))
+				.set("dbConnections.0.url", "https://db0.example.com")
+				.set("dbConnections.0.timing.keepAlive", "30s")
+				.set("additionalParameters.somekey", "somevalue"))
 			.build();
 		// end::nestedBuild[]
 		assertThat(dbConfig.dbConnections()
@@ -113,7 +113,7 @@ public class Binding extends DocTestBase {
 	@Test
 	public void customValueMappingWithAnnotation() {
 		Favourites favourites = ConfijBuilder.of(Favourites.class)
-				.loadFrom(new PropertiesSource().with("favouriteColor", "#000000"))
+				.loadFrom(new PropertiesSource().set("favouriteColor", "#000000"))
 				.build();
 		assertThat(favourites.favouriteColor()).isEqualTo(Color.BLACK);
 	}
@@ -129,8 +129,8 @@ public class Binding extends DocTestBase {
 		EmptyColorHolder colorHolder = ConfijBuilder.of(EmptyColorHolder.class)
 				.bindValuesForClassWith(Color::decode, java.awt.Color.class)
 				// end::custom-value-mapping[]
-				.loadFrom(new PropertiesSource().with("black", "#000000")
-						.with("green", "#00FF00"))
+				.loadFrom(new PropertiesSource().set("black", "#000000")
+						.set("green", "#00FF00"))
 				.build();
 		assertThat(colorHolder.black()).isEqualTo(Color.BLACK);
 		assertThat(colorHolder.green()).isEqualTo(Color.GREEN);
@@ -149,8 +149,8 @@ public class Binding extends DocTestBase {
 	@Test
 	public void testBuiltinCustomMappings() {
 		Base64Encoded builtInMappers = ConfijBuilder.of(Base64Encoded.class)
-				.loadFrom(new PropertiesSource().with("base64Arr", "AQIDBA==")
-						.with("base64List", "AQIDBA=="))
+				.loadFrom(new PropertiesSource().set("base64Arr", "AQIDBA==")
+						.set("base64List", "AQIDBA=="))
 				.build();
 		assertThat(builtInMappers.base64Arr()).containsExactly(1, 2, 3, 4);
 		assertThat(builtInMappers.base64List()).containsExactly((byte) 1, (byte) 2, (byte) 3, (byte) 4);

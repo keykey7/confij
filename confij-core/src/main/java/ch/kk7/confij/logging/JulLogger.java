@@ -1,14 +1,14 @@
 package ch.kk7.confij.logging;
 
-import static ch.kk7.confij.logging.LogUtil.formatLogSupplier;
-import static ch.kk7.confij.logging.LogUtil.throwableOrNull;
+import ch.kk7.confij.common.ServiceLoaderPriority;
+import com.google.auto.service.AutoService;
+import lombok.Value;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import ch.kk7.confij.common.ServiceLoaderPriority;
-import com.google.auto.service.AutoService;
-import lombok.Value;
+import static ch.kk7.confij.logging.LogUtil.formatLogSupplier;
+import static ch.kk7.confij.logging.LogUtil.throwableOrNull;
 
 /**
  * A logger which uses java.util.logging underneath, but allows for slf4j-like log message patterns.
@@ -16,7 +16,7 @@ import lombok.Value;
  */
 @Value
 public class JulLogger implements ConfijLogger {
-	private final Logger logger;
+	Logger logger;
 
 	@Override
 	public void debug(String message, Object... attributes) {
@@ -37,6 +37,7 @@ public class JulLogger implements ConfijLogger {
 		logger.log(level, throwableOrNull(attributes), formatLogSupplier(message, attributes));
 	}
 
+	@SuppressWarnings("unused")
 	@AutoService(ConfijLogFactory.class)
 	public static class JulLogFactory implements ConfijLogFactory, ServiceLoaderPriority {
 		@Override

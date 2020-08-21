@@ -38,9 +38,16 @@ public class ScheduledReloadStrategy<T> implements ConfijReloadStrategy<T> {
 	}
 
 	public ScheduledReloadStrategy(Duration reloadEvery, Duration initialDelay) {
-		this.reloadEvery = reloadEvery;
-		this.initialDelay = initialDelay;
-		executor = Executors.newScheduledThreadPool(1);
+		this.reloadEvery = assertPositive(reloadEvery);
+		this.initialDelay = assertPositive(initialDelay);
+		executor = Executors.newSingleThreadScheduledExecutor();
+	}
+
+	private static Duration assertPositive(Duration duration) {
+		if (duration.isNegative() || duration.isZero()) {
+			throw new IllegalArgumentException("duration must be strictly positive: " + duration);
+		}
+		return duration;
 	}
 
 	@Override
@@ -58,7 +65,7 @@ public class ScheduledReloadStrategy<T> implements ConfijReloadStrategy<T> {
 			try {
 				pipeline.build();
 				Duration dt = Duration.between(start, Instant.now());
-				LOGGER.info("successfully reloaded ConfiJ config within {}ms", dt);
+				LOGGER.info("successfully reloaded configuration within {}ms", dt);
 			} catch (Exception e) {
 				LOGGER.info("configuration reloading failed, will retry in {}ms", reloadEvery.toMillis(), e);
 			}
