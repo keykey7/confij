@@ -13,7 +13,9 @@ import lombok.experimental.NonFinal;
 
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -151,10 +153,9 @@ public class ConfijReloadNotifier<T> {
 				.getUri(), reloadHandler);
 	}
 
-	@Synchronized
-	public <X> AtomicReference<X> wrapInAtomicReference(@NonNull X onConfigObject) {
+	public <X> AtomicReference<X> registerAtomicReference(@NonNull X onConfigObject) {
 		AtomicReferenceReloadHandler<X> handler = new AtomicReferenceReloadHandler<>(onConfigObject);
-		registerReloadHandler(onConfigObject, handler);
+		registerReloadHandler(handler, onConfigObject);
 		return handler.getReference();
 	}
 
@@ -173,32 +174,57 @@ public class ConfijReloadNotifier<T> {
 		}
 	}
 
-	public <X> void registerReloadHandler(X onConfigObject, ReloadHandler<X> reloadHandler) {
-		registerReloadHandlerInternal(onConfigObject, reloadHandler, false);
-	}
+	private static Set<Class<?>> NON_UNIQUE_TYPES = new HashSet<>(
+			Arrays.asList(Boolean.class, Integer.class, Long.class, Double.class, Float.class, Character.class));
 
 	@Synchronized
-	protected <X> void registerReloadHandlerInternal(@NonNull X onConfigObject, @NonNull ReloadHandler<X> reloadHandler, boolean useEquals) {
+	public <X> void registerReloadHandler(@NonNull ReloadHandler<X> reloadHandler, @NonNull X onConfigObject, String ... childPaths) {
+		if (NON_UNIQUE_TYPES.contains(onConfigObject.getClass())) {
+			throw new ConfijException("it is unsafe to register a ReloadHandler on {} (type {}). " +
+					"all primitive types [int, boolean,...] as well as its boxing counterparts {} might not be unique " +
+					"and therefore ConfiJ might not recognize the correct Object you meant.", onConfigObject.getClass()
+					.getSimpleName(), NON_UNIQUE_TYPES.stream()
+					.map(Class::getSimpleName)
+					.collect(Collectors.toList()));
+		}
+		final URI uriOfObj = mustFindUniqueConfigObject(onConfigObject);
+		URI targetUri = uriOfObj;
+		for (String pathPart : childPaths) {
+			targetUri = targetUri.resolve(pathPart);
+		}
+		try { // verify the childPath is valid
+			getLastBindingResult().getNode()
+					.resolve(targetUri);
+		} catch (ConfijException e) { // TODO: use a less generic exception
+			throw new ConfijException("failed to register a ReloadHandler on {}. " +
+					"the parent instance {} ({}) was found, however not the child instance: {}", targetUri, uriOfObj, onConfigObject,
+					e.getMessage(), e);
+		}
+		registerReloadHandlerOnUri(targetUri, reloadHandler);
+	}
+
+	@NonNull
+	protected <X> URI mustFindUniqueConfigObject(X onConfigObject) {
 		Set<BindingResult<X>> results = new LinkedHashSet<>();
-		findSameValue(lastBindingResult, onConfigObject, results, useEquals);
+		findSameValue(lastBindingResult, onConfigObject, results);
 		if (results.isEmpty()) {
 			throw new ConfijException("unknown configuration object: {} (type {}). " +
-					"cannot register a reload handler on this since {} object cannot be found. " +
-					"Is must be an object you got using {}?", onConfigObject, onConfigObject.getClass()
-					.getName(), useEquals ? "an equal" : "the same", ConfijBuilder.class + "#build()");
+					"cannot register a ReloadHandler on this instance since the same object cannot be found. " +
+					"Is must be an object you got using {}", onConfigObject, onConfigObject.getClass()
+					.getName(), ConfijBuilder.class + "#build()");
 		}
 		if (results.size() > 1) {
 			throw new ConfijException(
-					"non unique configuration Object {}. cannot register a reload handler on this. the following config paths all have the same value: {}",
-					results.stream()
+					"non unique configuration object {}. cannot register a reload handler on this. " +
+							"the following config paths are all the same instance: {}", onConfigObject, results.stream()
 							.map(x -> x.getNode()
 									.getUri())
 							.collect(Collectors.toList()));
 		}
-		registerReloadHandlerOnUri(results.iterator()
+		return results.iterator()
 				.next()
 				.getNode()
-				.getUri(), reloadHandler);
+				.getUri();
 	}
 
 	protected <X> void registerReloadHandlerOnUri(@NonNull URI nodeURI, @NonNull ReloadHandler<X> reloadHandler) {
@@ -210,11 +236,11 @@ public class ConfijReloadNotifier<T> {
 		registered.add(reloadHandler);
 	}
 
-	protected <X> void findSameValue(BindingResult<?> current, @NonNull X onConfigObject, Set<BindingResult<X>> results, boolean useEquals) {
+	protected <X> void findSameValue(BindingResult<?> current, @NonNull X onConfigObject, Set<BindingResult<X>> results) {
 		for (BindingResult<?> child : current.getChildren()) {
-			findSameValue(child, onConfigObject, results, useEquals);
+			findSameValue(child, onConfigObject, results);
 		}
-		if (useEquals ? Objects.equals(current.getValue(), onConfigObject) : current.getValue() == onConfigObject) {
+		if (current.getValue() == onConfigObject) {
 			//noinspection unchecked
 			results.add((BindingResult<X>) current);
 		} else if (!results.isEmpty() &&

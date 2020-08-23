@@ -13,11 +13,10 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 class ConfijReloadNotifierTest implements WithAssertions {
-
 	interface A {
-		int int1();
+		String x1();
 
-		int int2();
+		String x2();
 	}
 
 	private PropertiesSource source;
@@ -30,8 +29,8 @@ class ConfijReloadNotifierTest implements WithAssertions {
 
 	@BeforeEach
 	public void init() {
-		source = new PropertiesSource().set("int1", "1")
-				.set("int2", "2");
+		source = new PropertiesSource().set("x1", "1")
+				.set("x2", "2");
 		reload = new ManualReloadStrategy<>();
 		wrapper = ConfijBuilder.of(A.class)
 				.loadFrom(source)
@@ -55,48 +54,51 @@ class ConfijReloadNotifierTest implements WithAssertions {
 
 	@Test
 	public void changedSourceMeansNewConfigInstance() {
-		int newInt = new Random().nextInt();
-		A updated = setAndReload("int2", newInt);
+		String newValue = new Random().nextInt() + "";
+		A updated = setAndReload("x2", newValue);
 		assertThat(first).as("proxy instance must change to be thread safe")
 				.isNotSameAs(wrapper.get());
-		assertThat(updated.int2()).isEqualTo(newInt)
-				.isNotEqualTo(first.int2());
+		assertThat(updated.x2()).isEqualTo(newValue)
+				.isNotEqualTo(first.x2());
 	}
 
 	@Test
-	public void customReloadHandlerOnPrimitive() {
-		int newInt = new Random().nextInt();
+	public void customReloadHandlerTriggers() {
+		String newValue = new Random().nextInt() + "";
 		AtomicBoolean handlerWasCalled = new AtomicBoolean(false);
 		wrapper.getReloadNotifier()
-				.registerReloadHandler(first.int2(), event -> {
-					assertThat(event.getOldValue()).isEqualTo(first.int2());
-					assertThat(event.getNewValue()).isEqualTo(newInt);
-					assertThat(event.getEventPath()).isEqualTo(URI.create("config:/int2"));
-					assertThat(event.getChangedPaths()).containsExactly(URI.create("config:/int2"));
+				.registerReloadHandler(event -> {
+					assertThat(event.getOldValue()).isEqualTo(first.x2());
+					assertThat(event.getNewValue()).isEqualTo(newValue);
+					assertThat(event.getEventPath()).isEqualTo(URI.create("config:/x2"));
+					assertThat(event.getChangedPaths()).containsExactly(URI.create("config:/x2"));
 					handlerWasCalled.set(true);
-				});
+				}, first.x2());
 		assertThat(handlerWasCalled).isFalse();
-		setAndReload("int2", newInt);
+		setAndReload("x2", newValue);
 		//noinspection ConstantConditions
 		assertThat(handlerWasCalled).isTrue();
 	}
 
 	@Test
-	public void noReloadHandlerPossibleOnDuplicatePrimitive() {
-		setAndReload("int2", first.int1());
+	public void noReloadHandlerPossibleOnDuplicate() {
+		wrapper = ConfijBuilder.of(A.class)
+				.bindValuesForClassWith(x -> "always me", String.class)
+				.buildWrapper();
 		assertThatThrownBy(() -> wrapper.getReloadNotifier()
-				.registerReloadHandler(first.int1(), x -> {
-				})).isInstanceOf(ConfijException.class)
-				.hasMessageContaining("int2");
-
+				.registerReloadHandler(x -> {
+				}, wrapper.get()
+						.x1())).isInstanceOf(ConfijException.class)
+				.hasMessageContaining("always me")
+				.hasMessageContaining("x1")
+				.hasMessageContaining("x2");
 	}
 
 	@Test
 	public void noReloadHandlerPossibleOnUnknownPrimitive() {
 		assertThatThrownBy(() -> wrapper.getReloadNotifier()
-				.registerReloadHandler(42, x -> {
-				})).isInstanceOf(ConfijException.class)
+				.registerReloadHandler(x -> {
+				}, "42")).isInstanceOf(ConfijException.class)
 				.hasMessageContaining("42");
-
 	}
 }

@@ -51,7 +51,7 @@ public class ConfijBuilder<T> {
 
 	private ValueResolver valueResolver = null;
 
-	private final List<ValueMapperFactory> valueMapperFactories = new ArrayList<>(ValueMapperFactory.defaultFactories());
+	private final ArrayList<ValueMapperFactory> valueMapperFactories = new ArrayList<>(ValueMapperFactory.defaultFactories());
 
 	private ConfijReloadStrategy<T> reloadStrategy = null;
 
@@ -187,7 +187,8 @@ public class ConfijBuilder<T> {
 	}
 
 	public ConfijBuilder<T> bindValuesWith(ValueMapperFactory valueMapperFactory) {
-		valueMapperFactories.add(valueMapperFactory);
+		// put the new value mapper first to give it preference
+		valueMapperFactories.add(0, valueMapperFactory);
 		return this;
 	}
 
