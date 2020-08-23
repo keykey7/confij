@@ -13,7 +13,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Spawns a new thread to reload configuration periodically. Never blocks.
+ * Spawns a new thread to reload configuration periodically.
  *
  * @param <T>
  */

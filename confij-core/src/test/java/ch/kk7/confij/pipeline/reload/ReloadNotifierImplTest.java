@@ -12,7 +12,7 @@ import java.net.URI;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-class ConfijReloadNotifierTest implements WithAssertions {
+class ReloadNotifierImplTest implements WithAssertions {
 	interface A {
 		String x1();
 
@@ -41,7 +41,7 @@ class ConfijReloadNotifierTest implements WithAssertions {
 		reload = new ManualReloadStrategy<>();
 		wrapper = ConfijBuilder.of(A.class)
 				.loadFrom(source)
-				.withReloadStrategy(reload)
+				.reloadStrategy(reload)
 				.buildWrapper();
 		first = wrapper.get();
 	}

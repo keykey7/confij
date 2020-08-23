@@ -2,7 +2,7 @@ package ch.kk7.confij.pipeline;
 
 import ch.kk7.confij.binding.BindingResult;
 import ch.kk7.confij.binding.ConfigBinding;
-import ch.kk7.confij.pipeline.reload.ConfijReloadNotifier;
+import ch.kk7.confij.pipeline.reload.ReloadNotifierImpl;
 import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.tree.ConfijNode;
 import ch.kk7.confij.tree.NodeDefinition;
@@ -21,7 +21,7 @@ public class ConfijPipelineImpl<T> implements ConfijPipeline<T> {
 	@NonNull ConfijValidator<T> validator;
 	@NonNull ConfigBinding<T> configBinding;
 	@NonNull NodeDefinition format;
-	@NonNull ConfijReloadNotifier<T> reloadNotifier;
+	@NonNull ReloadNotifierImpl<T> reloadNotifier;
 
 	protected ConfijNode newDefaultConfig() {
 		ConfijNode defaultsOnly = ConfijNode.newRootFor(format);

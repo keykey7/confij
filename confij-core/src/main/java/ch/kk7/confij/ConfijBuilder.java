@@ -5,6 +5,7 @@ import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.values.ValueMapperFactory;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
+import ch.kk7.confij.common.ConfijException;
 import ch.kk7.confij.common.GenericType;
 import ch.kk7.confij.common.Util;
 import ch.kk7.confij.pipeline.ConfijPipeline;
@@ -12,6 +13,7 @@ import ch.kk7.confij.pipeline.ConfijPipelineImpl;
 import ch.kk7.confij.pipeline.reload.ConfijReloadNotifier;
 import ch.kk7.confij.pipeline.reload.ConfijReloadStrategy;
 import ch.kk7.confij.pipeline.reload.NeverReloadStrategy;
+import ch.kk7.confij.pipeline.reload.ReloadNotifierImpl;
 import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.any.AnySource;
 import ch.kk7.confij.source.defaults.DefaultSource;
@@ -27,9 +29,11 @@ import ch.kk7.confij.validation.MultiValidator;
 import ch.kk7.confij.validation.NonNullValidator;
 import ch.kk7.confij.validation.ServiceLoaderValidator;
 import com.fasterxml.classmate.ResolvedType;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.ToString;
 import lombok.Value;
-import lombok.experimental.NonFinal;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -40,7 +44,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@ToString(onlyExplicitlyIncluded = true)
 public class ConfijBuilder<T> {
+	@ToString.Include
 	private final Type forType;
 
 	private final List<ConfijSource> sources = new ArrayList<>();
@@ -55,7 +61,7 @@ public class ConfijBuilder<T> {
 
 	private ConfijReloadStrategy<T> reloadStrategy = null;
 
-	private ConfijReloadNotifier<T> reloadNotifier = new ConfijReloadNotifier<>();
+	private final ReloadNotifierImpl<T> reloadNotifier = new ReloadNotifierImpl<>();
 
 	protected void lazySetDefaults() {
 		validator = Optional.ofNullable(validator)
@@ -196,7 +202,13 @@ public class ConfijBuilder<T> {
 		return bindValuesWith(ValueMapperFactory.forClass(valueMapper, forClass));
 	}
 
-	public ConfijBuilder<T> withReloadStrategy(@NonNull ConfijReloadStrategy<T> reloadStrategy) {
+	/**
+	 * define when/how new configurations are loaded. default is a {@link NeverReloadStrategy}.
+	 *
+	 * @param reloadStrategy the new reload strategy to be used
+	 * @return self
+	 */
+	public ConfijBuilder<T> reloadStrategy(@NonNull ConfijReloadStrategy<T> reloadStrategy) {
 		this.reloadStrategy = reloadStrategy;
 		return this;
 	}
@@ -221,30 +233,43 @@ public class ConfijBuilder<T> {
 	}
 
 	/**
-	 * finalize the configuration pipeline and build a single instance of it
+	 * Finalize the configuration pipeline and build a single instance of it.
+	 * In cases where you enable periodic configuration reloading, use {@link #buildWrapper()} instead.
 	 *
 	 * @return a fully initialized configuration instance
 	 */
 	public T build() {
+		if (reloadStrategy != null && !(reloadStrategy instanceof NeverReloadStrategy)) {
+			throw new ConfijException("there is an active ReloadStrategy configured ({}). " +
+					"however, by calling .build() there is no way to obtain an updated version of the configuration. " +
+					"use the .buildWrapper() instead and attach your reload hooks there.", reloadStrategy);
+		}
 		return buildWrapper().get();
 	}
 
+	/**
+	 * Finalize the configuration pipeline and build a single instance holding the most recent configuration.
+	 * In cases where no periodic configuration reload strategy is defined, {@link #build()} is simpler to use instead.
+	 *
+	 * @return a wrapper with the most up-to-date instance and ways to register reload notification hooks.
+	 */
 	public ConfijWrapper<T> buildWrapper() {
 		lazySetDefaults();
 		ConfijPipeline<T> pipeline = newPipeline();
 		T initialConfig = pipeline.build();
 		reloadStrategy.register(pipeline);
-		return new ConfijWrapper<T>(initialConfig, reloadNotifier);
+		return new ConfijWrapper<>(initialConfig, reloadNotifier);
 	}
 
 	@Value
-	@NonFinal
+	@ToString(onlyExplicitlyIncluded = true)
 	public static class ConfijWrapper<T> {
+		@Getter(AccessLevel.NONE)
 		AtomicReference<T> reference;
 
 		ConfijReloadNotifier<T> reloadNotifier;
 
-		public ConfijWrapper(T initialValue, ConfijReloadNotifier<T> reloadNotifier) {
+		public ConfijWrapper(T initialValue, ReloadNotifierImpl<T> reloadNotifier) {
 			reference = new AtomicReference<>(initialValue);
 			this.reloadNotifier = reloadNotifier;
 			reloadNotifier.registerRootReloadHandler(x -> reference.set(x.getNewValue()));
