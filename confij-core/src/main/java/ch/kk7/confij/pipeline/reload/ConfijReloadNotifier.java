@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Value
 @NonFinal
@@ -177,8 +178,18 @@ public class ConfijReloadNotifier<T> {
 	private static Set<Class<?>> NON_UNIQUE_TYPES = new HashSet<>(
 			Arrays.asList(Boolean.class, Integer.class, Long.class, Double.class, Float.class, Character.class));
 
+	public void registerReloadHandler(@NonNull ReloadHandler<?> childReloadHandler, @NonNull Object parent, String childPath,
+			String... childPaths) {
+		registerReloadHandlerInternal(childReloadHandler, parent, Stream.concat(Stream.of(childPath), Stream.of(childPaths))
+				.toArray(String[]::new));
+	}
+
+	public <X> void registerReloadHandler(@NonNull ReloadHandler<X> reloadHandler, @NonNull X onConfigObject) {
+		registerReloadHandlerInternal(reloadHandler, onConfigObject);
+	}
+
 	@Synchronized
-	public <X> void registerReloadHandler(@NonNull ReloadHandler<X> reloadHandler, @NonNull X onConfigObject, String ... childPaths) {
+	protected void registerReloadHandlerInternal(ReloadHandler<?> reloadHandler, Object onConfigObject, String... childPaths) {
 		if (NON_UNIQUE_TYPES.contains(onConfigObject.getClass())) {
 			throw new ConfijException("it is unsafe to register a ReloadHandler on {} (type {}). " +
 					"all primitive types [int, boolean,...] as well as its boxing counterparts {} might not be unique " +

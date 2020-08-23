@@ -17,6 +17,12 @@ class ConfijReloadNotifierTest implements WithAssertions {
 		String x1();
 
 		String x2();
+
+		B b();
+	}
+
+	interface B {
+		int x3();
 	}
 
 	private PropertiesSource source;
@@ -30,7 +36,8 @@ class ConfijReloadNotifierTest implements WithAssertions {
 	@BeforeEach
 	public void init() {
 		source = new PropertiesSource().set("x1", "1")
-				.set("x2", "2");
+				.set("x2", "2")
+				.set("b.x3", "3");
 		reload = new ManualReloadStrategy<>();
 		wrapper = ConfijBuilder.of(A.class)
 				.loadFrom(source)
@@ -81,6 +88,38 @@ class ConfijReloadNotifierTest implements WithAssertions {
 	}
 
 	@Test
+	public void noReloadHandlerOnPrimitiveAllowed() {
+		assertThatThrownBy(() -> wrapper.getReloadNotifier()
+				.registerReloadHandler(x -> {
+				}, first.b()
+						.x3())).isInstanceOf(ConfijException.class)
+				.hasMessageContaining("primitive");
+	}
+
+	@Test
+	public void handlerOnChildPath() {
+		AtomicBoolean handlerWasCalled = new AtomicBoolean(false);
+		wrapper.getReloadNotifier()
+				.registerReloadHandler(event -> {
+					assertThat(event.getOldValue()).isEqualTo(3);
+					assertThat(event.getNewValue()).isEqualTo(1337);
+					handlerWasCalled.set(true);
+				}, first.b(), "x3");
+		assertThat(handlerWasCalled).isFalse();
+		setAndReload("b.x3", 1337);
+		//noinspection ConstantConditions
+		assertThat(handlerWasCalled).isTrue();
+	}
+
+	@Test
+	public void unknownChildPath() {
+		assertThatThrownBy(() -> wrapper.getReloadNotifier()
+				.registerReloadHandler(x -> {
+				}, first.b(), "notAChild")).isInstanceOf(ConfijException.class)
+				.hasMessageContaining("notAChild");
+	}
+
+	@Test
 	public void noReloadHandlerPossibleOnDuplicate() {
 		wrapper = ConfijBuilder.of(A.class)
 				.bindValuesForClassWith(x -> "always me", String.class)
@@ -95,7 +134,7 @@ class ConfijReloadNotifierTest implements WithAssertions {
 	}
 
 	@Test
-	public void noReloadHandlerPossibleOnUnknownPrimitive() {
+	public void noReloadHandlerPossibleOnUnknownValue() {
 		assertThatThrownBy(() -> wrapper.getReloadNotifier()
 				.registerReloadHandler(x -> {
 				}, "42")).isInstanceOf(ConfijException.class)
