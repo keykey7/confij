@@ -24,3 +24,5 @@ include::source.adoc[]
 include::templates.adoc[]
 
 include::validation.adoc[]
+
+include::reload.adoc[]

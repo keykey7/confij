@@ -3,11 +3,11 @@ package ch.kk7.confij.pipeline.reload;
 import ch.kk7.confij.pipeline.ConfijPipeline;
 import lombok.NonNull;
 
-public class ManualReloadStrategy<T> implements ConfijReloadStrategy<T> {
-	ConfijPipeline<T> pipeline;
+public class ManualReloadStrategy implements ConfijReloadStrategy {
+	ConfijPipeline<?> pipeline;
 
 	@Override
-	public void register(@NonNull ConfijPipeline<T> pipeline) {
+	public void register(@NonNull ConfijPipeline<?> pipeline) {
 		if (this.pipeline != null) {
 			throw new IllegalStateException("pipeline already registered");
 		}

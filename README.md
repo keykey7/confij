@@ -19,7 +19,8 @@ This includes features such as
 - binding support to various immutable property types like URL, DateTime, Duration, enums, Period,...
 - templating support (variable substitutions), even within paths
 - plugin support for more formats and sources
-- JSR303 bean validation
+- from simple non-null validation to powerful JSR303 bean validation
+- live reloading hooks for change detection
 - no dependencies
 
 ## Example

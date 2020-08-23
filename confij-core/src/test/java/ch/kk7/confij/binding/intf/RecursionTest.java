@@ -6,7 +6,6 @@ import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.ConfigBindingFactory;
 import ch.kk7.confij.binding.ConfijDefinitionException;
 import ch.kk7.confij.binding.values.ValueMapperFactory;
-import ch.kk7.confij.pipeline.reload.NeverReloadStrategy;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +30,7 @@ public class RecursionTest implements WithAssertions {
 	}
 
 	public BindingContext defaultBindingContext() {
-		return BindingContext.newDefaultContext(ValueMapperFactory.defaultFactories(), new NeverReloadStrategy<>());
+		return BindingContext.newDefaultContext(ValueMapperFactory.defaultFactories());
 	}
 
 	@SuppressWarnings("unchecked")

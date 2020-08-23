@@ -14,12 +14,10 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Spawns a new thread to reload configuration periodically.
- *
- * @param <T>
  */
 @ToString
-public class ScheduledReloadStrategy<T> implements ConfijReloadStrategy<T> {
-	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(ScheduledReloadStrategy.class);
+public class PeriodicReloadStrategy implements ConfijReloadStrategy {
+	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(PeriodicReloadStrategy.class);
 
 	private final Duration reloadEvery;
 
@@ -29,15 +27,15 @@ public class ScheduledReloadStrategy<T> implements ConfijReloadStrategy<T> {
 
 	private boolean isInitialized = false;
 
-	public ScheduledReloadStrategy() {
+	public PeriodicReloadStrategy() {
 		this(Duration.ofSeconds(30));
 	}
 
-	public ScheduledReloadStrategy(Duration reloadEvery) {
+	public PeriodicReloadStrategy(Duration reloadEvery) {
 		this(reloadEvery, Duration.ofSeconds(60));
 	}
 
-	public ScheduledReloadStrategy(Duration reloadEvery, Duration initialDelay) {
+	public PeriodicReloadStrategy(Duration reloadEvery, Duration initialDelay) {
 		this.reloadEvery = assertPositive(reloadEvery);
 		this.initialDelay = assertPositive(initialDelay);
 		executor = Executors.newSingleThreadScheduledExecutor();
@@ -52,7 +50,7 @@ public class ScheduledReloadStrategy<T> implements ConfijReloadStrategy<T> {
 
 	@Override
 	@Synchronized
-	public void register(@NonNull ConfijPipeline<T> pipeline) {
+	public void register(@NonNull ConfijPipeline<?> pipeline) {
 		if (isInitialized) {
 			throw new IllegalStateException("already initialized");
 		}
@@ -65,7 +63,7 @@ public class ScheduledReloadStrategy<T> implements ConfijReloadStrategy<T> {
 			try {
 				pipeline.build();
 				Duration dt = Duration.between(start, Instant.now());
-				LOGGER.info("successfully reloaded configuration within {}ms", dt);
+				LOGGER.debug("successfully reloaded configuration within {}ms", dt);
 			} catch (Exception e) {
 				LOGGER.info("configuration reloading failed, will retry in {}ms", reloadEvery.toMillis(), e);
 			}

@@ -64,6 +64,7 @@ public class ReloadNotifierImpl<T> implements ConfijReloadNotifier<T> {
 		} else {
 			Instant timestamp = Instant.now();
 			result = notifyAllChangedValues(timestamp, lastBindingResult, newBindingResult);
+			result.ifPresent(event -> LOGGER.info("configuration change (@{}) detected changes in {}", timestamp, event.getChangedPaths()));
 		}
 		lastBindingResult = newBindingResult;
 		return result;
@@ -126,7 +127,7 @@ public class ReloadNotifierImpl<T> implements ConfijReloadNotifier<T> {
 	}
 
 	@Override
-	public void registerReloadHandler(@NonNull ConfijReloadHandler<?> childReloadHandler, @NonNull Object parent, String childPath,
+	public <X> void registerReloadHandler(@NonNull ConfijReloadHandler<X> childReloadHandler, @NonNull Object parent, String childPath,
 			String... childPaths) {
 		registerReloadHandlerInternal(childReloadHandler, parent, Stream.concat(Stream.of(childPath), Stream.of(childPaths))
 				.toArray(String[]::new));

@@ -2,9 +2,9 @@ package ch.kk7.confij.pipeline.reload;
 
 import ch.kk7.confij.pipeline.ConfijPipeline;
 
-public class NeverReloadStrategy<T> implements ConfijReloadStrategy<T> {
+public class NeverReloadStrategy implements ConfijReloadStrategy {
 	@Override
-	public void register(ConfijPipeline<T> pipeline) {
+	public void register(ConfijPipeline<?> pipeline) {
 		// noop
 	}
 }

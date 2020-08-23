@@ -13,6 +13,7 @@ import ch.kk7.confij.pipeline.ConfijPipelineImpl;
 import ch.kk7.confij.pipeline.reload.ConfijReloadNotifier;
 import ch.kk7.confij.pipeline.reload.ConfijReloadStrategy;
 import ch.kk7.confij.pipeline.reload.NeverReloadStrategy;
+import ch.kk7.confij.pipeline.reload.PeriodicReloadStrategy;
 import ch.kk7.confij.pipeline.reload.ReloadNotifierImpl;
 import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.any.AnySource;
@@ -36,6 +37,7 @@ import lombok.ToString;
 import lombok.Value;
 
 import java.lang.reflect.Type;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -59,7 +61,7 @@ public class ConfijBuilder<T> {
 
 	private final ArrayList<ValueMapperFactory> valueMapperFactories = new ArrayList<>(ValueMapperFactory.defaultFactories());
 
-	private ConfijReloadStrategy<T> reloadStrategy = null;
+	private ConfijReloadStrategy reloadStrategy = null;
 
 	private final ReloadNotifierImpl<T> reloadNotifier = new ReloadNotifierImpl<>();
 
@@ -208,14 +210,18 @@ public class ConfijBuilder<T> {
 	 * @param reloadStrategy the new reload strategy to be used
 	 * @return self
 	 */
-	public ConfijBuilder<T> reloadStrategy(@NonNull ConfijReloadStrategy<T> reloadStrategy) {
+	public ConfijBuilder<T> reloadStrategy(@NonNull ConfijReloadStrategy reloadStrategy) {
 		this.reloadStrategy = reloadStrategy;
 		return this;
 	}
 
+	public ConfijBuilder<T> reloadPeriodically(@NonNull Duration duration) {
+		return reloadStrategy(new PeriodicReloadStrategy(duration, duration));
+	}
+
 	@NonNull
 	protected BindingContext newBindingContext() {
-		return BindingContext.newDefaultContext(valueMapperFactories, reloadStrategy);
+		return BindingContext.newDefaultContext(valueMapperFactories);
 	}
 
 	@NonNull

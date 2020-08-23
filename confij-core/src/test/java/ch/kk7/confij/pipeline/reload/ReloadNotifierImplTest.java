@@ -27,7 +27,7 @@ class ReloadNotifierImplTest implements WithAssertions {
 
 	private PropertiesSource source;
 
-	private ManualReloadStrategy<A> reload;
+	private ManualReloadStrategy reload;
 
 	private ConfijWrapper<A> wrapper;
 
@@ -38,7 +38,7 @@ class ReloadNotifierImplTest implements WithAssertions {
 		source = new PropertiesSource().set("x1", "1")
 				.set("x2", "2")
 				.set("b.x3", "3");
-		reload = new ManualReloadStrategy<>();
+		reload = new ManualReloadStrategy();
 		wrapper = ConfijBuilder.of(A.class)
 				.loadFrom(source)
 				.reloadStrategy(reload)

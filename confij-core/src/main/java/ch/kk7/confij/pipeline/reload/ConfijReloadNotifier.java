@@ -31,7 +31,7 @@ public interface ConfijReloadNotifier<T> {
 		return handler.getReference();
 	}
 
-	void registerReloadHandler(@NonNull ConfijReloadHandler<?> childReloadHandler, @NonNull Object parent, String childPath,
+	<X> void registerReloadHandler(@NonNull ConfijReloadHandler<X> childReloadHandler, @NonNull Object parent, String childPath,
 			String... childPaths);
 
 	/**

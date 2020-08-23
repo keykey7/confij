@@ -5,7 +5,6 @@ import ch.kk7.confij.binding.values.ValueMapperFactory;
 import ch.kk7.confij.common.AnnotationUtil;
 import ch.kk7.confij.common.AnnotationUtil.AnnonResponse;
 import ch.kk7.confij.common.ClassToImplCache;
-import ch.kk7.confij.pipeline.reload.ConfijReloadStrategy;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -38,15 +37,12 @@ public class BindingContext {
 
 	@NonNull Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs;
 
-	@With(AccessLevel.NONE)
-	@NonNull ConfijReloadStrategy<?> reloadStrategy;
-
 	@ToString.Exclude
 	@With(AccessLevel.NONE)
 	@NonNull ClassToImplCache implCache;
 
-	public static BindingContext newDefaultContext(List<ValueMapperFactory> mapperFactories, ConfijReloadStrategy<?> reloadStrategy) {
-		return new BindingContext(null, mapperFactories, Collections.emptyMap(), reloadStrategy, new ClassToImplCache());
+	public static BindingContext newDefaultContext(List<ValueMapperFactory> mapperFactories) {
+		return new BindingContext(null, mapperFactories, Collections.emptyMap(), new ClassToImplCache());
 	}
 
 	public Optional<ValueMapperFactory> getForcedMapperFactory() {

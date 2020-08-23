@@ -23,7 +23,7 @@ asciidoctor {
 		sources {
 			include 'index.adoc'
 		}
-		fatalWarnings missingIncludes(), ~/missing attribute/
+		fatalWarnings ~/.+/
 	}
 }
 

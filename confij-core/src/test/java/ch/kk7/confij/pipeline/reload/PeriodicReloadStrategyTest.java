@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.awaitility.Awaitility.await;
 
-class ScheduledReloadStrategyTest implements WithAssertions {
+class PeriodicReloadStrategyTest implements WithAssertions {
 	@Data
 	private static class MockPipeline implements ConfijPipeline<Integer> {
 		int updatesDone = 0;
@@ -27,15 +27,15 @@ class ScheduledReloadStrategyTest implements WithAssertions {
 	@Test
 	public void testScheduled() {
 		MockPipeline mockPipeline = new MockPipeline();
-		new ScheduledReloadStrategy<Integer>(Duration.ofSeconds(10), Duration.ofMillis(1)).register(mockPipeline);
+		new PeriodicReloadStrategy(Duration.ofSeconds(10), Duration.ofMillis(1)).register(mockPipeline);
 		await().atMost(5, TimeUnit.SECONDS)
 				.untilAsserted(() -> assertThat(mockPipeline.getUpdatesDone()).isGreaterThanOrEqualTo(1));
 	}
 
 	@Test
 	public void notNull() {
-		assertThatThrownBy(() -> new ScheduledReloadStrategy<>(Duration.ZERO)).isInstanceOf(IllegalArgumentException.class);
-		assertThatThrownBy(() -> new ScheduledReloadStrategy<>(Duration.ofMillis(1), Duration.ZERO.minusDays(1))).isInstanceOf(
+		assertThatThrownBy(() -> new PeriodicReloadStrategy(Duration.ZERO)).isInstanceOf(IllegalArgumentException.class);
+		assertThatThrownBy(() -> new PeriodicReloadStrategy(Duration.ofMillis(1), Duration.ZERO.minusDays(1))).isInstanceOf(
 				IllegalArgumentException.class);
 	}
 
@@ -43,7 +43,7 @@ class ScheduledReloadStrategyTest implements WithAssertions {
 	public void builderWithoutWrapperMakesNoSense() {
 		assertThatThrownBy(() -> ConfijBuilder.of(new GenericType<Integer>() {
 		})
-				.reloadStrategy(new ScheduledReloadStrategy<>())
+				.reloadStrategy(new PeriodicReloadStrategy())
 				.build()).isInstanceOf(ConfijException.class)
 				.hasMessageContaining("buildWrapper");
 	}
