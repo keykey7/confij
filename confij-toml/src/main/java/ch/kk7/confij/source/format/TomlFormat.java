@@ -1,5 +1,17 @@
 package ch.kk7.confij.source.format;
 
+import static ch.kk7.confij.source.format.ConfijSourceFormatException.invalidFormat;
+import static java.util.stream.Collectors.joining;
+
+import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.OffsetDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+
 import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import lombok.ToString;
@@ -9,25 +21,9 @@ import org.tomlj.TomlParseError;
 import org.tomlj.TomlParseResult;
 import org.tomlj.TomlTable;
 
-import java.net.URI;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-
-import static ch.kk7.confij.source.format.ConfijSourceFormatException.invalidFormat;
-import static java.util.stream.Collectors.joining;
-
 @ToString
 @AutoService(ConfijSourceFormat.class)
 public class TomlFormat implements ConfijSourceFormat {
-
-	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SXXX");
 
 	@Override
 	public void override(ConfijNode rootNode, String content) {
@@ -77,15 +73,9 @@ public class TomlFormat implements ConfijSourceFormat {
 			return object;
 		}
 		if (object instanceof Long || object instanceof Double || object instanceof Boolean
-				|| object instanceof LocalDate || object instanceof LocalTime) {
+				|| object instanceof LocalDate || object instanceof LocalTime || object instanceof LocalDateTime ||
+				object instanceof OffsetDateTime) {
 			return object.toString();
-		}
-		if (object instanceof LocalDateTime) {
-			// Use system default zone id would be better.
-			return FORMATTER.withZone(ZoneId.systemDefault()).format((LocalDateTime) object);
-		}
-		if (object instanceof OffsetDateTime) {
-			return FORMATTER.format((OffsetDateTime) object);
 		}
 		if (object instanceof TomlTable) {
 			return transformTomlTable((TomlTable) object);
