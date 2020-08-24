@@ -9,16 +9,22 @@ import lombok.Setter;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 @Setter
 @Getter
 @AutoService(ConfijSourceFormat.class)
 public class PropertiesFormat implements ConfijSourceFormat {
+
+	private static final Pattern BRACKETS_ARRAY_FORMAT = Pattern.compile("(\\S+)\\[(\\d+)]");
+
 	@NonNull
 	private String separator = ".";
 
@@ -76,7 +82,16 @@ public class PropertiesFormat implements ConfijSourceFormat {
 		for (Entry<String, String> entry : map.entrySet()) {
 			String fullKey = entry.getKey();
 			Map<String, Object> current = result;
-			String[] keyParts = fullKey.split(Pattern.quote(getSeparator()), -1);
+			String[] keyParts = Arrays.stream(fullKey.split(Pattern.quote(getSeparator()), -1))
+					.flatMap(currentKey -> {
+						Matcher matcher = BRACKETS_ARRAY_FORMAT.matcher(currentKey);
+						if (matcher.matches()) {
+							return Stream.of(matcher.group(1), matcher.group(2));
+						} else {
+							return Stream.of(currentKey);
+						}
+					})
+					.toArray(String[]::new);
 			String keySoFar = null;
 			for (int i = 0; i < keyParts.length - 1; i++) {
 				keySoFar = keySoFar == null ? keyParts[i] : keySoFar + getSeparator() + keyParts[i];
