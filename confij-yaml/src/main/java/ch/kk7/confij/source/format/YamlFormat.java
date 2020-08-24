@@ -8,7 +8,7 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.net.URI;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -21,6 +21,9 @@ import static ch.kk7.confij.source.format.ConfijSourceFormatException.invalidFor
 @ToString
 @AutoService(ConfijSourceFormat.class)
 public class YamlFormat implements ConfijSourceFormat {
+
+	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SXXX");
+
 	private final Yaml yaml = new Yaml(new SafeConstructor());
 
 	@Override
@@ -52,7 +55,7 @@ public class YamlFormat implements ConfijSourceFormat {
 		}
 		if (yaml instanceof Date) {
 			// note: we loose TimeZone information here. snakeyaml doesn't support OffsetDateTime
-			return DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(ZoneOffset.UTC)
+			return FORMATTER.withZone(ZoneId.systemDefault())
 					.format(((Date) yaml).toInstant());
 		}
 		// TODO: dangerous in case of unexpected types
