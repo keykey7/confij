@@ -1,14 +1,9 @@
 package ch.kk7.confij.source.format;
 
-import ch.kk7.confij.tree.ConfijNode;
-import com.google.auto.service.AutoService;
-import lombok.NonNull;
-import lombok.ToString;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
+import static ch.kk7.confij.source.format.ConfijSourceFormatException.invalidFormat;
 
 import java.net.URI;
-import java.time.ZoneId;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -16,15 +11,39 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import static ch.kk7.confij.source.format.ConfijSourceFormatException.invalidFormat;
+import ch.kk7.confij.tree.ConfijNode;
+import com.google.auto.service.AutoService;
+import lombok.NonNull;
+import lombok.ToString;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
+import org.yaml.snakeyaml.nodes.Node;
+import org.yaml.snakeyaml.nodes.Tag;
 
 @ToString
 @AutoService(ConfijSourceFormat.class)
 public class YamlFormat implements ConfijSourceFormat {
 
-	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SXXX");
+	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_ZONED_DATE_TIME;
 
-	private final Yaml yaml = new Yaml(new SafeConstructor());
+	private final Yaml yaml = new Yaml(new SafeConstructorWithDateTime());
+
+	static class SafeConstructorWithDateTime extends SafeConstructor {
+
+		public SafeConstructorWithDateTime() {
+			super();
+			this.yamlConstructors.put(Tag.TIMESTAMP, new ConstructYamlOffsetDateTime());
+		}
+
+		static class ConstructYamlOffsetDateTime extends ConstructYamlTimestamp {
+
+			@Override
+			public OffsetDateTime construct(Node node) {
+				Date yamlDate = (Date) super.construct(node);
+				return yamlDate.toInstant().atZone(getCalendar().getTimeZone().toZoneId()).toOffsetDateTime();
+			}
+		}
+	}
 
 	@Override
 	public void override(ConfijNode rootNode, String content) {
@@ -53,10 +72,8 @@ public class YamlFormat implements ConfijSourceFormat {
 		if (yaml instanceof List) {
 			return simplifyList((List<Object>) yaml);
 		}
-		if (yaml instanceof Date) {
-			// note: we loose TimeZone information here. snakeyaml doesn't support OffsetDateTime
-			return FORMATTER.withZone(ZoneId.systemDefault())
-					.format(((Date) yaml).toInstant());
+		if (yaml instanceof OffsetDateTime) {
+			return ((OffsetDateTime) yaml).format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
 		}
 		// TODO: dangerous in case of unexpected types
 		return String.valueOf(yaml);

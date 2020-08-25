@@ -65,13 +65,25 @@ subprojects {
 		withSourcesJar()
 	}
 
+	tasks.withType(JavaCompile) {
+		options.incremental = true
+	}
+
 	tasks.withType(AbstractArchiveTask) {
 		preserveFileTimestamps = false
 		reproducibleFileOrder = true
 	}
 
-	tasks.withType(JavaCompile) {
-		options.incremental = true
+	configurations.runtime {
+		resolutionStrategy {
+			failOnVersionConflict()
+		}
+	}
+
+	configurations.all {
+		resolutionStrategy {
+			failOnNonReproducibleResolution()
+		}
 	}
 
 	dependencies {
@@ -147,6 +159,8 @@ allprojects {
 		}
 	}
 }
+// disable sonar analysis without secret (since secrets aren't availabe in PRs from forks)
+project.tasks['sonarqube'].enabled System.getenv('SONAR_TOKEN') != null
 project.tasks['sonarqube'].dependsOn jacocoRootReport
 
 // releases

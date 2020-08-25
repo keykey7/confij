@@ -2,6 +2,7 @@ package ch.kk7.confij.binding.leaf;
 
 import ch.kk7.confij.binding.BindingResult;
 import ch.kk7.confij.binding.ConfigBinding;
+import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
 import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionLeaf;
 import ch.kk7.confij.tree.NodeBindingContext;
@@ -27,6 +28,14 @@ public class LeafBinding<T> implements ConfigBinding<T> {
 				.getNodeBindingContext()
 				.getValueResolver()
 				.resolveLeaf(leafNode);
-		return BindingResult.ofLeaf(valueMapper.fromString(strValue), leafNode);
+		final T converted;
+		try {
+			converted = valueMapper.fromString(strValue);
+		} catch (Exception e) {
+			throw new ConfijBindingException(
+					"failed to convert string '{}' to an actual configuration object at '{}'. message: {}",
+					strValue, leafNode.getUri(), e.getMessage(), e);
+		}
+		return BindingResult.ofLeaf(converted, leafNode);
 	}
 }
