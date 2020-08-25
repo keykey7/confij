@@ -159,6 +159,8 @@ allprojects {
 		}
 	}
 }
+// disable sonar analysis without secret (since secrets aren't availabe in PRs from forks)
+project.tasks['sonarqube'].enabled System.getenv('SONAR_TOKEN') != null
 project.tasks['sonarqube'].dependsOn jacocoRootReport
 
 // releases
