@@ -20,9 +20,10 @@ import java.util.SortedSet;
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.binding.values.Base64Mapper.Base64;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class MitAllesUndScharfTest {
+class MitAllesUndScharfTest {
 	public interface MitAllesUndScharf {
 		Primitives primitives();
 
@@ -136,54 +137,62 @@ public class MitAllesUndScharfTest {
 		ZonedDateTime zonedDateTime();
 	}
 
-	@Test
-	public void canInstantiateEmpty() {
-		MitAllesUndScharf allDefaults = ConfijBuilder.of(MitAllesUndScharf.class)
+	private MitAllesUndScharf instance;
+
+	@BeforeEach
+	void build() {
+		instance = ConfijBuilder.of(MitAllesUndScharf.class)
 				.build();
-		Primitives primitives = allDefaults.primitives();
+	}
+
+	@Test
+	void canInstantiateEmpty() {
+		Primitives primitives = instance.primitives();
 		assertThat(primitives).isNotNull();
 		assertThat(primitives.aBoolean()).isFalse();
 		assertThat(primitives.aString()).isNull();
 		assertThat(primitives.aChar()).isEqualTo('\0');
 
-		Collections collections = allDefaults.collections();
+		Collections collections = instance.collections();
 		assertThat(collections.setSetString()).isEmpty();
 		assertThat(collections.setPrimitives()).isEmpty();
 
-		Maps maps = allDefaults.maps();
+		Maps maps = instance.maps();
 		assertThat(maps.mapStringMapStringString()).isEmpty();
 
-		Arrays arrays = allDefaults.arrays();
+		Arrays arrays = instance.arrays();
 		assertThat(arrays.anIntArray()).isEmpty();
 	}
 
 	@Test
-	public void canInstantiateDefaults() {
-		MitAllesUndScharf allDefaults = ConfijBuilder.of(MitAllesUndScharf.class)
-				.build();
-		Primitives primitives = allDefaults.primitives();
+	void canInstantiateDefaults() {
+		Primitives primitives = instance.primitives();
 		assertThat(primitives.anInt()).isEqualTo(42);
 		assertThat(primitives.aLong()).isEqualTo(1337L);
 		assertThat(primitives.aByte()).isEqualTo((byte) 100);
 
-		Collections collections = allDefaults.collections();
-		assertThrows(UnsupportedOperationException.class, () -> collections.setString()
-				.clear());
-		assertThrows(UnsupportedOperationException.class, () -> collections.listSetCollectionInteger()
-				.clear());
+		Collections collections = instance.collections();
+		Set<String> strings = collections.setString();
+		assertThrows(UnsupportedOperationException.class, strings::clear);
+		List<Set<Collection<Integer>>> listOfStuff = collections.listSetCollectionInteger();
+		assertThrows(UnsupportedOperationException.class, listOfStuff::clear);
 		// but a concrete class IS modifyable...
 		collections.hashSet()
 				.clear();
 
-		Maps maps = allDefaults.maps();
+		Maps maps = instance.maps();
 		assertThat(maps.mapStringString()).hasSize(1);
 		assertThat(maps.mapStringString()).hasEntrySatisfying("key", value -> assertThat(value).isEqualTo("value" + maps.hashCode()));
 
-		Arrays arrays = allDefaults.arrays();
+		Arrays arrays = instance.arrays();
 		assertThat(arrays.aDefaultByteArray()).hasSize(3);
 		assertThat(arrays.aBase64ByteArray()).containsExactly(1,2,3);
+	}
 
-		assertThat(allDefaults.dates()).satisfies(dates -> {
+	@Test
+	@SuppressWarnings("java:S5845")
+	void dateTypes() {
+		assertThat(instance.dates()).satisfies(dates -> {
 			assertThat(dates.date()).isEqualTo("2001-12-14T21:59:43Z");
 			assertThat(dates.instant()).isEqualTo("2001-12-14T21:59:43.01Z");
 			assertThat(dates.localTime()).isEqualTo("10:15:30.01");
