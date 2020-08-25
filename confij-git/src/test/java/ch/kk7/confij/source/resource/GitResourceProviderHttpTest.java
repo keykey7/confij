@@ -43,14 +43,20 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 		server.stop();
 	}
 
+	private String gitRead(URI uri) {
+		return git.read(uri)
+				.findAny()
+				.orElseThrow(IllegalStateException::new);
+	}
+
 	@Test
 	void basicAuthOverHttp() throws Exception {
 		testGit.addAndCommit();
 		RevCommit commit2 = testGit.addAndCommit();
-		assertThat(git.read(httpUri)).isEqualTo(commit2.getShortMessage());
+		assertThat(gitRead(httpUri)).isEqualTo(commit2.getShortMessage());
 
 		RevCommit commit3 = testGit.addAndCommit();
-		assertThat(git.read(httpUri)).isEqualTo(commit3.getShortMessage());
+		assertThat(gitRead(httpUri)).isEqualTo(commit3.getShortMessage());
 	}
 
 	@Test
@@ -66,7 +72,7 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 	@Test
 	void httpsFailsDueToCerts() throws Exception {
 		testGit.addAndCommit();
-		assertThatThrownBy(() -> git.read(httpsUri)).isInstanceOf(ConfijSourceException.class)
+		assertThatThrownBy(() -> gitRead(httpsUri)).isInstanceOf(ConfijSourceException.class)
 				.hasStackTraceContaining("cert");
 	}
 
@@ -75,10 +81,10 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 		git = new NoSslVerifyGitResourceProvider();
 		testGit.addAndCommit();
 		RevCommit commit2 = testGit.addAndCommit();
-		assertThat(git.read(httpUri)).isEqualTo(commit2.getShortMessage());
+		assertThat(gitRead(httpUri)).isEqualTo(commit2.getShortMessage());
 
 		RevCommit commit3 = testGit.addAndCommit();
-		assertThat(git.read(httpUri)).isEqualTo(commit3.getShortMessage());
+		assertThat(gitRead(httpUri)).isEqualTo(commit3.getShortMessage());
 	}
 
 	@Disabled("since it is a remote repo")
@@ -86,8 +92,8 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 	public void cloneGithubTestrepo() {
 		// not private accessable "ssh://git@github.com/github/testrepo.git"
 		URI uri = GitResourceProvider.toUri("https://github.com/github/testrepo.git", "test/alloc.c");
-		assertThat(git.read(uri)).contains("Linus Torvalds");
+		assertThat(gitRead(uri)).contains("Linus Torvalds");
 		// once more: expecting a fetch instead of clone
-		assertThat(git.read(uri)).contains("Linus Torvalds");
+		assertThat(gitRead(uri)).contains("Linus Torvalds");
 	}
 }

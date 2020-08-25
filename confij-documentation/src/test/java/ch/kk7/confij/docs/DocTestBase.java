@@ -18,6 +18,6 @@ public abstract class DocTestBase implements WithAssertions {
 	}
 
 	public static String classpath(String file) {
-		return new ClasspathResourceProvider().read(URI.create(file));
+		return new ClasspathResourceProvider().read(URI.create(file)).findAny().orElseThrow(IllegalStateException::new);
 	}
 }

@@ -13,6 +13,7 @@ import lombok.Value;
 import lombok.experimental.NonFinal;
 
 import java.net.URI;
+import java.util.stream.Stream;
 
 /**
  * An immutable mapping between a source (like a file) and a format (like properties).
@@ -30,19 +31,21 @@ public class FixedResourceSource implements ConfijSource {
 
 	@Override
 	public void override(ConfijNode rootNode) {
-		final String configAsStr;
+		final Stream<String> configsAsStr;
 		try {
-			configAsStr = resource.read(path);
+			configsAsStr = resource.read(path);
 		} catch (ConfijSourceException e) {
-			throw new ConfijSourceFetchingException("failed to fetch raw configuration data from {} using {}", path, resource, e);
+			throw new ConfijSourceFetchingException("failed to fetch raw configuration data from '{}' using {}", path, resource, e);
 		}
-		try {
-			format.override(rootNode, configAsStr);
-		} catch (ConfijSourceException e) {
-			LOGGER.debug("processing configuration with {} failed. Source was: \n{}", format, configAsStr);
-			throw new ConfijSourceFormatException(
-					"Sucessfully read a configuration in this pipeline step, " +
-							"but failed to apply it to the final configuration due to an invalid source format", e);
-		}
+		configsAsStr.forEach(configAsStr -> {
+			try {
+				format.override(rootNode, configAsStr);
+			} catch (ConfijSourceException e) {
+				LOGGER.debug("processing configuration with {} failed. Source was: \n{}", format, configAsStr);
+				throw new ConfijSourceFormatException(
+						"Sucessfully read a configuration in this pipeline step, " +
+								"but failed to apply it to the final configuration due to an invalid source format", e);
+			}
+		});
 	}
 }

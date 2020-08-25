@@ -22,7 +22,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.UUID;import java.util.stream.Stream;
 
 public class Source extends DocTestBase {
 	// tag::interface[]
@@ -200,7 +200,7 @@ public class Source extends DocTestBase {
 	// tag::resourceprovider-service-ignored[]
 	public static class AnUnimportantFooProvider extends FooProvider implements ServiceLoaderPriority {
 		@Override
-		public String read(URI path) {
+		public Stream<String> read(URI path) {
 			throw new RuntimeException("less important than " + FooProvider.class);
 		}
 
@@ -216,8 +216,8 @@ public class Source extends DocTestBase {
 	// +file: META-INF/services/ch.kk7.confij.source.file.resource.ConfijResourceProvider
 	public static class FooProvider implements ConfijResourceProvider {
 		@Override
-		public String read(URI path) {
-			return "foo=bar";
+		public Stream<String> read(URI path) {
+			return Stream.of("foo=bar");
 		}
 
 		@Override

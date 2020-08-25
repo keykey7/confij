@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static ch.kk7.confij.common.Util.not;
 
@@ -74,10 +75,10 @@ public class GitResourceProvider extends AbstractResourceProvider {
 	}
 
 	@Override
-	public String read(URI path) {
+	public Stream<String> read(URI path) {
 		GitSettings settings = uriToGitSettings(path);
 		Git git = gitCloneOrFetch(settings);
-		return readFile(git, settings);
+		return Stream.of(readFile(git, settings));
 	}
 
 	@Override
@@ -197,7 +198,7 @@ public class GitResourceProvider extends AbstractResourceProvider {
 		try {
 			objectId = repository.resolve(settings.getGitRevision());
 		} catch (Exception e) {
-			throw new ConfijSourceException("failed to git resove revision {} ({})", settings.getGitRevision(), settings, e);
+			throw new ConfijSourceException("failed to git resove an objectId from rev {} ({})", settings.getGitRevision(), settings, e);
 		}
 		if (objectId == null) {
 			throw new ConfijSourceException("unable to git resove revision {} ({})", settings.getGitRevision(), settings);

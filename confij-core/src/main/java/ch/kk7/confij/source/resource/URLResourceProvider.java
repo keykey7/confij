@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 import static ch.kk7.confij.source.resource.ConfijSourceFetchingException.unableToFetch;
 
@@ -16,9 +17,9 @@ import static ch.kk7.confij.source.resource.ConfijSourceFetchingException.unable
 @AutoService(ConfijResourceProvider.class)
 public class URLResourceProvider extends AbstractResourceProvider {
 	@Override
-	public String read(URI path) {
+	public Stream<String> read(URI path) {
 		try {
-			return read(path.toURL());
+			return Stream.of(read(path.toURL()));
 		} catch (MalformedURLException e) {
 			throw unableToFetch(path.toString(), "not a valid URL", e);
 		}
@@ -29,7 +30,7 @@ public class URLResourceProvider extends AbstractResourceProvider {
 			return new Scanner(inputStream, getCharset().name()).useDelimiter("\\A")
 					.next();
 		} catch (IOException e) {
-			throw unableToFetch(url.toString(), "cannot read input stream", e);
+			throw unableToFetch(url.toString(), "cannot read", e);
 		}
 	}
 

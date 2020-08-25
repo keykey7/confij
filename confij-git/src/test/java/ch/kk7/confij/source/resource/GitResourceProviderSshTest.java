@@ -80,10 +80,16 @@ public class GitResourceProviderSshTest implements WithAssertions {
 		server.stop();
 	}
 
+	private String gitRead(URI uri) {
+		return git.read(uri)
+				.findAny()
+				.orElseThrow(IllegalStateException::new);
+	}
+
 	@Test
 	public void viaSshUserAndPK() throws Exception {
 		testGit.addAndCommit();
 		RevCommit commit2 = testGit.addAndCommit();
-		assertThat(git.read(sshUri)).isEqualTo(commit2.getShortMessage());
+		assertThat(gitRead(sshUri)).isEqualTo(commit2.getShortMessage());
 	}
 }
