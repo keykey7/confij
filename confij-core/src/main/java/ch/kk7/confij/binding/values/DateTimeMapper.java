@@ -14,7 +14,6 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Locale.Category;
 import java.util.Optional;
 
 import ch.kk7.confij.annotation.ValueMapper;
@@ -38,7 +37,7 @@ public class DateTimeMapper implements ValueMapperFactory {
 		/**
 		 * @return A locale string for {@link DateTimeFormatter#ofPattern(String, Locale)}
 		 */
-		String lang() default "";
+		String lang() default "us";
 	}
 
 	@Override
@@ -85,8 +84,7 @@ public class DateTimeMapper implements ValueMapperFactory {
 				.map(annon -> {
 					DateTimeFormatter formatter =
 							annon.value().isEmpty() ? defaultFormatter : DateTimeFormatter.ofPattern(annon.value());
-					final Locale formatLang = annon.lang()
-							.isEmpty() ? Locale.getDefault(Category.FORMAT) : Locale.forLanguageTag(annon.lang());
+					final Locale formatLang = Locale.forLanguageTag(annon.lang());
 					return formatter.withLocale(formatLang);
 				}).orElse(defaultFormatter);
 	}

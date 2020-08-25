@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.OffsetDateTime;
@@ -20,6 +21,7 @@ import java.util.SortedSet;
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.binding.values.Base64Mapper.Base64;
+import ch.kk7.confij.binding.values.DateTimeMapper.DateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -127,6 +129,9 @@ class MitAllesUndScharfTest {
 		@Default("10:15:30.01")
 		LocalTime localTime();
 
+		@Default("2001-12-14")
+		LocalDate localDate();
+
 		@Default("2001-12-14T21:59:43.01")
 		LocalDateTime localDateTime();
 
@@ -135,6 +140,10 @@ class MitAllesUndScharfTest {
 
 		@Default("2001-12-14T21:59:43.01+01:00[Europe/Paris]")
 		ZonedDateTime zonedDateTime();
+
+		@DateTime(value = "MMM-dd-uuuu")
+		@Default("Dec-14-2001")
+		LocalDate localDateWithFormat();
 	}
 
 	private MitAllesUndScharf instance;
@@ -196,9 +205,11 @@ class MitAllesUndScharfTest {
 			assertThat(dates.date()).isEqualTo("2001-12-14T21:59:43Z");
 			assertThat(dates.instant()).isEqualTo("2001-12-14T21:59:43.01Z");
 			assertThat(dates.localTime()).isEqualTo("10:15:30.01");
+			assertThat(dates.localDate()).isEqualTo("2001-12-14");
 			assertThat(dates.localDateTime()).isEqualTo("2001-12-14T21:59:43.01");
 			assertThat(dates.offsetDateTime()).isEqualTo("2001-12-14T21:59:43.01-05:00");
 			assertThat(dates.zonedDateTime()).isEqualTo("2001-12-14T21:59:43.01+01:00[Europe/Paris]");
+			assertThat(dates.localDateWithFormat()).isEqualTo("2001-12-14");
 		});
 	}
 }
