@@ -3,14 +3,13 @@ package ch.kk7.confij.source.any;
 import ch.kk7.confij.common.ServiceLoaderUtil;
 import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.ConfijSourceBuilder;
+import ch.kk7.confij.source.ConfijSourceBuilder.URIish;
 import ch.kk7.confij.source.ConfijSourceException;
 import ch.kk7.confij.template.ValueResolver;
 import ch.kk7.confij.tree.ConfijNode;
 import lombok.Data;
 import lombok.ToString;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,37 +38,14 @@ public class AnySource implements ConfijSource {
 				.getValueResolver();
 	}
 
-	protected URI resolveUri(ConfijNode rootNode) {
+	protected URIish resolveUri(ConfijNode rootNode) {
 		String actualPath = getResolver(rootNode).resolveValue(rootNode, pathTemplate);
-		// this part is a workaround to escape the URI instead of new URI(actualPath)
-		final String scheme;
-		String path;
-		final String fragment;
-		String[] schemeParts = actualPath.split(":", 2);
-		if (schemeParts.length == 1) {
-			scheme = null;
-			path = schemeParts[0];
-		} else {
-			scheme = schemeParts[0];
-			path = schemeParts[1];
-		}
-		String[] pathParts = path.split("#", 2);
-		if (pathParts.length == 1) {
-			fragment = null;
-		} else {
-			path = pathParts[0];
-			fragment = pathParts[1];
-		}
-		try {
-			return new URI(scheme, path, fragment);
-		} catch (URISyntaxException e) {
-			throw new ConfijSourceException("The {} failed to resolve the path-template '{}' into a valid URI", this, pathTemplate, e);
-		}
+		return URIish.create(actualPath);
 	}
 
 	@Override
 	public void override(ConfijNode rootNode) {
-		URI path = resolveUri(rootNode);
+		URIish path = resolveUri(rootNode);
 		ConfijSource confijSource = sourceBuilders.stream()
 				.map(sourceBulder -> sourceBulder.fromURI(path))
 				.filter(Optional::isPresent)

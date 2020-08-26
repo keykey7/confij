@@ -2,6 +2,7 @@ package ch.kk7.confij.source.any;
 
 import ch.kk7.confij.logging.ConfijLogger;
 import ch.kk7.confij.source.ConfijSource;
+import ch.kk7.confij.source.ConfijSourceBuilder;
 import ch.kk7.confij.source.ConfijSourceException;
 import ch.kk7.confij.source.format.ConfijSourceFormat;
 import ch.kk7.confij.source.format.ConfijSourceFormatException;
@@ -12,7 +13,6 @@ import lombok.NonNull;
 import lombok.Value;
 import lombok.experimental.NonFinal;
 
-import java.net.URI;
 import java.util.stream.Stream;
 
 /**
@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 public class FixedResourceSource implements ConfijSource {
 	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(FixedResourceSource.class);
 
-	@NonNull URI path;
+	@NonNull ConfijSourceBuilder.URIish path;
 	@NonNull ConfijResourceProvider resource;
 	@NonNull ConfijSourceFormat format;
 

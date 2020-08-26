@@ -1,17 +1,20 @@
 package ch.kk7.confij.source.resource;
 
 import ch.kk7.confij.logging.ConfijLogger;
+import ch.kk7.confij.source.ConfijSourceBuilder.URIish;
 import com.google.auto.service.AutoService;
 import lombok.NonNull;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.ToString;
 import lombok.Value;
+import lombok.experimental.FieldNameConstants;
 import lombok.experimental.NonFinal;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,6 +24,8 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -29,73 +34,95 @@ import java.util.stream.Stream;
 import static ch.kk7.confij.source.resource.ConfijSourceFetchingException.unableToFetch;
 
 @ToString
+@Setter
+@FieldNameConstants
 @AutoService(ConfijResourceProvider.class)
 public class FileResourceProvider extends URLResourceProvider {
-	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(FileResourceProvider.class);
-
 	public static final String SCHEME = "file";
 
-	int maxFileMatches = 100;
+	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(FileResourceProvider.class);
 
-	int warnFilesTraversed = 1000;
+	int maxFileMatches = 50;
+
+	int maxFilesTraversed = 10000;
 
 	Pattern globPattern = Pattern.compile("(^|.*[^\\\\])([*?]|\\[.+]|\\{.+}).*");
 
+	@Value
+	@NonFinal
+	protected static class PathAndMatcher {
+		Path basePath;
+
+		PathMatcher pathMatcher;
+
+		String originalPath;
+
+		int maxDepth;
+	}
+
 	@SneakyThrows
-	protected List<Path> getFilesMatching(@NonNull Path basePath, @NonNull PathMatcher pathMatcher, String originalPath) {
+	protected List<Path> getFilesMatching(@NonNull PathAndMatcher query) {
 		List<Path> matchingFiles = new ArrayList<>();
 		final int[] fileCounter = new int[]{0};
-		Files.walkFileTree(basePath, new SimpleFileVisitor<Path>() {
+		// TODO: configurable symlink follow
+		Files.walkFileTree(query.getBasePath(), EnumSet.noneOf(FileVisitOption.class), query.getMaxDepth(), new SimpleFileVisitor<Path>() {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
-				if (pathMatcher.matches(file)) {
+				if (query.getPathMatcher()
+						.matches(file)) {
 					if (matchingFiles.size() >= maxFileMatches) {
 						throw new ConfijSourceFetchingException("found too many files (>={}) matching glob expression. " +
-								"your expression '{}' seems too lax.", maxFileMatches, originalPath);
+								"your expression '{}' seems too lax. if this was intentional, try to increase '{}'", maxFileMatches,
+								query.getOriginalPath(), Fields.maxFileMatches);
+					}
+					if (++fileCounter[0] >= maxFilesTraversed) {
+						throw new ConfijSourceFetchingException("traversed too many files (>={}) in query of a maching glob expression. " +
+								"your expression '{}' seems too expensive. if this was intentional, try to increase '{}'", fileCounter[0],
+								query.getOriginalPath(), Fields.maxFilesTraversed);
 					}
 					matchingFiles.add(file);
-					fileCounter[0]++;
 				}
 				return FileVisitResult.CONTINUE;
 			}
 		});
-		if (fileCounter[0] >= warnFilesTraversed) {
-			LOGGER.info("traversed {} files to get {} files matching glob {}: that was an expensive operation", fileCounter[0],
-					matchingFiles.size(), originalPath);
-		}
-		Collections.sort(matchingFiles);
+		LOGGER.debug("traversed {} files to find {} files matching glob '{}'", fileCounter[0], matchingFiles.size(),
+				query.getOriginalPath());
+		matchingFiles.sort(Comparator.comparingInt(Path::getNameCount)
+				.thenComparing(Comparator.naturalOrder()));
 		return matchingFiles;
-	}
-
-	@Value
-	@NonFinal
-	private static class PathAndMatcher {
-		Path basePath;
-		PathMatcher pathMatcher;
 	}
 
 	protected PathAndMatcher extractGlob(String path) {
 		String[] parts = path.split("/", -1);
 		int globAt = -1;
+		int maxDepth = -1;
 		for (int i = 0; i < parts.length; i++) {
-			if (globPattern.matcher(parts[i])
-					.matches()) {
-				globAt = i;
-				break;
+			if (globAt == -1) { // still searching for first glob
+				if (globPattern.matcher(parts[i])
+						.matches()) {
+					globAt = i;
+					maxDepth = 0;
+				}
+			}
+			if (globAt != -1) { // already found first glob
+				if (parts[i].contains("**")) {
+					maxDepth = Integer.MAX_VALUE;
+					break;
+				} else {
+					maxDepth++;
+				}
 			}
 		}
 		if (globAt == -1) {
-			return new PathAndMatcher(Paths.get(path), null);
+			return new PathAndMatcher(Paths.get(path), null, path, -1);
 		}
 		String beforeGlob = Stream.of(parts)
 				.limit(globAt)
 				.collect(Collectors.joining("/"));
-		String globExpression = Stream.of(parts)
-				.skip(globAt)
-				.collect(Collectors.joining("/"));
 		// TODO: support other pathMatchers like regex
-		final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher("glob:" + globExpression);
-		return new PathAndMatcher(Paths.get(beforeGlob), pathMatcher);
+		final PathMatcher pathMatcher = FileSystems.getDefault()
+				.getPathMatcher("glob:" + path);
+		return new PathAndMatcher(Paths.get(beforeGlob), pathMatcher, path, maxDepth);
 	}
 
 	protected String read(Path path) {
@@ -111,7 +138,7 @@ public class FileResourceProvider extends URLResourceProvider {
 	}
 
 	@Override
-	public Stream<String> read(URI fileUri) {
+	public Stream<String> read(URIish fileUri) {
 		String path = fileUri.getSchemeSpecificPart();
 		PathAndMatcher query = extractGlob(path);
 
@@ -119,14 +146,14 @@ public class FileResourceProvider extends URLResourceProvider {
 		if (query.getPathMatcher() == null) { // a file must exist if not a glob
 			matchingFiles = Collections.singletonList(query.getBasePath());
 		} else {
-			matchingFiles = getFilesMatching(query.getBasePath(), query.getPathMatcher(), path);
+			matchingFiles = getFilesMatching(query);
 		}
 		return matchingFiles.stream()
 				.map(this::read);
 	}
 
 	@Override
-	public boolean canHandle(URI path) {
-		return !path.isAbsolute() || SCHEME.equals(path.getScheme());
+	public boolean canHandle(URIish path) {
+		return path.getScheme() == null || SCHEME.equals(path.getScheme());
 	}
 }

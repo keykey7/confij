@@ -1,5 +1,6 @@
 package ch.kk7.confij.source.resource;
 
+import ch.kk7.confij.source.ConfijSourceBuilder;
 import ch.kk7.confij.source.ConfijSourceException;
 import org.assertj.core.api.WithAssertions;
 import org.eclipse.jgit.lib.StoredConfig;
@@ -12,12 +13,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
-import java.net.URI;
 
 class GitResourceProviderFileTest implements WithAssertions {
 	private GitResourceProvider git;
 	private GitTestrepo testGit;
-	private URI fileUri;
+	private ConfijSourceBuilder.URIish fileUri;
 
 	@BeforeEach
 	public void initGit(@TempDir File tempDir) throws Exception {
@@ -32,7 +32,7 @@ class GitResourceProviderFileTest implements WithAssertions {
 		fileUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE);
 	}
 
-	private String gitRead(URI uri) {
+	private String gitRead(ConfijSourceBuilder.URIish uri) {
 		return git.read(uri)
 				.findAny()
 				.orElseThrow(IllegalStateException::new);
@@ -52,11 +52,11 @@ class GitResourceProviderFileTest implements WithAssertions {
 	public void customRevision() throws Exception {
 		RevCommit commit1 = testGit.addAndCommit();
 		testGit.addAndCommit();
-		URI revUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, commit1.abbreviate(7)
+		ConfijSourceBuilder.URIish revUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, commit1.abbreviate(7)
 				.name());
 		assertThat(gitRead(revUri)).isEqualTo(commit1.getShortMessage());
 
-		URI relUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "HEAD~1");
+		ConfijSourceBuilder.URIish relUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "HEAD~1");
 		assertThat(gitRead(relUri)).isEqualTo(commit1.getShortMessage());
 	}
 
@@ -67,15 +67,15 @@ class GitResourceProviderFileTest implements WithAssertions {
 			"HEAD~42",})
 	public void unknownRevision(String revision) throws Exception {
 		testGit.addAndCommit();
-		URI revUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, revision);
+		ConfijSourceBuilder.URIish revUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, revision);
 		assertThatThrownBy(() -> gitRead(revUri)).isInstanceOf(ConfijSourceException.class);
 	}
 
 	@Test
 	public void notGitScheme() {
 		assertThat(git.canHandle(fileUri)).isTrue();
-		assertThat(git.canHandle(URI.create("someUri"))).isFalse();
-		assertThat(git.canHandle(URI.create("http://example.com/bla.git"))).isFalse();
+		assertThat(git.canHandle(ConfijSourceBuilder.URIish.create("someUri"))).isFalse();
+		assertThat(git.canHandle(ConfijSourceBuilder.URIish.create("http://example.com/bla.git"))).isFalse();
 	}
 
 	@ParameterizedTest
@@ -87,7 +87,7 @@ class GitResourceProviderFileTest implements WithAssertions {
 			"..", // you're kidding me right?
 	})
 	public void notGitUri(String invalidUri) {
-		URI uri = URI.create(invalidUri);
+		ConfijSourceBuilder.URIish uri = ConfijSourceBuilder.URIish.create(invalidUri);
 		assertThatThrownBy(() -> gitRead(uri)).isInstanceOf(ConfijSourceException.class);
 	}
 
@@ -113,7 +113,7 @@ class GitResourceProviderFileTest implements WithAssertions {
 	@Test
 	public void fileDoesntExist() throws Exception {
 		testGit.addAndCommit();
-		URI nonexistingFile = GitResourceProvider.toUri(testGit.getWorkingDir(), "non3xisting.bla");
+		ConfijSourceBuilder.URIish nonexistingFile = GitResourceProvider.toUri(testGit.getWorkingDir(), "non3xisting.bla");
 		assertThatThrownBy(() -> gitRead(nonexistingFile)).isInstanceOf(ConfijSourceException.class)
 				.hasMessageContaining("non3xisting.bla");
 	}
@@ -127,10 +127,10 @@ class GitResourceProviderFileTest implements WithAssertions {
 		RevCommit branch2 = testGit.addAndCommit();
 
 		assertThat(gitRead(fileUri)).isEqualTo(commit2.getShortMessage());
-		URI branchFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "refs/heads/fuu");
+		ConfijSourceBuilder.URIish branchFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "refs/heads/fuu");
 		assertThat(gitRead(branchFile)).isEqualTo(branch2.getShortMessage());
 
-		URI olderBranchFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "refs/heads/fuu~1");
+		ConfijSourceBuilder.URIish olderBranchFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "refs/heads/fuu~1");
 		assertThat(gitRead(olderBranchFile)).isEqualTo(branch1.getShortMessage());
 	}
 
@@ -141,7 +141,7 @@ class GitResourceProviderFileTest implements WithAssertions {
 		testGit.createTag("v1.0.42");
 		testGit.addAndCommit();
 
-		URI tagFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "refs/tags/v1.0.42");
+		ConfijSourceBuilder.URIish tagFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "refs/tags/v1.0.42");
 		assertThat(gitRead(tagFile)).isEqualTo(commit2.getShortMessage());
 	}
 

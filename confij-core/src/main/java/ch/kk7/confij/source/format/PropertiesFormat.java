@@ -1,5 +1,6 @@
 package ch.kk7.confij.source.format;
 
+import ch.kk7.confij.source.ConfijSourceBuilder.URIish;
 import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import lombok.Getter;
@@ -8,7 +9,6 @@ import lombok.Setter;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -118,7 +118,7 @@ public class PropertiesFormat implements ConfijSourceFormat {
 	}
 
 	@Override
-	public boolean canHandle(URI path) {
+	public boolean canHandle(URIish path) {
 		return path.getSchemeSpecificPart()
 				.matches("(?s).+\\.prop(ertie)?s?$");
 	}

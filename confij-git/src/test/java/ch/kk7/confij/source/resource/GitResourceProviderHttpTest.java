@@ -1,5 +1,6 @@
 package ch.kk7.confij.source.resource;
 
+import ch.kk7.confij.source.ConfijSourceBuilder;
 import ch.kk7.confij.source.ConfijSourceException;
 import org.assertj.core.api.WithAssertions;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -13,14 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
-import java.net.URI;
 
 public class GitResourceProviderHttpTest implements WithAssertions {
 	private GitResourceProvider git;
 	private GitTestrepo testGit;
 	private SimpleHttpServer server;
-	private URI httpUri;
-	private URI httpsUri;
+	private ConfijSourceBuilder.URIish httpUri;
+	private ConfijSourceBuilder.URIish httpsUri;
 
 	@BeforeEach
 	public void initServer(@TempDir File tempDir) throws Exception {
@@ -43,7 +43,7 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 		server.stop();
 	}
 
-	private String gitRead(URI uri) {
+	private String gitRead(ConfijSourceBuilder.URIish uri) {
 		return git.read(uri)
 				.findAny()
 				.orElseThrow(IllegalStateException::new);
@@ -60,8 +60,8 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 	}
 
 	@Test
-	void invalidPassword() throws Exception {
-		URI invalidPasswordUri = GitResourceProvider.toUri(server.getUri()
+	void invalidPassword() {
+		ConfijSourceBuilder.URIish invalidPasswordUri = GitResourceProvider.toUri(server.getUri()
 				.setUser(AppServer.username)
 				.setPass("totallyWrongPassword")
 				.toPrivateString(), GitTestrepo.DEFAULT_FILE);
@@ -91,7 +91,7 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 	@Test
 	public void cloneGithubTestrepo() {
 		// not private accessable "ssh://git@github.com/github/testrepo.git"
-		URI uri = GitResourceProvider.toUri("https://github.com/github/testrepo.git", "test/alloc.c");
+		ConfijSourceBuilder.URIish uri = GitResourceProvider.toUri("https://github.com/github/testrepo.git", "test/alloc.c");
 		assertThat(gitRead(uri)).contains("Linus Torvalds");
 		// once more: expecting a fetch instead of clone
 		assertThat(gitRead(uri)).contains("Linus Torvalds");

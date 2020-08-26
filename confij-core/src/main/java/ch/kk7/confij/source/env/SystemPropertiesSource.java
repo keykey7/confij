@@ -4,7 +4,6 @@ import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.ConfijSourceBuilder;
 import com.google.auto.service.AutoService;
 
-import java.net.URI;
 import java.util.Optional;
 
 @AutoService(ConfijSourceBuilder.class)
@@ -16,7 +15,7 @@ public class SystemPropertiesSource extends PropertiesSource implements ConfijSo
 	}
 
 	@Override
-	public Optional<ConfijSource> fromURI(URI path) {
+	public Optional<ConfijSource> fromURI(URIish path) {
 		if (SCHEME.equals(path.getScheme())) {
 			SystemPropertiesSource source = new SystemPropertiesSource();
 			source.setGlobalPrefix(path.getSchemeSpecificPart());
