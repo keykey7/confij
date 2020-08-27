@@ -50,19 +50,12 @@ import java.util.stream.Stream;
 public class ConfijBuilder<T> {
 	@ToString.Include
 	private final Type forType;
-
 	private final List<ConfijSource> sources = new ArrayList<>();
-
 	private ConfijValidator<T> validator = null;
-
 	private ConfijValidator<T> nonNullValidator = null;
-
 	private ValueResolver valueResolver = null;
-
 	private final ArrayList<ValueMapperFactory> valueMapperFactories = new ArrayList<>(ValueMapperFactory.defaultFactories());
-
 	private ConfijReloadStrategy reloadStrategy = null;
-
 	private final ReloadNotifierImpl<T> reloadNotifier = new ReloadNotifierImpl<>();
 
 	protected void lazySetDefaults() {
@@ -272,7 +265,6 @@ public class ConfijBuilder<T> {
 	public static class ConfijWrapper<T> {
 		@Getter(AccessLevel.NONE)
 		AtomicReference<T> reference;
-
 		ConfijReloadNotifier<T> reloadNotifier;
 
 		public ConfijWrapper(T initialValue, ReloadNotifierImpl<T> reloadNotifier) {

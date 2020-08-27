@@ -41,7 +41,7 @@ public class Binding extends DocTestBase {
 	// end::builtinMapping[]
 
 	@Test
-	public void valueMapping() {
+	void valueMapping() {
 		MappedConfig dbConfig = ConfijBuilder.of(MappedConfig.class)
 				.loadFrom("mapped.yml")
 				.build();
@@ -80,7 +80,7 @@ public class Binding extends DocTestBase {
 	// end::nestedList[]
 
 	@Test
-	public void nested() {
+	void nested() {
 		// tag::nestedBuild[]
 		DbConfig dbConfig = ConfijBuilder.of(DbConfig.class)
 			.loadFrom(new PropertiesSource()
@@ -111,7 +111,7 @@ public class Binding extends DocTestBase {
 	// end::custom-value-mapping-interface[]
 
 	@Test
-	public void customValueMappingWithAnnotation() {
+	void customValueMappingWithAnnotation() {
 		Favourites favourites = ConfijBuilder.of(Favourites.class)
 				.loadFrom(new PropertiesSource().set("favouriteColor", "#000000"))
 				.build();
@@ -124,7 +124,7 @@ public class Binding extends DocTestBase {
 	}
 
 	@Test
-	public void customValueMappingWithBuilder() {
+	void customValueMappingWithBuilder() {
 		// tag::custom-value-mapping[]
 		EmptyColorHolder colorHolder = ConfijBuilder.of(EmptyColorHolder.class)
 				.bindValuesForClassWith(Color::decode, java.awt.Color.class)
@@ -147,7 +147,7 @@ public class Binding extends DocTestBase {
 	// end::base64-mapping[]
 
 	@Test
-	public void testBuiltinCustomMappings() {
+	void testBuiltinCustomMappings() {
 		Base64Encoded builtInMappers = ConfijBuilder.of(Base64Encoded.class)
 				.loadFrom(new PropertiesSource().set("base64Arr", "AQIDBA==")
 						.set("base64List", "AQIDBA=="))
@@ -169,7 +169,7 @@ public class Binding extends DocTestBase {
 	// end::separated-mapping[]
 
 	@Test
-	public void separated() {
+	void separated() {
 		SeparatedConfig separated = ConfijBuilder.of(SeparatedConfig.class)
 				.loadFrom("separated.properties")
 				.build();

@@ -11,7 +11,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class PrimitiveMapperFactoryTest implements WithAssertions {
-
 	interface Primitive {
 		@Default("true")
 		boolean aBoolean();

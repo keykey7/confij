@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 class ExplicitMapperTest implements WithAssertions {
-
 	interface Explicit {
 		@Default("str")
 		String string();
@@ -26,7 +25,7 @@ class ExplicitMapperTest implements WithAssertions {
 	}
 
 	@Test
-	public void explicits() {
+	void explicits() {
 		assertThat(Explicit.INSTANCE.string()).isEqualTo("str");
 		assertThat(Explicit.INSTANCE.path()).isEqualTo(Paths.get("pat"));
 		assertThat(Explicit.INSTANCE.file()).isEqualTo(new File("fil"));

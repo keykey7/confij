@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import java.net.URL;
 
 class HoconResourceProviderTest implements WithAssertions {
-
 	interface Hocon {
 		AandB aandb();
 
@@ -29,7 +28,7 @@ class HoconResourceProviderTest implements WithAssertions {
 	}
 
 	@Test
-	public void complex() {
+	void complex() {
 		Hocon hocon = ConfijBuilder.of(Hocon.class)
 				.loadFrom("classpath:hocon.conf")
 				.build();
@@ -44,7 +43,7 @@ class HoconResourceProviderTest implements WithAssertions {
 	}
 
 	@Test
-	public void hoconResolvesThis() {
+	void hoconResolvesThis() {
 		assertThat(ConfijBuilder.of(AandB.class)
 				.loadFrom("classpath:brefa.conf")
 				.build()
@@ -58,7 +57,7 @@ class HoconResourceProviderTest implements WithAssertions {
 	}
 
 	@Test
-	public void confijResolvesThis() {
+	void confijResolvesThis() {
 		assertThat(ConfijBuilder.of(AandB.class)
 				.loadFrom("classpath:bnotrefa.conf")
 				.build()

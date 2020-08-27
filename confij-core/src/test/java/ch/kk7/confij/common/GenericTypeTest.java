@@ -8,9 +8,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 class GenericTypeTest implements WithAssertions {
-
 	@Test
-	public void asd() {
+	void asd() {
 		List<Integer> listConfig = ConfijBuilder.of(new GenericType<List<Integer>>() {
 		})
 				.loadFrom(new PropertiesSource().set("0", "42")

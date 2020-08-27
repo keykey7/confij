@@ -15,15 +15,14 @@ import java.util.Set;
  */
 @UtilityClass
 public class AnnotationUtil {
-
 	@Value
 	public static class AnnonResponse<A extends Annotation> {
 		Annotation declaredAnnotation;
 		A annotationType;
 	}
 
-	public <A extends Annotation> Optional<AnnonResponse<A>>
-			findAnnotationAndDeclaration(AnnotatedElement annotatedElement, Class<A> annotationType) {
+	public <A extends Annotation> Optional<AnnonResponse<A>> findAnnotationAndDeclaration(AnnotatedElement annotatedElement,
+			Class<A> annotationType) {
 		A annotation = annotatedElement.getDeclaredAnnotation(annotationType);
 		if (annotation != null) {
 			return Optional.of(new AnnonResponse<>(annotation, annotation));
@@ -50,8 +49,7 @@ public class AnnotationUtil {
 		return Optional.ofNullable(findAnnotation(annotatedElement, annotationType, new HashSet<>()));
 	}
 
-	private <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType,
-			Set<Annotation> visited) {
+	private <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType, Set<Annotation> visited) {
 		A annotation = annotatedElement.getDeclaredAnnotation(annotationType);
 		if (annotation != null) {
 			return annotation;

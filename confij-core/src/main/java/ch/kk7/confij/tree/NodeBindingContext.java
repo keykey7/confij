@@ -21,11 +21,8 @@ import java.lang.reflect.AnnotatedElement;
 @Value
 public class NodeBindingContext {
 	AnnotatedElement annotatedElement;
-
 	String defaultValue;
-
 	@NonNull ValueResolver valueResolver;
-
 	@NonNull
 	@With(AccessLevel.NONE)
 	@Getter(AccessLevel.NONE)

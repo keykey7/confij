@@ -1,7 +1,7 @@
 package ch.kk7.confij.binding.values;
 
-import ch.kk7.confij.binding.values.SeparatedMapper.Separated;
 import ch.kk7.confij.ConfijBuilder;
+import ch.kk7.confij.binding.values.SeparatedMapper.Separated;
 import ch.kk7.confij.source.env.PropertiesSource;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 class SeparatedMapperTest implements WithAssertions {
-
 	interface Stringings {
 		@Separated
 		List<String> listOfStrings();
@@ -41,18 +40,18 @@ class SeparatedMapperTest implements WithAssertions {
 	}
 
 	@Test
-	public void testValid() {
+	void testValid() {
 		String in = "hello,☠world ,\tyay\n\n,, ";
 		assertThatStringingsAll(in, in.split(","));
 	}
 
 	@Test
-	public void testEmpty() {
+	void testEmpty() {
 		assertThatStringingsAll("", new String[]{""});
 	}
 
 	@Test
-	public void testNull() {
+	void testNull() {
 		assertThatStringingsAll(null, new String[]{});
 	}
 
@@ -65,7 +64,7 @@ class SeparatedMapperTest implements WithAssertions {
 	}
 
 	@Test
-	public void testOtherValidTypes() {
+	void testOtherValidTypes() {
 		OtherValidTypes otherValidTypes = ConfijBuilder.of(OtherValidTypes.class)
 				.loadFrom(new PropertiesSource().set("intArray", "0,1,2,3,4,5")
 						.set("longHashSet", "0"))
@@ -75,7 +74,7 @@ class SeparatedMapperTest implements WithAssertions {
 	}
 
 	@Test
-	public void unmappableValue() {
+	void unmappableValue() {
 		assertThatThrownBy(() -> ConfijBuilder.of(OtherValidTypes.class)
 				.loadFrom(new PropertiesSource().set("intArray", "0 ,1,2,3,4,5")
 						.set("longHashSet", "0"))
@@ -88,7 +87,7 @@ class SeparatedMapperTest implements WithAssertions {
 	}
 
 	@Test
-	public void invalidMap() {
+	void invalidMap() {
 		assertThatThrownBy(() -> ConfijBuilder.of(InvalidMap.class)
 				.build());
 	}
@@ -99,7 +98,7 @@ class SeparatedMapperTest implements WithAssertions {
 	}
 
 	@Test
-	public void notACollectionOrArray() {
+	void notACollectionOrArray() {
 		assertThatThrownBy(() -> ConfijBuilder.of(InvalidNonList.class)
 				.build());
 	}
@@ -116,7 +115,7 @@ class SeparatedMapperTest implements WithAssertions {
 	}
 
 	@Test
-	public void customAnnotation() {
+	void customAnnotation() {
 		CustomAnnotation customAnnotation = ConfijBuilder.of(CustomAnnotation.class)
 				.loadFrom(new PropertiesSource().set("semicolon", "a, b ;c;; ")
 						.set("semicolonTrimmed", "a, b;c;; ")

@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
 @ToString
 public class IntfaceInvocationHandler implements InvocationHandler, Serializable {
 	private String className;
-
 	@SuppressWarnings("java:S1948") // serialization is possible IF all values are Serializable
 	private Map<Method, Object> methodToValues;
 

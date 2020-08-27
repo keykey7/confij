@@ -15,8 +15,7 @@ import java.lang.annotation.Target;
 import java.util.Optional;
 import java.util.UUID;
 
-public class NonNullValidatorTest implements WithAssertions {
-
+class NonNullValidatorTest implements WithAssertions {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.TYPE})
 	@interface Null {
@@ -49,7 +48,7 @@ public class NonNullValidatorTest implements WithAssertions {
 	private static final String FIELD_NAME = "aField";
 
 	@Test
-	public void defaultBuilderAllowsNull() {
+	void defaultBuilderAllowsNull() {
 		WithNulls test = ConfijBuilder.of(WithNulls.class)
 				.build();
 		assertThat(test.aField()).isNull();
@@ -57,7 +56,7 @@ public class NonNullValidatorTest implements WithAssertions {
 	}
 
 	@Test
-	public void nullNotAllowedAsDefinedInBuilder() {
+	void nullNotAllowedAsDefinedInBuilder() {
 		assertThatThrownBy(() -> ConfijBuilder.of(WithNulls.class)
 				.validateOnlyWith(NonNullValidator.initiallyNotNull())
 				.build()).hasMessageContaining("null")
@@ -65,7 +64,7 @@ public class NonNullValidatorTest implements WithAssertions {
 	}
 
 	@Test
-	public void okIfNotNullAsDefinedInBuilder() {
+	void okIfNotNullAsDefinedInBuilder() {
 		String value = UUID.randomUUID() + "";
 		assertThat(ConfijBuilder.of(WithNulls.class)
 				.validateOnlyWith(NonNullValidator.initiallyNotNull())
@@ -75,14 +74,14 @@ public class NonNullValidatorTest implements WithAssertions {
 	}
 
 	@Test
-	public void nullNotAllowedAsDefinedInCode() {
+	void nullNotAllowedAsDefinedInCode() {
 		assertThatThrownBy(() -> ConfijBuilder.of(WithNullsAnnotated.class)
 				.build()).hasMessageContaining("null")
 				.hasMessageContaining(FIELD_NAME);
 	}
 
 	@Test
-	public void okIfNotNullAsDefinedInCode() {
+	void okIfNotNullAsDefinedInCode() {
 		String value = UUID.randomUUID() + "";
 		assertThat(ConfijBuilder.of(WithNullsAnnotated.class)
 				.loadFrom(PropertiesSource.of(FIELD_NAME, value))
@@ -91,7 +90,7 @@ public class NonNullValidatorTest implements WithAssertions {
 	}
 
 	@Test
-	public void nestedNotNullalbe() {
+	void nestedNotNullalbe() {
 		// a bit of an edge case: nested configs are never nullable. only the ones that hold a value are
 		assertThatThrownBy(() -> ConfijBuilder.of(WithNullsNested.class)
 				.build()).hasMessageContaining("null")

@@ -22,7 +22,7 @@ class EnvvarSourceTest implements WithAssertions {
 	}
 
 	@Test
-	public void withPrefix() throws Exception {
+	void withPrefix() throws Exception {
 		String value1 = UUID.randomUUID() + "";
 		String value2 = UUID.randomUUID() + "";
 		SystemLambda.withEnvironmentVariable("A_PREFIX_xy", value1)
@@ -38,7 +38,7 @@ class EnvvarSourceTest implements WithAssertions {
 	}
 
 	@Test
-	public void emptyStringEnvvar() throws Exception {
+	void emptyStringEnvvar() throws Exception {
 		String value1 = UUID.randomUUID() + "";
 		SystemLambda.withEnvironmentVariable("A_PREFIX_others_", value1)
 				.and("_", "whatever")
@@ -52,7 +52,7 @@ class EnvvarSourceTest implements WithAssertions {
 
 	@ParameterizedTest
 	@ValueSource(strings = {"PRE_", "PRE_xy_", "PRE__", "PRE_others_cannot_map_this", "PRE_others__", "PRE_xy_invalid", "PRE_others"})
-	public void keysCannotBindToConfigStructure(String envvar) throws Exception {
+	void keysCannotBindToConfigStructure(String envvar) throws Exception {
 		SystemLambda.withEnvironmentVariable(envvar, "whatever")
 				.execute(() -> {
 					assertThatThrownBy(() -> ConfijBuilder.of(Config.class)
@@ -62,7 +62,7 @@ class EnvvarSourceTest implements WithAssertions {
 	}
 
 	@Test
-	public void keyConflictsAreSourceIssues() throws Exception {
+	void keyConflictsAreSourceIssues() throws Exception {
 		SystemLambda.withEnvironmentVariable("PRE_a_b", "whatever")
 				.and("PRE_a", "whatever")
 				.execute(() -> assertThatThrownBy(() -> ConfijBuilder.of(new GenericType<Map<String, String>>() {
@@ -71,5 +71,4 @@ class EnvvarSourceTest implements WithAssertions {
 						.build()).isInstanceOf(ConfijSourceException.class)
 						.hasMessageContaining("PRE_a"));
 	}
-
 }

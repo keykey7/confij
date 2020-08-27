@@ -15,7 +15,7 @@ class FileResourceProviderGlobTest implements WithAssertions {
 	}
 
 	@Test
-	public void oneGlob() {
+	void oneGlob() {
 		assertThat(provider.extractGlob("/fuu/bar/a*.txt")).satisfies(x -> {
 			assertThat(x.getBasePath()).isEqualTo(Paths.get("/fuu/bar"));
 			assertThat(x.getMaxDepth()).isEqualTo(1);
@@ -31,21 +31,21 @@ class FileResourceProviderGlobTest implements WithAssertions {
 	}
 
 	@Test
-	public void globAtRoot() {
+	void globAtRoot() {
 		assertThat(provider.extractGlob("x**.txt")).satisfies(x -> {
 			assertThat(x.getBasePath()).isEqualTo(Paths.get(""));
 		});
 	}
 
 	@Test
-	public void escapedGlob() {
+	void escapedGlob() {
 		assertThat(provider.extractGlob("fuu/BA\\*")).satisfies(x -> {
 			assertThat(x.getBasePath()).isEqualTo(Paths.get("fuu/BA\\*"));
 		});
 	}
 
 	@Test
-	public void multiGlob() {
+	void multiGlob() {
 		assertThat(provider.extractGlob("fuu/**/xxx/?.x")).satisfies(x -> {
 			assertThat(x.getBasePath()).isEqualTo(Paths.get("fuu"));
 			assertThat(x.getPathMatcher()

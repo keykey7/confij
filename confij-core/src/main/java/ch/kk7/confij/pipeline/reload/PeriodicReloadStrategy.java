@@ -18,13 +18,9 @@ import java.util.concurrent.TimeUnit;
 @ToString
 public class PeriodicReloadStrategy implements ConfijReloadStrategy {
 	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(PeriodicReloadStrategy.class);
-
 	private final Duration reloadEvery;
-
 	private final Duration initialDelay;
-
 	private final ScheduledExecutorService executor;
-
 	private boolean isInitialized = false;
 
 	public PeriodicReloadStrategy() {

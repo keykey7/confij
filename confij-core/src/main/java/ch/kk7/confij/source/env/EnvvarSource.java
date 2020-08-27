@@ -11,7 +11,6 @@ import java.util.Optional;
 @AutoService(ConfijSourceBuilder.class)
 public class EnvvarSource extends PropertiesFormat implements ConfijSource, ConfijSourceBuilder {
 	public static final String SCHEME = "env";
-
 	private Object deepMap;
 
 	public EnvvarSource() {

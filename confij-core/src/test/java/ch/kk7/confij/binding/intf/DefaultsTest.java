@@ -77,12 +77,12 @@ public class DefaultsTest extends AbstractProxyBuilderTest<WithDefaults> {
 	}
 
 	@Test
-	public void uninitializedString() {
+	void uninitializedString() {
 		assertThat(instance().aString()).isEqualTo(DEFAULT_VALUE);
 	}
 
 	@Test
-	public void bindStringToValue() {
+	void bindStringToValue() {
 		String newValue = UUID.randomUUID() + "";
 		WithDefaults withDefaults = withString(newValue).instance();
 		assertThat(withDefaults.aString()).isEqualTo(newValue)
@@ -91,19 +91,19 @@ public class DefaultsTest extends AbstractProxyBuilderTest<WithDefaults> {
 	}
 
 	@Test
-	public void bindStringToNull() {
+	void bindStringToNull() {
 		WithDefaults withDefaults = withString(null).instance();
 		assertThat(withDefaults.aString()).isNull();
 		assertThat(withDefaults.dependsOnAString()).isEqualTo(null + "X");
 	}
 
 	@Test
-	public void uninitializedNullString() {
+	void uninitializedNullString() {
 		assertThat(instance().aNull()).isNull();
 	}
 
 	@Test
-	public void aBoolean() {
+	void aBoolean() {
 		assertThat(instance().aBoolean()).isTrue();
 		assertThat(withBoolean(true).instance()
 				.aBoolean()).isTrue();
@@ -114,35 +114,35 @@ public class DefaultsTest extends AbstractProxyBuilderTest<WithDefaults> {
 	}
 
 	@Test
-	public void aRandom() {
+	void aRandom() {
 		WithDefaults withDefaults = instance();
 		assertThat(withDefaults.aRandomDouble()).isNotEqualTo(withDefaults.aRandomDouble());
 	}
 
 	@Test
-	public void aPath() {
+	void aPath() {
 		WithDefaults withDefaults = instance();
 		Path path = Paths.get("fuu");
 		assertThat(withDefaults.echoPath(path)).isEqualTo(path);
 	}
 
 	@Test
-	public void aRuntimeException() {
+	void aRuntimeException() {
 		assertThatThrownBy(() -> instance().aRuntimeException()).isInstanceOf(TestRuntimeException.class);
 	}
 
 	@Test
-	public void aCheckedException() {
+	void aCheckedException() {
 		assertThatThrownBy(() -> instance().aCheckedException()).isInstanceOf(TestException.class);
 	}
 
 	@Test
-	public void canInitialize() {
+	void canInitialize() {
 		assertThat(instance()).isNotNull();
 	}
 
 	@Test
-	public void uninitializedEquals() {
+	void uninitializedEquals() {
 		WithDefaults first = instance();
 		WithDefaults second = instance();
 		assertThat(first).isEqualTo(second)
@@ -151,7 +151,7 @@ public class DefaultsTest extends AbstractProxyBuilderTest<WithDefaults> {
 	}
 
 	@Test
-	public void proxyIsSerializable() {
+	void proxyIsSerializable() {
 		WithDefaults first = withString(UUID.randomUUID() + "").withDouble(1337)
 				.instance();
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -161,7 +161,7 @@ public class DefaultsTest extends AbstractProxyBuilderTest<WithDefaults> {
 			throw new RuntimeException("isn't serializable", e);
 		}
 		WithDefaults second;
-		try(ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()))) {
+		try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()))) {
 			second = (WithDefaults) in.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException("isn't deserializable", e);

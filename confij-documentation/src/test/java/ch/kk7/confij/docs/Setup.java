@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 
-public class Setup extends DocTestBase {
+class Setup extends DocTestBase {
 
 	// tag::simple_interface[]
 	interface ServerConfig { // <1>
@@ -15,7 +15,7 @@ public class Setup extends DocTestBase {
 	// end::simple_interface[]
 
 	@Test
-	public void gettingStarted() {
+	void gettingStarted() {
 		// tag::simple_builder[]
 		ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
 				.loadFrom("server.properties") // <2>

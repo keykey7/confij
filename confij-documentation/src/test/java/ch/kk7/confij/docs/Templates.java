@@ -9,7 +9,7 @@ import ch.kk7.confij.template.ValueResolver;import ch.kk7.confij.tree.ConfijNode
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
-public class Templates implements WithAssertions {
+class Templates implements WithAssertions {
 
 	// tag::simple[]
 	interface Salutation {
@@ -22,7 +22,7 @@ public class Templates implements WithAssertions {
 	// end::simple[]
 
 	@Test
-	public void simple() {
+	void simple() {
 		Salutation salutation = ConfijBuilder.of(Salutation.class)
 				.loadFrom(new PropertiesSource().set("name", "Bob"))
 				.build();
@@ -53,7 +53,7 @@ public class Templates implements WithAssertions {
 	// end::relative-interface[]
 
 	@Test
-	public void relative() {
+	void relative() {
 		// tag::relative[]
 		Letter letter = ConfijBuilder.of(Letter.class).build();
 		assertThat(letter.regards().sender()).isEqualTo("John's friend");
@@ -75,7 +75,7 @@ public class Templates implements WithAssertions {
 	// end::recursive[]
 
 	@Test
-	public void recursive() {
+	void recursive() {
 		Recursive recursive = ConfijBuilder.of(Recursive.class).build();
 		assertThat(recursive.victim()).isEqualTo("Poor Alice!");
 	}
@@ -99,7 +99,7 @@ public class Templates implements WithAssertions {
 	}
 
 	@Test
-	public void noop() {
+	void noop() {
 		assertThat(ConfijBuilder.of(Noop.class)
 				.loadFrom(new PropertiesSource().set("canContainDollar", "${variable}"))
 				.build().canContainDollar()).isEqualTo("${variable}");
@@ -131,14 +131,14 @@ public class Templates implements WithAssertions {
 	// end::customresolver[]
 
 	@Test
-	public void fooResolver() {
+	void fooResolver() {
 		assertThat(ConfijBuilder.of(CustomResolver.class)
 				.build()
 				.everyVariableIsFoo()).isEqualTo("foo");
 	}
 
 	@Test
-	public void globalFooResolver() {
+	void globalFooResolver() {
 		assertThat(ConfijBuilder.of(BuilderNoop.class)
 				.templatingWith(new FooResolver())
 				.build()

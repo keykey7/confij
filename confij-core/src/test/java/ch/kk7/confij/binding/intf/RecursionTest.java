@@ -13,7 +13,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-public class RecursionTest implements WithAssertions {
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
+class RecursionTest implements WithAssertions {
 	public static class SoloConfigBinder extends ConfigBinder {
 		public SoloConfigBinder(ConfigBindingFactory configBindingFactory) {
 			super();
@@ -49,7 +51,7 @@ public class RecursionTest implements WithAssertions {
 	}
 
 	@Test
-	public void directRecursion() {
+	void directRecursion() {
 		assertThrowsRecursive(DirectRecursion.class);
 	}
 
@@ -62,7 +64,7 @@ public class RecursionTest implements WithAssertions {
 	}
 
 	@Test
-	public void indirectRecursion() {
+	void indirectRecursion() {
 		assertThrowsRecursive(FirstStep.class).hasMessageContaining(SecondStep.class.getSimpleName());
 	}
 
@@ -71,7 +73,7 @@ public class RecursionTest implements WithAssertions {
 	}
 
 	@Test
-	public void otherTypesInBetween() {
+	void otherTypesInBetween() {
 		assertThrowsRecursive(RecursionWithList.class);
 	}
 
@@ -83,7 +85,7 @@ public class RecursionTest implements WithAssertions {
 	}
 
 	@Test
-	public void genericActuallyRecursive() {
+	void genericActuallyRecursive() {
 		assertThrowsRecursive(GenericActuallyRecursive.class);
 	}
 
@@ -91,7 +93,7 @@ public class RecursionTest implements WithAssertions {
 	}
 
 	@Test
-	public void genericActuallyRecursive2() {
+	void genericActuallyRecursive2() {
 		assertThrowsRecursive(GenericActuallyRecursive2.class);
 	}
 
@@ -99,15 +101,15 @@ public class RecursionTest implements WithAssertions {
 	}
 
 	@Test
-	public void genericNotRecursive() {
-		configBindingFor(GenericNotRecursive.class);
+	void genericNotRecursive() {
+		assertDoesNotThrow(() -> configBindingFor(GenericNotRecursive.class));
 	}
 
 	public interface GenericNotRecursiveDeep extends GenericMaybeRecursive<GenericMaybeRecursive<String>> {
 	}
 
 	@Test
-	public void genericNotRecursiveDeep() {
-		configBindingFor(GenericNotRecursiveDeep.class);
+	void genericNotRecursiveDeep() {
+		assertDoesNotThrow(() -> configBindingFor(GenericNotRecursiveDeep.class));
 	}
 }

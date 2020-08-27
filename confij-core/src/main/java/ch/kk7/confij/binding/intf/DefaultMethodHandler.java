@@ -17,9 +17,9 @@ import java.lang.reflect.Method;
  */
 @UtilityClass
 public class DefaultMethodHandler {
-	private static final Method privateLookupIn = privateLookupIn();
+	private final Method privateLookupIn = privateLookupIn();
 
-	public static Object invokeDefaultMethod(Object proxy, Method method, Object[] args) throws DefaultMethodException {
+	public Object invokeDefaultMethod(Object proxy, Method method, Object[] args) throws DefaultMethodException {
 		if (privateLookupIn == null) {
 			// assuming java8 at this point
 			return invokeDefaultMethodJava8(proxy, method, args);
@@ -28,7 +28,7 @@ public class DefaultMethodHandler {
 		}
 	}
 
-	private static Object invokeDefaultMethodJava8(Object proxy, Method method, Object[] args) throws DefaultMethodException {
+	private Object invokeDefaultMethodJava8(Object proxy, Method method, Object[] args) throws DefaultMethodException {
 		Class<?> forClass = method.getDeclaringClass();
 		Lookup lookup = lookupJava8(forClass);
 		try {
@@ -41,7 +41,7 @@ public class DefaultMethodHandler {
 		}
 	}
 
-	private static Object invokeDefaultMethodJava9(Object proxy, Method method, Object[] args) throws DefaultMethodException {
+	private Object invokeDefaultMethodJava9(Object proxy, Method method, Object[] args) throws DefaultMethodException {
 		// FIXME: this is horrible, cleanup
 		Class<?> forClass = method.getDeclaringClass();
 		try {
@@ -58,7 +58,7 @@ public class DefaultMethodHandler {
 	/**
 	 * Java8 only hack to use a lookup of a non-private-accessible interface
 	 */
-	private static Lookup lookupJava8(Class<?> forClass) throws DefaultMethodException {
+	private Lookup lookupJava8(Class<?> forClass) throws DefaultMethodException {
 		try {
 			Constructor<Lookup> constructor = Lookup.class.getDeclaredConstructor(Class.class);
 			constructor.setAccessible(true);
@@ -69,7 +69,7 @@ public class DefaultMethodHandler {
 	}
 
 	@SuppressWarnings("JavaReflectionMemberAccess")
-	private static Method privateLookupIn() {
+	private Method privateLookupIn() {
 		try {
 			return MethodHandles.class.getMethod("privateLookupIn", Class.class, Lookup.class);
 		} catch (NoSuchMethodException e) {
@@ -81,6 +81,6 @@ public class DefaultMethodHandler {
 	@Value
 	@EqualsAndHashCode(callSuper = false)
 	protected static class DefaultMethodException extends Exception {
-		private final Throwable throwable;
+		Throwable throwable;
 	}
 }

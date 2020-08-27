@@ -10,7 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.awaitility.Awaitility.await;
 
-public class Reload extends DocTestBase {
+class Reload extends DocTestBase {
 
 	// tag::reload-interface[]
 	interface ClientConfig {
@@ -25,7 +25,7 @@ public class Reload extends DocTestBase {
 	// end::reload-interface[]
 
 	@Test
-	public void reloadHandlers(){
+	void reloadHandlers(){
 		PropertiesSource source = PropertiesSource.of("database.url", "http://example.com/db")
 			.set("backend.url", "http://example.com/be");
 

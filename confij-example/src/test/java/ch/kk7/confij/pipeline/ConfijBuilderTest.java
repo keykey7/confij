@@ -29,24 +29,24 @@ class ConfijBuilderTest {
 	}
 
 	@Test
-	public void yamlFromClasspath() {
+	void yamlFromClasspath() {
 		assertSourceBecomes("classpath:MyConfig.yaml", "iamfromyaml");
 	}
 
 	@Test
-	public void propertiesFromClasspath() {
+	void propertiesFromClasspath() {
 		assertSourceBecomes("classpath:MyConfig.properties", "iamfromproperties");
 		assertSourceBecomes("classpath:./MyConfig.properties", "iamfromproperties");
 	}
 
 	@Test
-	public void fromEnvvar() throws Exception {
+	void fromEnvvar() throws Exception {
 		SystemLambda.withEnvironmentVariable("cfgprefix_aString", "envvalue")
 				.execute(() -> assertSourceBecomes("env:cfgprefix", "envvalue"));
 	}
 
 	@Test
-	public void fromSysprops() throws Exception {
+	void fromSysprops() throws Exception {
 		SystemLambda.restoreSystemProperties(() -> {
 			System.setProperty("sysprefix.a.1.xxx.aString", "sysvalue");
 			assertSourceBecomes("sys:sysprefix.a.1.xxx", "sysvalue");
@@ -55,14 +55,14 @@ class ConfijBuilderTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {"unknown:whatever", "file:", ":", "#", "\0", "unknown:${env:PATH}"})
-	public void unknownScheme(String invalidPath) {
+	void unknownScheme(String invalidPath) {
 		ConfijBuilder<MyConfig> builder = ConfijBuilder.of(MyConfig.class)
 				.loadFrom(invalidPath);
 		assertThrows(ConfijSourceException.class, builder::build);
 	}
 
 	@Test
-	public void fromFile(@TempDir Path tempDir) throws IOException {
+	void fromFile(@TempDir Path tempDir) throws IOException {
 		Path configFile = tempDir.resolve("with spaces/FileConfig!%.yml");
 		Files.createDirectory(configFile.getParent());
 		Files.copy(Objects.requireNonNull(ClassLoader.getSystemResourceAsStream("MyConfig.yaml")), configFile);

@@ -10,7 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MaybeSourceTest extends ConfijSourceTestBase {
-
 	private static AbstractStringAssert<?> assertThatX(ConfijSource nested) {
 		ConfigX orConfig = ConfijBuilder.of(ConfigX.class)
 				.loadFrom(setXTo("before"))
@@ -20,27 +19,27 @@ class MaybeSourceTest extends ConfijSourceTestBase {
 	}
 
 	@Test
-	public void exceptionAtStart() {
+	void exceptionAtStart() {
 		assertThatX(alwaysFail).isEqualTo("before");
 	}
 
 	@Test
-	public void exceptionAtEnd() {
+	void exceptionAtEnd() {
 		assertThatX(setThenFail).isEqualTo("before");
 	}
 
 	@Test
-	public void noException() {
+	void noException() {
 		assertThatX(setXTo("override")).isEqualTo("override");
 	}
 
 	@Test
-	public void noNullSource() {
+	void noNullSource() {
 		assertThatThrownBy(() -> new MaybeSource(null));
 	}
 
 	@Test
-	public void viaBuilder() {
+	void viaBuilder() {
 		System.setProperty("app.x", "appx");
 		ConfigX orConfig = ConfijBuilder.of(ConfigX.class)
 				.loadFrom(setXTo("before"))

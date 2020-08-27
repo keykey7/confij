@@ -2,17 +2,23 @@ package ch.kk7.confij.source.format;
 
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.annotation.Key;
+import ch.kk7.confij.common.GenericType;
+import ch.kk7.confij.source.ConfijSourceException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SuppressWarnings({"squid:S1192", "squid:S00100"})
 class TomlFormatTest {
-
 	interface TomlSpec {
 		String title();
 
@@ -75,5 +81,16 @@ class TomlFormatTest {
 		assertThat(beta.ip()).isEqualTo("10.0.0.2");
 		assertThat(beta.dc()).isEqualTo("eqdc10");
 		assertThat(beta.hosts()).containsExactly("alpha", "omega");
+	}
+
+	@Test
+	void errorCase(@TempDir Path tmpDir) throws IOException {
+		Path testFile = tmpDir.resolve("bla.toml");
+		Files.write(testFile, ("just crap").getBytes());
+		assertThatThrownBy(() -> ConfijBuilder.of(new GenericType<Integer>() {
+		})
+				.loadFrom(testFile.toString())
+				.build()).isInstanceOf(ConfijSourceException.class)
+				.hasMessageContaining("crap");
 	}
 }

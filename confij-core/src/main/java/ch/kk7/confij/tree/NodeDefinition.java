@@ -18,8 +18,7 @@ import java.util.Set;
 @Value
 @NonFinal
 public abstract class NodeDefinition {
-	@NonNull
-	NodeBindingContext nodeBindingContext;
+	@NonNull NodeBindingContext nodeBindingContext;
 
 	/**
 	 * @return true if this is a leaf node and can hold a property value
@@ -102,8 +101,9 @@ public abstract class NodeDefinition {
 
 		/**
 		 * a map-like definition for a node where all keys are known and no optional ones are allowed.
+		 *
 		 * @param nodeBindingContext this nodes context
-		 * @param children the map of mandatory child definitions
+		 * @param children           the map of mandatory child definitions
 		 * @return self
 		 */
 		public static NodeDefinitionMap fixedKeysMap(NodeBindingContext nodeBindingContext, Map<String, NodeDefinition> children) {

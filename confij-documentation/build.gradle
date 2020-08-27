@@ -16,7 +16,7 @@ asciidoctor {
 			'attribute-missing': 'warn'
 
 	doFirst {
-		attributes 'revnumberstable': "git tag -l --sort=-v:refname".execute().in.readLines().find {it ==~ /\d+\.\d+\.\d+/}
+		attributes 'revnumberstable': "git tag -l --sort=-v:refname".execute().in.readLines().find { it ==~ /\d+\.\d+\.\d+/ }
 	}
 
 	asciidoctorj {

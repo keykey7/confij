@@ -25,7 +25,7 @@ class PeriodicReloadStrategyTest implements WithAssertions {
 	}
 
 	@Test
-	public void testScheduled() {
+	void testScheduled() {
 		MockPipeline mockPipeline = new MockPipeline();
 		new PeriodicReloadStrategy(Duration.ofSeconds(10), Duration.ofMillis(1)).register(mockPipeline);
 		await().atMost(5, TimeUnit.SECONDS)
@@ -33,14 +33,14 @@ class PeriodicReloadStrategyTest implements WithAssertions {
 	}
 
 	@Test
-	public void notNull() {
+	void notNull() {
 		assertThatThrownBy(() -> new PeriodicReloadStrategy(Duration.ZERO)).isInstanceOf(IllegalArgumentException.class);
 		assertThatThrownBy(() -> new PeriodicReloadStrategy(Duration.ofMillis(1), Duration.ZERO.minusDays(1))).isInstanceOf(
 				IllegalArgumentException.class);
 	}
 
 	@Test
-	public void builderWithoutWrapperMakesNoSense() {
+	void builderWithoutWrapperMakesNoSense() {
 		assertThatThrownBy(() -> ConfijBuilder.of(new GenericType<Integer>() {
 		})
 				.reloadStrategy(new PeriodicReloadStrategy())

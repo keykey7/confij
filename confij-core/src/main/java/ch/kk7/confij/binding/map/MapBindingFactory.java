@@ -15,7 +15,6 @@ import java.util.function.Function;
 
 @ToString
 public class MapBindingFactory implements ConfigBindingFactory<MapBinding> {
-
 	private final Function<ResolvedType, ? extends MapBuilder> builderFactory;
 
 	public MapBindingFactory() {

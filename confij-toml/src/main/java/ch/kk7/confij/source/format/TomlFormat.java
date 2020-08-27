@@ -24,7 +24,6 @@ import static java.util.stream.Collectors.joining;
 @ToString
 @AutoService(ConfijSourceFormat.class)
 public class TomlFormat implements ConfijSourceFormat {
-
 	@Override
 	public void override(ConfijNode rootNode, String content) {
 		TomlParseResult result;
@@ -66,14 +65,15 @@ public class TomlFormat implements ConfijSourceFormat {
 	 * 10. TomlTable.class
 	 */
 	private Object transform(Object object) {
-		if (object == null) {
-			return null;
-		}
 		if (object instanceof String) {
 			return object;
 		}
-		if (object instanceof Long || object instanceof Double || object instanceof Boolean
-				|| object instanceof LocalDate || object instanceof LocalTime || object instanceof LocalDateTime ||
+		if (object instanceof Long ||
+				object instanceof Double ||
+				object instanceof Boolean ||
+				object instanceof LocalDate ||
+				object instanceof LocalTime ||
+				object instanceof LocalDateTime ||
 				object instanceof OffsetDateTime) {
 			return object.toString();
 		}
@@ -83,7 +83,7 @@ public class TomlFormat implements ConfijSourceFormat {
 		if (object instanceof TomlArray) {
 			return transformTomlArray((TomlArray) object);
 		}
-		throw new IllegalArgumentException("This is a invalid type " + object.getClass().getSimpleName() + " while parsing TOML.");
+		throw new IllegalArgumentException("This is a invalid type " + object.getClass() + " while parsing TOML.");
 	}
 
 	private Map<String, Object> transformTomlTable(TomlTable table) {

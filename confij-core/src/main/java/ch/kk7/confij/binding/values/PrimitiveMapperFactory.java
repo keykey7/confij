@@ -30,7 +30,6 @@ public class PrimitiveMapperFactory implements ValueMapperFactory {
 			return Optional.empty();
 		}
 		return Optional.of(mappings.get(type.getErasedType()));
-
 	}
 
 	protected <T> void withMapping(Class<T> forClass, NullableValueMapperInstance<T> mapping) {

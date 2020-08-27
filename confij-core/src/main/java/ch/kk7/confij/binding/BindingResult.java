@@ -19,9 +19,7 @@ import java.util.List;
 @Value
 public class BindingResult<T> {
 	T value;
-
 	@NonNull ConfijNode node;
-
 	@NonNull List<BindingResult<?>> children;
 
 	public static <X> BindingResult<X> ofLeaf(X value, ConfijNode node) {

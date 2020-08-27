@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 // TODO: make ThreadSafe
 @ToString
 public class SimpleVariableResolver implements ValueResolver {
-
 	@Inherited
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.TYPE})
@@ -168,5 +167,4 @@ public class SimpleVariableResolver implements ValueResolver {
 		s = s.replace("" + escapeChar, "" + escapeChar + escapeChar);
 		return s.replaceAll("\\$\\{", escapeChar + "${");
 	}
-
 }

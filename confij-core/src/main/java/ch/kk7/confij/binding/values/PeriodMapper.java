@@ -1,9 +1,9 @@
 package ch.kk7.confij.binding.values;
 
-import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.BindingType;
-import ch.kk7.confij.binding.values.ValueMapperInstance.NullableValueMapperInstance;
+import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.values.DurationMapper.DurationMapperInstance;
+import ch.kk7.confij.binding.values.ValueMapperInstance.NullableValueMapperInstance;
 
 import java.time.DateTimeException;
 import java.time.Period;
@@ -16,7 +16,7 @@ public class PeriodMapper extends AbstractClassValueMapper<Period> {
 		 * assumed to be in days. The returned period is in days.
 		 * The purpose of this function is to implement the period-related methods
 		 * in the ConfigObject interface.
-		 *
+		 * <p>
 		 * Heavily inspired by https://github.com/lightbend/config/blob/ea45ea3767a201933eeeb9c3f0f13eacc9b51f07/config/src/main/java/com/typesafe/config/impl/SimpleConfig.java
 		 */
 		public static Period parsePeriod(String s) {
