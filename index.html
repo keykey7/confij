@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <h1>ConfiJ Reference Guide</h1>
 <div class="details">
-<span id="revnumber">version 0.5.1</span>
+<span id="revnumber">version 0.6.0-rc.0.7+4b5a872</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -452,39 +452,39 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_quick_start">2. Quick Start</a></li>
 </ul>
 </li>
-<li><a href="#_binding">Binding</a>
-<ul class="sectlevel1">
-<li><a href="#_value_mapping">3. Value Mapping</a>
-<ul class="sectlevel2">
-<li><a href="#_default_value_mapping">3.1. Default Value Mapping</a></li>
-<li><a href="#_built_in_value_mapping">3.2. Built-in Value Mapping</a>
-<ul class="sectlevel3">
-<li><a href="#base64-mapping">3.2.1. Base64 encoded</a></li>
-<li><a href="#separated-mapping">3.2.2. Comma Separated</a></li>
-</ul>
-</li>
-<li><a href="#custom-value-mapping">3.3. Custom Value Mapping</a></li>
-</ul>
-</li>
-<li><a href="#nested-configuration">4. Nested Configuration</a></li>
-</ul>
-</li>
 <li><a href="#_configuration_sources">Configuration Sources</a>
 <ul class="sectlevel1">
-<li><a href="#_source_pipelines">5. Source Pipelines</a></li>
-<li><a href="#format-default">6. Default Values</a></li>
-<li><a href="#anysource">7. The AnySource</a></li>
-<li><a href="#_sources_and_formats">8. Sources and Formats</a>
+<li><a href="#_source_pipelines">3. Source Pipelines</a></li>
+<li><a href="#format-default">4. Default Values</a></li>
+<li><a href="#anysource">5. The AnySource</a></li>
+<li><a href="#_sources_and_formats">6. Sources and Formats</a>
 <ul class="sectlevel2">
-<li><a href="#resource-locations">8.1. Resource Providers</a></li>
-<li><a href="#git">8.2. GIT Resource Provider</a></li>
-<li><a href="#_yaml_format">8.3. YAML Format</a></li>
-<li><a href="#_hoconjson_format">8.4. HOCON/JSON Format</a></li>
-<li><a href="#properties-format">8.5. Properties Format</a></li>
-<li><a href="#_environment_variables_and_system_properties_format">8.6. Environment Variables and System Properties Format</a></li>
+<li><a href="#resource-locations">6.1. Resource Providers</a></li>
+<li><a href="#git">6.2. GIT Resource Provider</a></li>
+<li><a href="#_yaml_format">6.3. YAML Format</a></li>
+<li><a href="#_hoconjson_format">6.4. HOCON/JSON Format</a></li>
+<li><a href="#properties-format">6.5. Properties Format</a></li>
+<li><a href="#_environment_variables_and_system_properties_format">6.6. Environment Variables and System Properties Format</a></li>
 </ul>
 </li>
-<li><a href="#serviceloader">9. ConfiJ&#8217;s ServiceLoaders</a></li>
+<li><a href="#serviceloader">7. ConfiJ&#8217;s ServiceLoaders</a></li>
+</ul>
+</li>
+<li><a href="#_binding">Binding</a>
+<ul class="sectlevel1">
+<li><a href="#_value_mapping">8. Value Mapping</a>
+<ul class="sectlevel2">
+<li><a href="#_default_value_mapping">8.1. Default Value Mapping</a></li>
+<li><a href="#_built_in_value_mapping">8.2. Built-in Value Mapping</a>
+<ul class="sectlevel3">
+<li><a href="#base64-mapping">8.2.1. Base64 encoded</a></li>
+<li><a href="#separated-mapping">8.2.2. Comma Separated</a></li>
+</ul>
+</li>
+<li><a href="#custom-value-mapping">8.3. Custom Value Mapping</a></li>
+</ul>
+</li>
+<li><a href="#nested-configuration">9. Nested Configuration</a></li>
 </ul>
 </li>
 <li><a href="#variables">Templating</a>
@@ -503,6 +503,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#non-null-validator">12. Non-Null Validator</a></li>
 <li><a href="#jsr303-validator">13. JSR303 Validator</a></li>
 <li><a href="#_logging">14. Logging</a></li>
+<li><a href="#_live_reloading">15. Live Reloading</a></li>
 </ul>
 </li>
 </ul>
@@ -511,6 +512,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
+<div class="imageblock right">
+<div class="content">
+<img src="data:image/png;base64,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" alt="ConfiJ Logo">
+</div>
+</div>
 <div class="paragraph">
 <p>ConfiJ is a type-safe, strongly defined, minimal-dependency Java configuration library.
 It enforces a contract on the configuration as Java-types.</p>
@@ -545,6 +551,9 @@ dependencies {
 </div>
 </div>
 </div>
+</div>
+<div class="paragraph">
+<p>The latest snapshot version <code>0.6.0-rc.0.7+4b5a872</code> will be removed after 30 days.</p>
 </div>
 </div>
 </div>
@@ -600,342 +609,9 @@ ConfiJ will make sure no unknown keys are present and bind all configuration str
 </div>
 </div>
 </div>
-<h1 id="_binding" class="sect0"><a class="anchor" href="#_binding"></a>Binding</h1>
-<div class="openblock partintro">
-<div class="content">
-The binding defines the contract of the configuration as well as the mapping
-from string value to the actual configuration type.
-Each configuration is organized in a tree-structure and generally immutable.
-</div>
-</div>
-<div class="sect1">
-<h2 id="_value_mapping"><a class="anchor" href="#_value_mapping"></a>3. Value Mapping</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>When values are read from a configuration files they are first available as Strings.
-They are then transparently mapped to Objects or pimitives to match the defined type.</p>
-</div>
-<div class="exampleblock">
-<div class="title">Example 3. Value Mapping to known types in a flat configuration</div>
-<div class="content">
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="java">interface MappedConfig {
-	String aString();
-
-	Double pi(); <i class="conum" data-value="1"></i><b>(1)</b>
-
-	@Key("int") <i class="conum" data-value="2"></i><b>(2)</b>
-	int anInt();
-
-	int[] intArray(); <i class="conum" data-value="3"></i><b>(3)</b>
-
-	@Base64 <i class="conum" data-value="4"></i><b>(4)</b>
-	byte[] base64();
-
-	Duration duration(); <i class="conum" data-value="5"></i><b>(5)</b>
-}</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="yaml"># mapped.yaml
-aString: a value
-pi: 3.141
-int: 42
-intArray: [1, 2, 3]
-base64: AQIDBA==
-duration: 7nanoseconds</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>mapping to primitives or java.lang objects</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>configuration keys can be changed if the attribute name doesn&#8217;t fit</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>arrays are usually mapped from lists (see <a href="#nested-configuration">Chapter 4, <em>Nested Configuration</em></a>)</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>or the default behavior can be changed with a custom <code>ValueMapping</code>.</td>
-</tr>
-</table>
-</div>
-<div class="sect2">
-<h3 id="_default_value_mapping"><a class="anchor" href="#_default_value_mapping"></a>3.1. Default Value Mapping</h3>
-<div class="paragraph">
-<p>The default mapping behavior attempts to map from string to target type in the following order:</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>if the attribute is annotated with a custom <code>@ValueMapper</code> enforce that one
-(see <a href="#custom-value-mapping">Section 3.3, &#8220;Custom Value Mapping&#8221;</a>)</p>
-</li>
-<li>
-<p>primitives types, where <code>null</code> values are mapped to their empty types:
-a non-existent <code>int</code> becomes 0.
-booleans either have to be lowercase <code>true</code> or <code>false</code>,
-except for source languages enforcing another definition (like yaml).</p>
-</li>
-<li>
-<p>explicit mappings, for example:</p>
-<div class="literalblock">
-<div class="content">
-<pre>java.nio.file.Path
-java.io.File
-java.time.Duration
-java.time.Period
-java.util.Optional
-...</pre>
-</div>
-</div>
-</li>
-<li>
-<p>all Enum-types based on the Enum&#8217;s name</p>
-</li>
-<li>
-<p>classes with a static method named <code>valueOf(String)</code> or <code>fromString(String)</code></p>
-</li>
-<li>
-<p>classes with a constructor taking a single String as input argument</p>
-</li>
-</ol>
-</div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-tip" title="Tip"></i>
-</td>
-<td class="content">
-Arrays/Collections are not considered leafs. In order to map a comma separated
-configuration string to a <code>string[]</code> you have to annotate it with <code>@Separated</code>.
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_built_in_value_mapping"><a class="anchor" href="#_built_in_value_mapping"></a>3.2. Built-in Value Mapping</h3>
-<div class="sect3">
-<h4 id="base64-mapping"><a class="anchor" href="#base64-mapping"></a>3.2.1. Base64 encoded</h4>
-<div class="paragraph">
-<p><code>@Base64</code> expects to bind a base64-encoded string to an array or collection of bytes.</p>
-</div>
-<div class="exampleblock">
-<div class="title">Example 4. Mapping base64 encoded configuration properties</div>
-<div class="content">
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="java">interface Base64Encoded {
-	@Base64
-	byte[] base64Arr();
-
-	@Base64(decoder = Base64Decoder.RFC4648_URLSAFE)
-	List&lt;Byte&gt; base64List();
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect3">
-<h4 id="separated-mapping"><a class="anchor" href="#separated-mapping"></a>3.2.2. Comma Separated</h4>
-<div class="paragraph">
-<p><code>@Separated</code> expects to bind a delimited string to an array or collection of arbitrary type.</p>
-</div>
-<div class="exampleblock">
-<div class="title">Example 5. @Separated as a short-form for collection types</div>
-<div class="content">
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="java">interface SeparatedConfig {
-	@Separated
-	List&lt;String&gt; commaSeparated();
-
-	@Separated(separator = "#")
-	int[] hashSeparated();
-
-	Set&lt;String&gt; usuallyAList();
-}</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="java">commaSeparated=comma,separated,values
-hashSeparated=1#2#3
-usuallyAList.0=common
-usuallyAList.1=list
-usuallyAList.2=notation</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="custom-value-mapping"><a class="anchor" href="#custom-value-mapping"></a>3.3. Custom Value Mapping</h3>
-<div class="paragraph">
-<p>If the default mapping does not fit or the target type is unknown, you generally have
-two options: programmatic the ConfiJBuilder or with an annotation on the affected attribute.</p>
-</div>
-<div class="paragraph">
-<p>If a custom mapping holds for all types in the whole configuration,
-it&#8217;s easiest to set it in the builder when creating the configuration instance.</p>
-</div>
-<div class="exampleblock">
-<div class="title">Example 6. Global support to map RGB codes like "#0F0F0F" to Color</div>
-<div class="content">
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="java">EmptyColorHolder colorHolder = ConfijBuilder.of(EmptyColorHolder.class)
-		.bindValuesForClassWith(Color::decode, java.awt.Color.class)</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>If a custom mapping should only be applied to specific attributes,
-annotate them with <code>@ValueMapper(Class)</code>.
-The mapper class must have an accessible empty constructor.</p>
-</div>
-<div class="exampleblock">
-<div class="title">Example 7. Annotation based support to map RGB codes like "#0F0F0F" to Color</div>
-<div class="content">
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="java">static class ColorDecoder implements ValueMapperFactory {
-	@Override
-	public Optional&lt;ValueMapperInstance&lt;?&gt;&gt; maybeForType(BindingType bindingType) {
-		return Optional.of(Color::decode);
-	}
-}
-
-interface Favourites {
-	@ValueMapper(ColorDecoder.class)
-	Color favouriteColor();
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>In order to pass compile time options to the mapper instance,
-introduce fresh custom annotation, annotated with <code>@ValueMapper(Class)</code>.
-See for example the implementation of <a href="#separated-mapping">Section 3.2.2, &#8220;Comma Separated&#8221;</a>.</p>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="nested-configuration"><a class="anchor" href="#nested-configuration"></a>4. Nested Configuration</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Configurations can themselves contain child configurations recursively.
-Since every configuration is organized in a tree-structure, we call them branches.</p>
-</div>
-<div class="exampleblock">
-<div class="title">Example 8. Simple nested configuration</div>
-<div class="content">
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="java">interface ServerConfig {
-	Timing timing();
-	URL url();
-}
-
-interface Timing {
-	Duration keepAlive();
-	Duration timeout();
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>Typical branches contain, but are not limited to:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>nested interfaces (also with generics)</p>
-</li>
-<li>
-<p>Collection of interfaces, Objects (leafs), other Collections,&#8230;&#8203;</p>
-</li>
-<li>
-<p>Array types of Objects, primitives, other Arrays,&#8230;&#8203;</p>
-</li>
-<li>
-<p>Map types where keys are Strings and values are again anything</p>
-</li>
-</ul>
-</div>
-<div class="exampleblock">
-<div class="title">Example 9. Nested branches of child configurations</div>
-<div class="content">
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="java">interface DbConfig {
-	List&lt;ServerConfig&gt; dbConnections();
-	Map&lt;String, String&gt; additionalParameters();
-	byte[] privateKey();
-	Nested&lt;Timing&gt; defaultTiming();
-}
-
-interface Nested&lt;T&gt; {
-	boolean active();
-	T wrapped();
-}</code></pre>
-</div>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="java">DbConfig dbConfig = ConfijBuilder.of(DbConfig.class)
-	.loadFrom(new PropertiesSource()
-		.with("dbConnections.0.url", "https://db0.example.com")
-		.with("dbConnections.0.timing.keepAlive", "30s")
-		.with("additionalParameters.somekey", "somevalue"))
-	.build();</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>If the standard <code>Collection</code> interfaces are used ConfiJ will use an immutable representation of it.
-But any instance can be used as long as it has an empty constructor (but at the loss of immutability).
-Same holds for <code>Map&lt;String,?&gt;</code> types.</p>
-</div>
-<div class="paragraph">
-<p>Interface proxies are Java-serializable if all the customized values are serializable, too.</p>
-</div>
-<div class="admonitionblock warning">
-<table>
-<tr>
-<td class="icon">
-<i class="fa icon-warning" title="Warning"></i>
-</td>
-<td class="content">
-Java Bean types (POJO) are not supported yet. Please contribute.
-</td>
-</tr>
-</table>
-</div>
-</div>
-</div>
 <h1 id="_configuration_sources" class="sect0"><a class="anchor" href="#_configuration_sources"></a>Configuration Sources</h1>
 <div class="sect1">
-<h2 id="_source_pipelines"><a class="anchor" href="#_source_pipelines"></a>5. Source Pipelines</h2>
+<h2 id="_source_pipelines"><a class="anchor" href="#_source_pipelines"></a>3. Source Pipelines</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>ConfiJ loads sources one after the other.
@@ -946,7 +622,7 @@ getting more and more detailed.
 Source types can be freely mixed, meaning you can load from classpath, then from a remote file, then from envionment variables and so on.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 10. Merge multiple configuration files across all formats</div>
+<div class="title">Example 3. Merge multiple configuration files across all formats</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1032,7 +708,7 @@ It is allowed to have incomplete configurations while there are still more confi
 </div>
 </div>
 <div class="sect1">
-<h2 id="format-default"><a class="anchor" href="#format-default"></a>6. Default Values</h2>
+<h2 id="format-default"><a class="anchor" href="#format-default"></a>4. Default Values</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Configuration default can be defined directly in your configuration interface using the <code>@Default</code> annotation.
@@ -1040,7 +716,7 @@ For more complex scenarios where the default value is not easily stingifyable,
 use a <code>default</code> method.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 11. Default configuration values as annotations</div>
+<div class="title">Example 4. Default configuration values as annotations</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1066,14 +742,14 @@ use a <code>default</code> method.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="anysource"><a class="anchor" href="#anysource"></a>7. The AnySource</h2>
+<h2 id="anysource"><a class="anchor" href="#anysource"></a>5. The AnySource</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The <code>AnySource</code> simply takes a URI-string and determines resource location and type based on it.
 It is the most compact form to specify a source unless you require special settings.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 12. Load from multiple sources of dynamic type and location</div>
+<div class="title">Example 5. Load from multiple sources of dynamic type and location</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1096,22 +772,22 @@ They take into account the previously loaded configuration keys.
 Replacement keys are always absolute (relative to the configuration root).</p>
 </div>
 <div class="paragraph">
-<p>Most commonly the resource location (file, classpath,&#8230;&#8203;) is detected based on the URI scheme (see <a href="#resource-locations">Section 8.1, &#8220;Resource Providers&#8221;</a>).
+<p>Most commonly the resource location (file, classpath,&#8230;&#8203;) is detected based on the URI scheme (see <a href="#resource-locations">Section 6.1, &#8220;Resource Providers&#8221;</a>).
 The configuration format (yaml, json,&#8230;&#8203;) is detected based on the ending.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_sources_and_formats"><a class="anchor" href="#_sources_and_formats"></a>8. Sources and Formats</h2>
+<h2 id="_sources_and_formats"><a class="anchor" href="#_sources_and_formats"></a>6. Sources and Formats</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="resource-locations"><a class="anchor" href="#resource-locations"></a>8.1. Resource Providers</h3>
+<h3 id="resource-locations"><a class="anchor" href="#resource-locations"></a>6.1. Resource Providers</h3>
 <div class="paragraph">
 <p>Configuration sources that can load from a file can usually load from other input streams as well.
 For those, the source location and source format can be combined freely.</p>
 </div>
 <div class="paragraph">
-<p><a href="#anysource">Chapter 7, <em>The AnySource</em></a> usually detects the location based on the scheme:</p>
+<p><a href="#anysource">Chapter 5, <em>The AnySource</em></a> usually detects the location based on the scheme:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1125,16 +801,16 @@ For those, the source location and source format can be combined freely.</p>
 <p><code>http:</code> or any other registered URL format</p>
 </li>
 <li>
-<p><code>git:</code> for GIT repositories, see <a href="#git">Section 8.2, &#8220;GIT Resource Provider&#8221;</a></p>
+<p><code>git:</code> for GIT repositories, see <a href="#git">Section 6.2, &#8220;GIT Resource Provider&#8221;</a></p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>Register custom resource providers using a <a href="#serviceloader">Chapter 9, <em>ConfiJ&#8217;s ServiceLoaders</em></a> for <code>ch.kk7.confij.source.file.resource.ConfijResourceProvider</code>.</p>
+<p>Register custom resource providers using a <a href="#serviceloader">Chapter 7, <em>ConfiJ&#8217;s ServiceLoaders</em></a> for <code>ch.kk7.confij.source.file.resource.ConfijResourceProvider</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="git"><a class="anchor" href="#git"></a>8.2. GIT Resource Provider</h3>
+<h3 id="git"><a class="anchor" href="#git"></a>6.2. GIT Resource Provider</h3>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -1149,7 +825,7 @@ GIT resources require the <code>ch.kk7:confij-git</code> maven artifact.
 </div>
 <div class="paragraph">
 <p>Configuration sources can be fetched via GIT.
-For simple cases an <a href="#anysource">Chapter 7, <em>The AnySource</em></a> can be used with a special URL format:</p>
+For simple cases an <a href="#anysource">Chapter 5, <em>The AnySource</em></a> can be used with a special URL format:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1170,7 +846,7 @@ The default refspec is HEAD.</p>
 </ul>
 </div>
 <div class="exampleblock">
-<div class="title">Example 13. Valid AnySource-URLs specifying the path to a file in a GIT-repository</div>
+<div class="title">Example 6. Valid AnySource-URLs specifying the path to a file in a GIT-repository</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1210,7 +886,7 @@ the existing <code>GitResourceProvider</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_yaml_format"><a class="anchor" href="#_yaml_format"></a>8.3. YAML Format</h3>
+<h3 id="_yaml_format"><a class="anchor" href="#_yaml_format"></a>6.3. YAML Format</h3>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -1228,11 +904,11 @@ YAML format requires the <code>ch.kk7:confij-yaml</code> maven artifact.
 Collection types can be represented as lists or as maps with numerical keys.</p>
 </div>
 <div class="paragraph">
-<p>YAML can be loaded from all the <a href="#resource-locations">Section 8.1, &#8220;Resource Providers&#8221;</a>.
+<p>YAML can be loaded from all the <a href="#resource-locations">Section 6.1, &#8220;Resource Providers&#8221;</a>.
 The <code>AnySource</code> expects a case-insensitive file ending of <code>.yaml</code> or <code>.yml</code>.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 14. Load from multiple sources of dynamic type and location</div>
+<div class="title">Example 7. Load from multiple sources of dynamic type and location</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1278,7 +954,7 @@ Internally all values are reduced to Maps of Maps or Strings.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_hoconjson_format"><a class="anchor" href="#_hoconjson_format"></a>8.4. HOCON/JSON Format</h3>
+<h3 id="_hoconjson_format"><a class="anchor" href="#_hoconjson_format"></a>6.4. HOCON/JSON Format</h3>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -1296,7 +972,7 @@ HOCON format requires the <code>ch.kk7:confij-hocon</code> maven artifact.
 is a format for human-readable data, and a superset of JSON and .properties.</p>
 </div>
 <div class="paragraph">
-<p>HOCON can be loaded from all the <a href="#resource-locations">Section 8.1, &#8220;Resource Providers&#8221;</a>.
+<p>HOCON can be loaded from all the <a href="#resource-locations">Section 6.1, &#8220;Resource Providers&#8221;</a>.
 The <code>AnySource</code> expects a case-insensitive file ending of <code>.hocon</code>, <code>.json</code> or <code>.conf</code>.</p>
 </div>
 <div class="paragraph">
@@ -1305,7 +981,7 @@ The <code>AnySource</code> expects a case-insensitive file ending of <code>.hoco
 before ConfiJ&#8217;s templating will kick in.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 15. Two substitution mechanisms</div>
+<div class="title">Example 8. Two substitution mechanisms</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1325,17 +1001,17 @@ b: "${a} and two"</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="properties-format"><a class="anchor" href="#properties-format"></a>8.5. Properties Format</h3>
+<h3 id="properties-format"><a class="anchor" href="#properties-format"></a>6.5. Properties Format</h3>
 <div class="paragraph">
 <p>Java properties files are part of the <code>ch.kk7:confij-core</code> due to not having any 3rd party dependencies,
 but are otherwise not recommended, since it is a flat key-value format.</p>
 </div>
 <div class="paragraph">
-<p>Property files can be loaded from all <a href="#resource-locations">Section 8.1, &#8220;Resource Providers&#8221;</a>.
+<p>Property files can be loaded from all <a href="#resource-locations">Section 6.1, &#8220;Resource Providers&#8221;</a>.
 The <code>AnySource</code> expects a case-insensitive file ending of <code>.properties</code>.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 16. Nested configuration loading from properties file</div>
+<div class="title">Example 9. Nested configuration loading from properties file</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1390,16 +1066,16 @@ mapOfNest.myotherkey.x=200</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_environment_variables_and_system_properties_format"><a class="anchor" href="#_environment_variables_and_system_properties_format"></a>8.6. Environment Variables and System Properties Format</h3>
+<h3 id="_environment_variables_and_system_properties_format"><a class="anchor" href="#_environment_variables_and_system_properties_format"></a>6.6. Environment Variables and System Properties Format</h3>
 <div class="paragraph">
-<p>Environment variables and system properties work similar to the file based <a href="#properties-format">Section 8.5, &#8220;Properties Format&#8221;</a>.
+<p>Environment variables and system properties work similar to the file based <a href="#properties-format">Section 6.5, &#8220;Properties Format&#8221;</a>.
 System properties have to be dot separated, whereas envvars are underline separated.
 To read an envvar specify a URI like <code>env:&lt;prefix&gt;</code>, where every envvar to be considered
 must start with that prefix and will have that prefix stripped away.
 For example an envvar <code>FUU_bar_xy</code> with a prefix <code>FUU</code> is mapped to a property called <code>bar.xy</code> (case-sensitive).</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 17. Read configuration values from envvars and Java sys props</div>
+<div class="title">Example 10. Read configuration values from envvars and Java sys props</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1431,7 +1107,7 @@ For example an envvar <code>FUU_bar_xy</code> with a prefix <code>FUU</code> is 
 </div>
 </div>
 <div class="sect1">
-<h2 id="serviceloader"><a class="anchor" href="#serviceloader"></a>9. ConfiJ&#8217;s ServiceLoaders</h2>
+<h2 id="serviceloader"><a class="anchor" href="#serviceloader"></a>7. ConfiJ&#8217;s ServiceLoaders</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>ConfiJ allows utilizing Java&#8217;s <a href="https://docs.oracle.com/javase/8/docs/api/?java/util/ServiceLoader.html">ServiceLoader</a>
@@ -1440,7 +1116,7 @@ All you have to do is to add the file with the service-interface name to META-IN
 In this service file you list the fully qualified classnames of your constraint validator classes (one per line).</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 18. Custom Resource Provider as ServiceLoader</div>
+<div class="title">Example 11. Custom Resource Provider as ServiceLoader</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1472,7 +1148,7 @@ interface Foo {
 <p>To change the priority of a service loader instance implement the <code>ServiceLoaderPriority</code>.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 19. Custom Resource Provider as ServiceLoader with lowered priority</div>
+<div class="title">Example 12. Custom Resource Provider as ServiceLoader with lowered priority</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1493,6 +1169,339 @@ interface Foo {
 </div>
 </div>
 </div>
+<h1 id="_binding" class="sect0"><a class="anchor" href="#_binding"></a>Binding</h1>
+<div class="openblock partintro">
+<div class="content">
+The binding defines the contract of the configuration as well as the mapping
+from string value to the actual configuration type.
+Each configuration is organized in a tree-structure and generally immutable.
+</div>
+</div>
+<div class="sect1">
+<h2 id="_value_mapping"><a class="anchor" href="#_value_mapping"></a>8. Value Mapping</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>When values are read from a configuration files they are first available as Strings.
+They are then transparently mapped to Objects or pimitives to match the defined type.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 13. Value Mapping to known types in a flat configuration</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">interface MappedConfig {
+	String aString();
+
+	Double pi(); <i class="conum" data-value="1"></i><b>(1)</b>
+
+	@Key("int") <i class="conum" data-value="2"></i><b>(2)</b>
+	int anInt();
+
+	int[] intArray(); <i class="conum" data-value="3"></i><b>(3)</b>
+
+	@Base64 <i class="conum" data-value="4"></i><b>(4)</b>
+	byte[] base64();
+
+	Duration duration(); <i class="conum" data-value="5"></i><b>(5)</b>
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="yaml"># mapped.yaml
+aString: a value
+pi: 3.141
+int: 42
+intArray: [1, 2, 3]
+base64: AQIDBA==
+duration: 7nanoseconds</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>mapping to primitives or java.lang objects</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>configuration keys can be changed if the attribute name doesn&#8217;t fit</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>arrays are usually mapped from lists (see <a href="#nested-configuration">Chapter 9, <em>Nested Configuration</em></a>)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>or the default behavior can be changed with a custom <code>ValueMapping</code>.</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_default_value_mapping"><a class="anchor" href="#_default_value_mapping"></a>8.1. Default Value Mapping</h3>
+<div class="paragraph">
+<p>The default mapping behavior attempts to map from string to target type in the following order:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>if the attribute is annotated with a custom <code>@ValueMapper</code> enforce that one
+(see <a href="#custom-value-mapping">Section 8.3, &#8220;Custom Value Mapping&#8221;</a>)</p>
+</li>
+<li>
+<p>primitives types, where <code>null</code> values are mapped to their empty types:
+a non-existent <code>int</code> becomes 0.
+booleans either have to be lowercase <code>true</code> or <code>false</code>,
+except for source languages enforcing another definition (like yaml).</p>
+</li>
+<li>
+<p>explicit mappings, for example:</p>
+<div class="literalblock">
+<div class="content">
+<pre>java.nio.file.Path
+java.io.File
+java.time.Duration
+java.time.Period
+java.util.Optional
+...</pre>
+</div>
+</div>
+</li>
+<li>
+<p>all Enum-types based on the Enum&#8217;s name</p>
+</li>
+<li>
+<p>classes with a static method named <code>valueOf(String)</code> or <code>fromString(String)</code></p>
+</li>
+<li>
+<p>classes with a constructor taking a single String as input argument</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Arrays/Collections are not considered leafs. In order to map a comma separated
+configuration string to a <code>string[]</code> you have to annotate it with <code>@Separated</code>.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_built_in_value_mapping"><a class="anchor" href="#_built_in_value_mapping"></a>8.2. Built-in Value Mapping</h3>
+<div class="sect3">
+<h4 id="base64-mapping"><a class="anchor" href="#base64-mapping"></a>8.2.1. Base64 encoded</h4>
+<div class="paragraph">
+<p><code>@Base64</code> expects to bind a base64-encoded string to an array or collection of bytes.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 14. Mapping base64 encoded configuration properties</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">interface Base64Encoded {
+	@Base64
+	byte[] base64Arr();
+
+	@Base64(decoder = Base64Decoder.RFC4648_URLSAFE)
+	List&lt;Byte&gt; base64List();
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="separated-mapping"><a class="anchor" href="#separated-mapping"></a>8.2.2. Comma Separated</h4>
+<div class="paragraph">
+<p><code>@Separated</code> expects to bind a delimited string to an array or collection of arbitrary type.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 15. @Separated as a short-form for collection types</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">interface SeparatedConfig {
+	@Separated
+	List&lt;String&gt; commaSeparated();
+
+	@Separated(separator = "#")
+	int[] hashSeparated();
+
+	Set&lt;String&gt; usuallyAList();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">commaSeparated=comma,separated,values
+hashSeparated=1#2#3
+usuallyAList.0=common
+usuallyAList.1=list
+usuallyAList.2=notation</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="custom-value-mapping"><a class="anchor" href="#custom-value-mapping"></a>8.3. Custom Value Mapping</h3>
+<div class="paragraph">
+<p>If the default mapping does not fit or the target type is unknown, you generally have
+two options: programmatic the ConfiJBuilder or with an annotation on the affected attribute.</p>
+</div>
+<div class="paragraph">
+<p>If a custom mapping holds for all types in the whole configuration,
+it&#8217;s easiest to set it in the builder when creating the configuration instance.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 16. Global support to map RGB codes like "#0F0F0F" to Color</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">EmptyColorHolder colorHolder = ConfijBuilder.of(EmptyColorHolder.class)
+		.bindValuesForClassWith(Color::decode, java.awt.Color.class)</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>If a custom mapping should only be applied to specific attributes,
+annotate them with <code>@ValueMapper(Class)</code>.
+The mapper class must have an accessible empty constructor.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 17. Annotation based support to map RGB codes like "#0F0F0F" to Color</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">static class ColorDecoder implements ValueMapperFactory {
+	@Override
+	public Optional&lt;ValueMapperInstance&lt;?&gt;&gt; maybeForType(BindingType bindingType) {
+		return Optional.of(Color::decode);
+	}
+}
+
+interface Favourites {
+	@ValueMapper(ColorDecoder.class)
+	Color favouriteColor();
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>In order to pass compile time options to the mapper instance,
+introduce fresh custom annotation, annotated with <code>@ValueMapper(Class)</code>.
+See for example the implementation of <a href="#separated-mapping">Section 8.2.2, &#8220;Comma Separated&#8221;</a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="nested-configuration"><a class="anchor" href="#nested-configuration"></a>9. Nested Configuration</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Configurations can themselves contain child configurations recursively.
+Since every configuration is organized in a tree-structure, we call them branches.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 18. Simple nested configuration</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">interface ServerConfig {
+	Timing timing();
+	URL url();
+}
+
+interface Timing {
+	Duration keepAlive();
+	Duration timeout();
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>Typical branches contain, but are not limited to:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>nested interfaces (also with generics)</p>
+</li>
+<li>
+<p>Collection of interfaces, Objects (leafs), other Collections,&#8230;&#8203;</p>
+</li>
+<li>
+<p>Array types of Objects, primitives, other Arrays,&#8230;&#8203;</p>
+</li>
+<li>
+<p>Map types where keys are Strings and values are again anything</p>
+</li>
+</ul>
+</div>
+<div class="exampleblock">
+<div class="title">Example 19. Nested branches of child configurations</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">interface DbConfig {
+	List&lt;ServerConfig&gt; dbConnections();
+	Map&lt;String, String&gt; additionalParameters();
+	byte[] privateKey();
+	Nested&lt;Timing&gt; defaultTiming();
+}
+
+interface Nested&lt;T&gt; {
+	boolean active();
+	T wrapped();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">DbConfig dbConfig = ConfijBuilder.of(DbConfig.class)
+	.loadFrom(new PropertiesSource()
+		.set("dbConnections.0.url", "https://db0.example.com")
+		.set("dbConnections.0.timing.keepAlive", "30s")
+		.set("additionalParameters.somekey", "somevalue"))
+	.build();</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>If the standard <code>Collection</code> interfaces are used ConfiJ will use an immutable representation of it.
+But any instance can be used as long as it has an empty constructor (but at the loss of immutability).
+Same holds for <code>Map&lt;String,?&gt;</code> types.</p>
+</div>
+<div class="paragraph">
+<p>Interface proxies are Java-serializable if all the customized values are serializable, too.</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+Java Bean types (POJO) are not supported yet. Please contribute.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
 <h1 id="variables" class="sect0"><a class="anchor" href="#variables"></a>Templating</h1>
 <div class="openblock partintro">
 <div class="content">
@@ -1502,7 +1511,7 @@ Placeholders are only resolved after all sources were loaded.
 Therefore it is possible for an unfinished configuration to contain undefined references.</p>
 </div>
 <div class="paragraph">
-<p>Additionally some source paths are subject to templating (see <a href="#anysource">Chapter 7, <em>The AnySource</em></a>).</p>
+<p>Additionally some source paths are subject to templating (see <a href="#anysource">Chapter 5, <em>The AnySource</em></a>).</p>
 </div>
 </div>
 </div>
@@ -1808,7 +1817,83 @@ recursively to all child-nodes, which is usually desirable for configurations.</
 <div class="paragraph">
 <p>ConfiJ core relies on <code>java.util.logging</code> (JUL) only due to it&#8217;s zero-dependency strategy.
 If <code>ch.kk7:confij-slf4j</code> is found on the classpath, logging uses the slf4j-framework.
-To support a custom logging-framework, register a <a href="#serviceloader">Chapter 9, <em>ConfiJ&#8217;s ServiceLoaders</em></a> for <code>ConfijLogFactory</code>.</p>
+To support a custom logging-framework, register a <a href="#serviceloader">Chapter 7, <em>ConfiJ&#8217;s ServiceLoaders</em></a> for <code>ConfijLogFactory</code>.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_live_reloading"><a class="anchor" href="#_live_reloading"></a>15. Live Reloading</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>ConfiJ treats configurations are immutable objects. Using mutable objects like arrays is generally possible, but not advised.
+In any case ConfiJ will always create a completely new configuration if one of the values changes.</p>
+</div>
+<div class="paragraph">
+<p>If a reload strategy is used, the <code>ConfiJBuilder.buildWrapper()</code> must be used, as it allows to register to change notifications.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 30. Register a reload strategy which will update the configuration every 2 seconds</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">interface ClientConfig {
+	Endpoint database();
+	Endpoint backend();
+}
+interface Endpoint {
+	URL url();
+	Duration timeout();
+	boolean active();
+}</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">ConfijWrapper&lt;ClientConfig&gt; wrapper = ConfijBuilder.of(ClientConfig.class)
+	.loadFrom(source)
+	.reloadPeriodically(Duration.ofSeconds(2))
+	.buildWrapper();
+ClientConfig currentConfig = wrapper.get(); // always the most up-to-date value</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>You chan be notified on a change on <strong>any</strong> configuration value (it doesn&#8217;t have to be the root).
+If one of the nested configuration values changes, all parent objects will be notified, too.
+For example if <code>database.active</code> swaps, a change handler on <code>database</code> will trigger too.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 31. Register change handlers on individual configuration values</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">wrapper.getReloadNotifier().registerReloadHandler(
+		reloadEvent -&gt; resetHttpClient(reloadEvent.getNewValue()), <i class="conum" data-value="1"></i><b>(1)</b>
+		currentConfig.backend()); <i class="conum" data-value="2"></i><b>(2)</b>
+
+wrapper.getReloadNotifier().&lt;Boolean&gt;registerReloadHandler(
+		reloadEvent -&gt; setDbActivityTo(reloadEvent.getNewValue()),
+              currentConfig.database(), "active"); <i class="conum" data-value="3"></i><b>(3)</b></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>A handler receives a reload event, whenever this value (or a child/nested value) changes</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The target object to attach the handler to. Can be any object&#8230;&#8203;</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>&#8230;&#8203;except primitives. For which a relative path to a parent object has to be set.</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
