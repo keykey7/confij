@@ -29,10 +29,10 @@ class SeparatedMapperTest implements WithAssertions {
 
 	private void assertThatStringingsAll(String source, String[] expected) {
 		Stringings stringings = ConfijBuilder.of(Stringings.class)
-				.loadFrom(new PropertiesSource().with("listOfStrings", source)
-						.with("stringArray", source)
-						.with("setOfStrings", source)
-						.with("notAnnotated", source))
+				.loadFrom(new PropertiesSource().set("listOfStrings", source)
+						.set("stringArray", source)
+						.set("setOfStrings", source)
+						.set("notAnnotated", source))
 				.build();
 		assertThat(stringings.listOfStrings()).containsExactly(expected);
 		assertThat(stringings.stringArray()).containsExactly(expected);
@@ -67,8 +67,8 @@ class SeparatedMapperTest implements WithAssertions {
 	@Test
 	public void testOtherValidTypes() {
 		OtherValidTypes otherValidTypes = ConfijBuilder.of(OtherValidTypes.class)
-				.loadFrom(new PropertiesSource().with("intArray", "0,1,2,3,4,5")
-						.with("longHashSet", "0"))
+				.loadFrom(new PropertiesSource().set("intArray", "0,1,2,3,4,5")
+						.set("longHashSet", "0"))
 				.build();
 		assertThat(otherValidTypes.intArray()).containsExactly(0, 1, 2, 3, 4, 5);
 		assertThat(otherValidTypes.longHashSet()).containsOnly(0L);
@@ -77,8 +77,8 @@ class SeparatedMapperTest implements WithAssertions {
 	@Test
 	public void unmappableValue() {
 		assertThatThrownBy(() -> ConfijBuilder.of(OtherValidTypes.class)
-				.loadFrom(new PropertiesSource().with("intArray", "0 ,1,2,3,4,5")
-						.with("longHashSet", "0"))
+				.loadFrom(new PropertiesSource().set("intArray", "0 ,1,2,3,4,5")
+						.set("longHashSet", "0"))
 				.build());
 	}
 
@@ -118,9 +118,9 @@ class SeparatedMapperTest implements WithAssertions {
 	@Test
 	public void customAnnotation() {
 		CustomAnnotation customAnnotation = ConfijBuilder.of(CustomAnnotation.class)
-				.loadFrom(new PropertiesSource().with("semicolon", "a, b ;c;; ")
-						.with("semicolonTrimmed", "a, b;c;; ")
-						.with("intTrimmed", "1 SPLIT 2 SPLUNK 3"))
+				.loadFrom(new PropertiesSource().set("semicolon", "a, b ;c;; ")
+						.set("semicolonTrimmed", "a, b;c;; ")
+						.set("intTrimmed", "1 SPLIT 2 SPLUNK 3"))
 				.build();
 		assertThat(customAnnotation.semicolon()).containsExactly("a, b ", "c", "", " ");
 		assertThat(customAnnotation.semicolonTrimmed()).containsExactly("a, b", "c", "", "");

@@ -19,10 +19,10 @@ public class PropertiesSource extends PropertiesFormat implements ConfijSource {
 	}
 
 	public static PropertiesSource of(String key, String value) {
-		return new PropertiesSource().with(key, value);
+		return new PropertiesSource().set(key, value);
 	}
 
-	public PropertiesSource with(String key, String value) {
+	public PropertiesSource set(String key, String value) {
 		if (value == null) {
 			properties.remove(key);
 		} else {

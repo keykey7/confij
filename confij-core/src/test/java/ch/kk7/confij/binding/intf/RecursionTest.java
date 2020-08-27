@@ -1,8 +1,11 @@
 package ch.kk7.confij.binding.intf;
 
+import ch.kk7.confij.binding.BindingContext;
 import ch.kk7.confij.binding.ConfigBinder;
+import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.ConfigBindingFactory;
 import ch.kk7.confij.binding.ConfijDefinitionException;
+import ch.kk7.confij.binding.values.ValueMapperFactory;
 import org.assertj.core.api.AbstractThrowableAssert;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,8 +29,17 @@ public class RecursionTest implements WithAssertions {
 		configBinder = new ConfigBinder();
 	}
 
+	public BindingContext defaultBindingContext() {
+		return BindingContext.newDefaultContext(ValueMapperFactory.defaultFactories());
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> ConfigBinding<T> configBindingFor(Class<T> forClass) {
+		return (ConfigBinding<T>) configBinder.toRootConfigBinding(forClass, defaultBindingContext());
+	}
+
 	public <T> AbstractThrowableAssert<?, ? extends Throwable> assertThrowsRecursive(Class<T> forClass) {
-		return assertThatThrownBy(() -> configBinder.toRootConfigBinding(forClass)).isInstanceOf(ConfijDefinitionException.class)
+		return assertThatThrownBy(() -> configBindingFor(forClass)).isInstanceOf(ConfijDefinitionException.class)
 				.hasMessageContaining("circular")
 				.hasMessageContaining(forClass.getSimpleName());
 	}
@@ -88,7 +100,7 @@ public class RecursionTest implements WithAssertions {
 
 	@Test
 	public void genericNotRecursive() {
-		configBinder.toRootConfigBinding(GenericNotRecursive.class);
+		configBindingFor(GenericNotRecursive.class);
 	}
 
 	public interface GenericNotRecursiveDeep extends GenericMaybeRecursive<GenericMaybeRecursive<String>> {
@@ -96,6 +108,6 @@ public class RecursionTest implements WithAssertions {
 
 	@Test
 	public void genericNotRecursiveDeep() {
-		configBinder.toRootConfigBinding(GenericNotRecursiveDeep.class);
+		configBindingFor(GenericNotRecursiveDeep.class);
 	}
 }

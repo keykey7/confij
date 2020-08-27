@@ -60,7 +60,7 @@ public class PrimitiveMapperFactory implements ValueMapperFactory {
 		}
 
 		static BooleanFormatException forInputString(String str) {
-			return new BooleanFormatException("For input string: \"" + str + "\"");
+			return new BooleanFormatException("cannot convert \"" + str + "\" to a boolean, valid are \"true\" and \"false\"");
 		}
 	}
 
@@ -70,7 +70,7 @@ public class PrimitiveMapperFactory implements ValueMapperFactory {
 		}
 
 		static CharFormatException forInputString(String str) {
-			return new CharFormatException("For input string: \"" + str + "\"");
+			return new CharFormatException("cannot convert \"" + str + "\" to a char");
 		}
 	}
 }

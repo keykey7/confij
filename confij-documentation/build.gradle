@@ -10,6 +10,7 @@ dependencies {
 
 asciidoctor {
 	attributes 'revnumber': project.version.toString(),
+			'imagesdir': file('src/docs/resources'),
 			'group': project.group,
 			'reproducible': 'true',
 			'attribute-missing': 'warn'
@@ -23,7 +24,7 @@ asciidoctor {
 		sources {
 			include 'index.adoc'
 		}
-		fatalWarnings missingIncludes(), ~/missing attribute/
+		fatalWarnings ~/.+/
 	}
 }
 

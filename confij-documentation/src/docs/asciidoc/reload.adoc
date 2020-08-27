@@ -1,0 +1,34 @@
+== Live Reloading
+:src: ../../test/java/ch/kk7/confij/docs/Reload.java
+
+ConfiJ treats configurations are immutable objects. Using mutable objects like arrays is generally possible, but not advised.
+In any case ConfiJ will always create a completely new configuration if one of the values changes.
+
+If a reload strategy is used, the `ConfiJBuilder.buildWrapper()` must be used, as it allows to register to change notifications.
+
+.Register a reload strategy which will update the configuration every 2 seconds
+====
+[source]
+----
+include::{src}[tag=reload-interface]
+----
+[source]
+----
+include::{src}[tag=reload-builder]
+----
+====
+
+You chan be notified on a change on *any* configuration value (it doesn't have to be the root).
+If one of the nested configuration values changes, all parent objects will be notified, too.
+For example if `database.active` swaps, a change handler on `database` will trigger too.
+
+.Register change handlers on individual configuration values
+====
+[source]
+----
+include::{src}[tag=reload-handler]
+----
+====
+<1> A handler receives a reload event, whenever this value (or a child/nested value) changes
+<2> The target object to attach the handler to. Can be any object...
+<3> ...except primitives. For which a relative path to a parent object has to be set.

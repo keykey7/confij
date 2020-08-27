@@ -3,7 +3,6 @@ package ch.kk7.confij.tree;
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.common.AnnotationUtil;
 import ch.kk7.confij.common.ClassToImplCache;
-import ch.kk7.confij.template.SimpleVariableResolver;
 import ch.kk7.confij.template.ValueResolver;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -25,17 +24,17 @@ public class NodeBindingContext {
 
 	String defaultValue;
 
-	@NonNull
-	ValueResolver valueResolver;
+	@NonNull ValueResolver valueResolver;
 
 	@NonNull
 	@With(AccessLevel.NONE)
 	@Getter(AccessLevel.NONE)
 	ClassToImplCache implCache;
 
-	public static NodeBindingContext newDefaultSettings() {
+	public static NodeBindingContext newDefaultSettings(@NonNull ValueResolver valueResolver) {
 		ClassToImplCache implCache = new ClassToImplCache();
-		return new NodeBindingContext( null, null, implCache.getInstance(SimpleVariableResolver.class), implCache);
+		implCache.put(valueResolver);
+		return new NodeBindingContext(null, null, valueResolver, implCache);
 	}
 
 	protected NodeBindingContext withValueResolverFor(AnnotatedElement element) {

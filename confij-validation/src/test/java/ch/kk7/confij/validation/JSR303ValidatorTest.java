@@ -53,7 +53,7 @@ class JSR303ValidatorTest implements WithAssertions {
 	@Test
 	public void testOneInvalid() {
 		ConfijBuilder<ValidatedConfig> builder = ConfijBuilder.of(ValidatedConfig.class)
-				.loadFrom(new PropertiesSource().with("anInt", "23"));
+				.loadFrom(new PropertiesSource().set("anInt", "23"));
 		assertThatExceptionOfType(ConfijValidationException.class).isThrownBy(builder::build)
 				.withCauseExactlyInstanceOf(ConstraintViolationException.class)
 				.satisfies(e -> assertThat(((ConstraintViolationException) e.getCause()).getConstraintViolations()).hasSize(1));
@@ -62,14 +62,14 @@ class JSR303ValidatorTest implements WithAssertions {
 	@Test
 	public void testNestedInvalid() {
 		ConfijBuilder<ValidatedConfig> builder = ConfijBuilder.of(ValidatedConfig.class)
-				.loadFrom(new PropertiesSource().with("nested.aString", ""));
+				.loadFrom(new PropertiesSource().set("nested.aString", ""));
 		assertThatExceptionOfType(ConfijValidationException.class).isThrownBy(builder::build);
 	}
 
 	@Test
 	public void testNestedIgnored() {
 		ConfijBuilder.of(ValidatedConfig.class)
-				.loadFrom(new PropertiesSource().with("nestedIgnored.aString", ""))
+				.loadFrom(new PropertiesSource().set("nestedIgnored.aString", ""))
 				.build();
 	}
 
@@ -77,9 +77,9 @@ class JSR303ValidatorTest implements WithAssertions {
 	public void testNestedSetInvalid() {
 		ConfijBuilder<ValidatedConfig> builder = ConfijBuilder.of(ValidatedConfig.class)
 				.loadFrom(new PropertiesSource()
-						.with("aSet.0.aString", "")
-						.with("aSet.1.aString", "I'm valid")
-						.with("aSet.2.aString", ""));
+						.set("aSet.0.aString", "")
+						.set("aSet.1.aString", "I'm valid")
+						.set("aSet.2.aString", ""));
 		assertThatExceptionOfType(ConfijValidationException.class).isThrownBy(builder::build)
 				.withCauseExactlyInstanceOf(ConstraintViolationException.class);
 	}
@@ -87,8 +87,8 @@ class JSR303ValidatorTest implements WithAssertions {
 	@Test
 	public void testNoValidator() {
 		ConfijBuilder.of(ValidatedConfig.class)
-				.loadFrom(new PropertiesSource().with("anInt", "23")
-						.with("aSet.0.aString", ""))
+				.loadFrom(new PropertiesSource().set("anInt", "23")
+						.set("aSet.0.aString", ""))
 				.validationDisabled()
 				.build();
 	}

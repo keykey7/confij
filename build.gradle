@@ -103,7 +103,8 @@ subprojects {
 		testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
 		testImplementation "org.assertj:assertj-core:3.16.1"
-		testImplementation "com.github.stefanbirkner:system-lambda:1.0.0"
+		testImplementation "com.github.stefanbirkner:system-lambda:1.1.0"
+		testImplementation "org.awaitility:awaitility:4.0.3"
 
 		testRuntimeOnly 'ch.qos.logback:logback-classic:1.2.3'
 	}

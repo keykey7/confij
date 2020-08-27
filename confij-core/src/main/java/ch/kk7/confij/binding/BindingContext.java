@@ -1,15 +1,6 @@
 package ch.kk7.confij.binding;
 
 import ch.kk7.confij.annotation.ValueMapper;
-import ch.kk7.confij.binding.values.DateTimeMapper;
-import ch.kk7.confij.binding.values.DurationMapper;
-import ch.kk7.confij.binding.values.EnumMapper;
-import ch.kk7.confij.binding.values.ExplicitMapper;
-import ch.kk7.confij.binding.values.OptionalMapper;
-import ch.kk7.confij.binding.values.PeriodMapper;
-import ch.kk7.confij.binding.values.PrimitiveMapperFactory;
-import ch.kk7.confij.binding.values.SoloConstructorMapper;
-import ch.kk7.confij.binding.values.StaticFunctionMapper;
 import ch.kk7.confij.binding.values.ValueMapperFactory;
 import ch.kk7.confij.common.AnnotationUtil;
 import ch.kk7.confij.common.AnnotationUtil.AnnonResponse;
@@ -25,7 +16,6 @@ import lombok.experimental.NonFinal;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -41,28 +31,17 @@ import java.util.Optional;
 @NonFinal
 public class BindingContext {
 	ValueMapperFactory forcedMapperFactory;
+
 	@Getter
-	@NonNull
-	List<ValueMapperFactory> mapperFactories;
-	@NonNull
-	Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs;
-	@NonNull
+	@NonNull List<ValueMapperFactory> mapperFactories;
+
+	@NonNull Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs;
+
 	@ToString.Exclude
 	@With(AccessLevel.NONE)
-	ClassToImplCache implCache;
+	@NonNull ClassToImplCache implCache;
 
-	public BindingContext(ValueMapperFactory forcedMapperFactory, @NonNull List<ValueMapperFactory> mapperFactories,
-			@NonNull Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs, @NonNull ClassToImplCache implCache) {
-		this.forcedMapperFactory = forcedMapperFactory;
-		this.mapperFactories = Collections.unmodifiableList(mapperFactories);
-		this.factoryConfigs = Collections.unmodifiableMap(factoryConfigs);
-		this.implCache = implCache;
-	}
-
-	public static BindingContext newDefaultContext() {
-		List<ValueMapperFactory> mapperFactories = Arrays.asList(ExplicitMapper.forString(), new PrimitiveMapperFactory(),
-				new OptionalMapper(), ExplicitMapper.forFile(), ExplicitMapper.forPath(), new EnumMapper(), new DurationMapper(),
-				new PeriodMapper(), new DateTimeMapper(), new StaticFunctionMapper(), new SoloConstructorMapper());
+	public static BindingContext newDefaultContext(List<ValueMapperFactory> mapperFactories) {
 		return new BindingContext(null, mapperFactories, Collections.emptyMap(), new ClassToImplCache());
 	}
 

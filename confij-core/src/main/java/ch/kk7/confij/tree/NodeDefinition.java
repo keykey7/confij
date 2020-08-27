@@ -12,14 +12,14 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * The definition of how the config must look like on a high level, like
- * what children it can and must contain. No link to actual config values.
+ * The definition of how the config must look like on a high level, like what children it can and must contain.
+ * No link to actual config values and therefore static over the livetime of the configuration.
  */
 @Value
 @NonFinal
 public abstract class NodeDefinition {
 	@NonNull
-	private final NodeBindingContext nodeBindingContext;
+	NodeBindingContext nodeBindingContext;
 
 	/**
 	 * @return true if this is a leaf node and can hold a property value

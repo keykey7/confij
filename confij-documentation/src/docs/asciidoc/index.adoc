@@ -12,15 +12,19 @@
 :data-uri:
 :nofooter:
 
+image::confij-logo.png[ConfiJ Logo,float="right"]
+
 ConfiJ is a type-safe, strongly defined, minimal-dependency Java configuration library.
 It enforces a contract on the configuration as Java-types.
 
 include::setup.adoc[]
 
-include::binding.adoc[]
-
 include::source.adoc[]
+
+include::binding.adoc[]
 
 include::templates.adoc[]
 
 include::validation.adoc[]
+
+include::reload.adoc[]
