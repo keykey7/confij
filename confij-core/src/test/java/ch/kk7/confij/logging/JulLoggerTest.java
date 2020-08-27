@@ -51,7 +51,7 @@ class JulLoggerTest implements WithAssertions {
 	}
 
 	@Test
-	public void testLogger() {
+	void testLogger() {
 		logger.debug("a debug msg");
 		logger.info("a info msg");
 		logger.error("a error msg");
@@ -59,13 +59,13 @@ class JulLoggerTest implements WithAssertions {
 	}
 
 	@Test
-	public void testLoggerTemplate() {
+	void testLoggerTemplate() {
 		logger.debug("a debug msg {}", "fuu");
 		assertThat(julHandler.getLogRecords()).allSatisfy(logRecord -> assertThat(logRecord.getMessage()).isEqualTo("a debug msg fuu"));
 	}
 
 	@Test
-	public void testNull() {
+	void testNull() {
 		logger.debug(null);
 		assertThat(julHandler.getLogRecords()).allSatisfy(logRecord -> assertThat(logRecord.getMessage()).isNull());
 	}

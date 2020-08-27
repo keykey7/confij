@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;import java.util.stream.Stream;
 
-public class Source extends DocTestBase {
+class Source extends DocTestBase {
 	// tag::interface[]
 	interface ServerConfig {
 		String name();
@@ -39,7 +39,7 @@ public class Source extends DocTestBase {
 	// end::interface[]
 
 	@Test
-	public void pipedSources() {
+	void pipedSources() {
 		System.setProperty("app.line", "3");
 		// tag::pipedsource[]
 		ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
@@ -70,7 +70,7 @@ public class Source extends DocTestBase {
 	// end::defaults[]
 
 	@Test
-	public void defaultValues() {
+	void defaultValues() {
 		HasDefaults defaults = ConfijBuilder.of(HasDefaults.class)
 				.build();
 		assertThat(defaults.aString()).isEqualTo("a default value");
@@ -94,7 +94,7 @@ public class Source extends DocTestBase {
 	// end::nestedinterface[]
 
 	@Test
-	public void nestedPropertiesFile() {
+	void nestedPropertiesFile() {
 		Config config = ConfijBuilder.of(Config.class)
 				.loadFrom("nested.properties")
 				.build();
@@ -107,7 +107,7 @@ public class Source extends DocTestBase {
 	}
 
 	@Test
-	public void powerOfTheAnySource() {
+	void powerOfTheAnySource() {
 		System.setProperty("some.prefix.key", "fromSysprops");
 		// tag::anysource[]
 		ConfijBuilder.of(Config.class)
@@ -137,7 +137,7 @@ public class Source extends DocTestBase {
 	// end::envvarsyspropsource[]
 
 	@Test
-	public void envvarsAndSyspropSource() throws Exception {
+	void envvarsAndSyspropSource() throws Exception {
 		String value1 = UUID.randomUUID() + "";
 		String value2 = UUID.randomUUID() + "";
 		/*
@@ -174,7 +174,7 @@ public class Source extends DocTestBase {
 	// end::yaml-interface[]
 
 	@Test
-	public void complexYaml() {
+	void complexYaml() {
 		ComplexYaml yaml = ConfijBuilder.of(ComplexYaml.class)
 				.loadFrom("complex.yaml")
 				.build();
@@ -231,7 +231,7 @@ public class Source extends DocTestBase {
 	// end::resourceprovider-service[]
 
 	@Test
-	public void customResourceProvider() {
+	void customResourceProvider() {
 		// tag::resourceprovider[]
 		Foo foo = ConfijBuilder.of(Foo.class)
 				.loadFrom("foo:fuuuuu.properties")

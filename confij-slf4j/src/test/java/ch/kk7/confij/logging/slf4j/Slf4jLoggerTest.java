@@ -14,7 +14,7 @@ class Slf4jLoggerTest implements WithAssertions {
 	TestLogger slf4j = TestLoggerFactory.getTestLogger(Slf4jLoggerTest.class);
 
 	@Test
-	public void testLoggerItself() {
+	void testLoggerItself() {
 		ConfijLogger logger = ConfijLogger.getLogger(Slf4jLoggerTest.class.getName());
 		logger.debug("a debug msg");
 		logger.info("a info msg");

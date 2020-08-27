@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-public class OptionalMapperTest implements WithAssertions {
+class OptionalMapperTest implements WithAssertions {
 	interface WithOptional {
 		@Default("str")
 		Optional<String> string();
@@ -27,14 +27,14 @@ public class OptionalMapperTest implements WithAssertions {
 	}
 
 	@Test
-	public void simple() {
+	void simple() {
 		assertThat(WithOptional.INSTANCE.string()).hasValue("str");
 		assertThat(WithOptional.INSTANCE.looong()).hasValue(123456L);
 		assertThat(WithOptional.INSTANCE.empty()).isEmpty();
 	}
 
 	@Test
-	public void complex() {
+	void complex() {
 		// TODO: would be desirable to work with complex types, too... here we just verify the exception type
 		assertThatThrownBy(() -> ConfijBuilder.of(Complex.class)
 				.build()).isInstanceOf(ConfijBindingException.class)

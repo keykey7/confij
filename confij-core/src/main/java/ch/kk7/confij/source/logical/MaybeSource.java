@@ -13,14 +13,14 @@ public class MaybeSource implements ConfijSource {
 	private static final ConfijLogger LOG = ConfijLogger.getLogger(MaybeSource.class.getName());
 
 	@NonNull
-	private final ConfijSource maybeSource;
+	private final ConfijSource source;
 
 	@Override
 	public void override(ConfijNode rootNode) {
 		ConfijNode copy = rootNode.deepClone();
 		try {
 			// simulate it first
-			maybeSource.override(copy);
+			source.override(copy);
 		} catch (Exception e) {
 			LOG.info("failed reading optional source {}", this, e);
 			return;

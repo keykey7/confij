@@ -3,7 +3,6 @@ package ch.kk7.confij.source.format;
 import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.tree.ConfijNode;
 import ch.kk7.confij.tree.NodeDefinition;
-import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.Map.Entry;
 public class MapAndStringValidator {
 	private final String SEP = ".";
 
-	public void validateDefinition(Object src, ConfijNode node) throws ConfijBindingException {
+	public void validateDefinition(Object src, ConfijNode node) {
 		validateObj(null, src, node.getConfig());
 	}
 

@@ -13,7 +13,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.Optional;
 
-public class Validation implements WithAssertions {
+class Validation implements WithAssertions {
 
 	// tag::jsr303-interface[]
 	interface Jsr303Validated {
@@ -25,7 +25,7 @@ public class Validation implements WithAssertions {
 	// end::jsr303-interface[]
 
 	@Test
-	public void isJrs303Validated() {
+	void isJrs303Validated() {
 		assertThatThrownBy(() -> ConfijBuilder.of(Jsr303Validated.class)
 				.build()).isInstanceOf(ConfijValidationException.class)
 				.hasCauseExactlyInstanceOf(ConstraintViolationException.class);
@@ -41,7 +41,7 @@ public class Validation implements WithAssertions {
 	// end::notnull-interface[]
 
 	@Test
-	public void isNotNullValidated() {
+	void isNotNullValidated() {
 		assertThatThrownBy(() -> ConfijBuilder.of(NothingIsNull.class)
         				.build()).isInstanceOf(ConfijValidationException.class);
 		assertThat(ConfijBuilder.of(NothingIsNull.class)
@@ -52,7 +52,7 @@ public class Validation implements WithAssertions {
 	}
 
 	@Test
-	public void isNotNullDisabled() {
+	void isNotNullDisabled() {
 		assertThat(
 			// tag::notnull-disabled-builder[]
 			ConfijBuilder.of(NothingIsNull.class).validationAllowsNull().build()

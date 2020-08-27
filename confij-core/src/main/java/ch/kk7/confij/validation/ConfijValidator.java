@@ -9,5 +9,5 @@ public interface ConfijValidator<T> {
 		};
 	}
 
-	void validate(BindingResult<T> bindingResult) throws ConfijValidationException;
+	void validate(BindingResult<T> bindingResult);
 }

@@ -44,7 +44,7 @@ public class Readme extends DocTestBase {
 	}
 
 	@Test
-	public void houseTest() {
+	void houseTest() {
 		HouseConfiguration johnsHouse = ConfijBuilder.of(HouseConfiguration.class)
 				.loadFrom("classpath:house.properties", "johnshouse.yaml")
 				.build();
@@ -53,7 +53,7 @@ public class Readme extends DocTestBase {
 	}
 
 	@Test
-	public void readmeMatches() throws Exception {
+	void readmeMatches() throws Exception {
 		assertThatContains(projectRootReadme(), "(?msi)^```java(.+?)^```", simplify(thisJavaFile()));
 		String yaml = new Scanner(new File("johnshouse.yaml")).useDelimiter("\\A").next();
 		assertThatContains(projectRootReadme(), "(?msi)^```yaml(.+?)^```", simplify(yaml));

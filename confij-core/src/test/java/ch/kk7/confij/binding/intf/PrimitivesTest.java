@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class PrimitivesTest extends AbstractProxyBuilderTest<WithPrimitives> {
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
+class PrimitivesTest extends AbstractProxyBuilderTest<WithPrimitives> {
 	interface WithPrimitives {
 		static void ignored() {
 			// noop
@@ -45,14 +47,14 @@ public class PrimitivesTest extends AbstractProxyBuilderTest<WithPrimitives> {
 	}
 
 	@Test
-	public void allUninitialized() {
+	void allUninitialized() {
 		assertThatThrownBy(this::instance).isInstanceOf(ConfijBindingException.class)
 				.hasMessageContaining("anInt")
 				.hasMessageContaining("byteArray");
 	}
 
 	@Test
-	public void partiallyUninitialized() {
+	void partiallyUninitialized() {
 		// NOT withAnInt()
 		withBoolean(false).withByteArray(new byte[]{});
 		assertThatThrownBy(this::instance).isInstanceOf(ConfijBindingException.class)
@@ -61,13 +63,13 @@ public class PrimitivesTest extends AbstractProxyBuilderTest<WithPrimitives> {
 	}
 
 	@Test
-	public void zeroInt() {
+	void zeroInt() {
 		assertThat(whatever().instance()
 				.anInt()).isEqualTo(0);
 	}
 
 	@Test
-	public void nullInt() {
+	void nullInt() {
 		assertThat(whatever().withInt(null)
 				.instance()
 				.anInt()).as("null is automapped to 0")
@@ -75,7 +77,7 @@ public class PrimitivesTest extends AbstractProxyBuilderTest<WithPrimitives> {
 	}
 
 	@Test
-	public void randomInt() {
+	void randomInt() {
 		int rand = ThreadLocalRandom.current()
 				.nextInt(Integer.MAX_VALUE - 1) + 1;
 		WithPrimitives withPrimitives = whatever().withInt(rand)
@@ -85,7 +87,7 @@ public class PrimitivesTest extends AbstractProxyBuilderTest<WithPrimitives> {
 	}
 
 	@Test
-	public void whateverEquals() {
+	void whateverEquals() {
 		WithPrimitives first = whatever().instance();
 		WithPrimitives second = instance();
 		assertThat(first).isEqualTo(first)
@@ -97,7 +99,7 @@ public class PrimitivesTest extends AbstractProxyBuilderTest<WithPrimitives> {
 	}
 
 	@Test
-	public void canCallStatic() {
-		WithPrimitives.ignored();
+	void canCallStatic() {
+		assertDoesNotThrow(WithPrimitives::ignored);
 	}
 }

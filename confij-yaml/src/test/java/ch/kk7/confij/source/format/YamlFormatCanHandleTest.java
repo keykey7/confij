@@ -15,13 +15,13 @@ class YamlFormatCanHandleTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {"x.yaml", "x.YAML", "yaml.yaml.yaml", "x..YaMl", "x.yml", "☕.yml"})
-	public void canHandle(String file) {
+	void canHandle(String file) {
 		assertCanHandle(file).isTrue();
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = {"config.properties", ".yaml", ".yaml.sh", "x.yaml$", "☕yml", "PUZZLE.YAМL"})
-	public void cannotHandle(String file) {
+	void cannotHandle(String file) {
 		assertCanHandle(file).isFalse();
 	}
 

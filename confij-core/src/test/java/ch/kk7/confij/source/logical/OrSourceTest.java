@@ -21,38 +21,38 @@ class OrSourceTest extends ConfijSourceTestBase {
 	}
 
 	@Test
-	public void exceptionAtFirst() {
+	void exceptionAtFirst() {
 		assertThatX(alwaysFail, noop).isEqualTo("before");
 	}
 
 	@Test
-	public void exceptionOnAll() {
+	void exceptionOnAll() {
 		assertThatThrownBy(() -> assertThatX(alwaysFail, alwaysFail)).isInstanceOf(ConfijSourceException.class);
 		assertThatThrownBy(() -> assertThatX(alwaysFail, alwaysFail, alwaysFail, alwaysFail)).isInstanceOf(ConfijSourceException.class);
 	}
 
 	@Test
-	public void firstSucceeds() {
+	void firstSucceeds() {
 		assertThatX(setXTo("1st"), setXTo("2nd")).isEqualTo("1st");
 	}
 
 	@Test
-	public void secondSucceeds() {
+	void secondSucceeds() {
 		assertThatX(alwaysFail, setXTo("2nd")).isEqualTo("2nd");
 	}
 
 	@Test
-	public void secondSucceedsAndFirstLate() {
+	void secondSucceedsAndFirstLate() {
 		assertThatX(setThenFail, setXTo("2nd")).isEqualTo("2nd");
 	}
 
 	@Test
-	public void thirdSucceeds() {
+	void thirdSucceeds() {
 		assertThatX(alwaysFail, alwaysFail, setXTo("3rd"), alwaysFail).isEqualTo("3rd");
 	}
 
 	@Test
-	public void viaBuilder() {
+	void viaBuilder() {
 		System.setProperty("app.x", "appx");
 		ConfigX orConfig = ConfijBuilder.of(ConfigX.class)
 				.loadFrom(setXTo("before"))

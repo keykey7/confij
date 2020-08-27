@@ -43,7 +43,7 @@ class FileResourceProviderTest implements WithAssertions {
 	}
 
 	@Test
-	public void realFiles() {
+	void realFiles() {
 		assertGlob("/f[13].txt").containsExactly("content#1", "content#3");
 		assertGlob("/**1.txt").containsExactly("content#1", "xxx#1");
 		assertGlob("/d2/*").containsExactly("xxx#2");
@@ -52,13 +52,13 @@ class FileResourceProviderTest implements WithAssertions {
 	}
 
 	@Test
-	public void searchOnlyPossibleMatches() {
+	void searchOnlyPossibleMatches() {
 		provider.setMaxFilesTraversed(11); // it shouldn't search through all 20 files now:
 		assertGlob("/*1.txt").containsExactly("content#1");
 	}
 
 	@Test
-	public void maxFilesTraversed(@TempDir Path tmpDir) {
+	void maxFilesTraversed(@TempDir Path tmpDir) {
 		provider.setMaxFilesTraversed(15);
 		URIish urIish = URIish.create(tmpDir.toString() + "/**");
 		assertThatThrownBy(() -> provider.read(urIish)).isInstanceOf(ConfijSourceException.class)
@@ -66,7 +66,7 @@ class FileResourceProviderTest implements WithAssertions {
 	}
 
 	@Test
-	public void maxFileMatches(@TempDir Path tmpDir) {
+	void maxFileMatches(@TempDir Path tmpDir) {
 		provider.setMaxFileMatches(1);
 		URIish urIish = URIish.create(tmpDir.toString() + "/*.txt");
 		assertThatThrownBy(() -> provider.read(urIish)).isInstanceOf(ConfijSourceException.class)

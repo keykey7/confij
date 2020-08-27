@@ -33,122 +33,122 @@ class SimpleVariableResolverTest implements WithAssertions, SysPropertyAssertion
 	}
 
 	@Test
-	public void resolveStatic() {
+	void resolveStatic() {
 		assertResolve("hello").isEqualTo("hello");
 	}
 
 	@Test
-	public void resolveEmpty() {
+	void resolveEmpty() {
 		assertResolve("").isEqualTo("");
 	}
 
 	@Test
-	public void resolveOne() {
+	void resolveOne() {
 		assertResolve("hello ${x1}", "v1").isEqualTo("hello v1");
 	}
 
 	@Test
-	public void resolveTwo() {
+	void resolveTwo() {
 		assertResolve("hello ${x1} ${x2}!", "one", "two").isEqualTo("hello one two!");
 	}
 
 	@Test
-	public void resolveEmbedded() {
+	void resolveEmbedded() {
 		assertResolve("hello ${${x1}}", "x2", "yo").isEqualTo("hello yo");
 	}
 
 	@Test
-	public void resolveEmbedded2() {
+	void resolveEmbedded2() {
 		assertResolve("hello ${${${x1}}}", "x2", "x3", "yo").isEqualTo("hello yo");
 	}
 
 	@Test
-	public void resolveEmbeddedCircular() {
+	void resolveEmbeddedCircular() {
 		assertThatThrownBy(() -> resolve("hello ${x1}", "${x1}")).isInstanceOf(ConfijException.class);
 	}
 
 	@Test
-	public void resolveNested() {
+	void resolveNested() {
 		assertResolve("hello ${x1}", "one ${x2}", "two").isEqualTo("hello one two");
 	}
 
 	@Test
-	public void resolveNested2() {
+	void resolveNested2() {
 		assertResolve("hello ${x1}", "one ${x2}", "two ${x3}", "three").isEqualTo("hello one two three");
 	}
 
 	@Test
-	public void resolveNestedCircular() {
+	void resolveNestedCircular() {
 		assertThatThrownBy(() -> resolve("hello ${x1}", "1${x2}", "2${x3}", "3${x1}")).isInstanceOf(ConfijException.class);
 	}
 
 	@Test
-	public void looksLikeAVariable() {
+	void looksLikeAVariable() {
 		assertResolve("${x1${${x1").isEqualTo("${x1${${x1");
 	}
 
 	@Test
-	public void emptyVariable() {
+	void emptyVariable() {
 		assertThatThrownBy(() -> resolve("hello ${}", "1")).isInstanceOf(ConfijException.class);
 	}
 
 	@Test
-	public void nonexistentVariable() {
+	void nonexistentVariable() {
 		assertThatThrownBy(() -> resolve("hello ${x1}")).isInstanceOf(ConfijException.class);
 	}
 
 	@Test
-	public void escapedVariable() {
+	void escapedVariable() {
 		assertResolve("hello \\${x1}", "one").isEqualTo("hello ${x1}");
 	}
 
 	@Test
-	public void escapedNothing() {
+	void escapedNothing() {
 		assertResolve("hello \\${xxx", "one").isEqualTo("hello ${xxx");
 	}
 
 	@Test
-	public void doubleEscaped() {
+	void doubleEscaped() {
 		assertResolve("hello \\\\${x1}", "one").isEqualTo("hello \\one");
 	}
 
 	@Test
-	public void currency() {
+	void currency() {
 		assertResolve("23$ 10¢").isEqualTo("23$ 10¢");
 	}
 
 	@Test
-	public void noNullReferences() {
+	void noNullReferences() {
 		assertThatThrownBy(() -> resolve("${x1}", (String) null)).isInstanceOf(ConfijException.class);
 	}
 
 	@Test
-	public void unnessessaryEscape() {
+	void unnessessaryEscape() {
 		assertResolve("hello \\!${x1}", "one").isEqualTo("hello !one");
 	}
 
 	@Test
-	public void escapedNested() {
+	void escapedNested() {
 		assertResolve("hello ${x1}", "~\\${x2}~", "two").isEqualTo("hello ~${x2}~");
 	}
 
 	@Test
-	public void sysProperty() {
+	void sysProperty() {
 		withSysProperty(() -> assertResolve("hello ${sys:name}").isEqualTo("hello John"), "name", "John");
 	}
 
 	@Test
-	public void sysPropertyDoesNotExist() {
+	void sysPropertyDoesNotExist() {
 		withSysProperty(() -> assertThatThrownBy(() -> resolve("hello ${sys:name}")).isInstanceOf(ConfijException.class), "name", null);
 	}
 
 	@Test
-	public void sysPropertyEmbedded() {
+	void sysPropertyEmbedded() {
 		withSysProperty(() -> assertResolve("hello ${x1}", "${sys:name}").isEqualTo("hello John"), "name", "John");
 	}
 
 	@Test
-	public void sysPropertyHome() {
+	void sysPropertyHome() {
 		withSysProperty(() -> assertResolve("${sys:user.home}").isEqualTo("/home/bla"), "user.home", "/home/bla");
 	}
 }

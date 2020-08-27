@@ -15,7 +15,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 
-public class GitResourceProviderHttpTest implements WithAssertions {
+class GitResourceProviderHttpTest implements WithAssertions {
 	private GitResourceProvider git;
 	private GitTestrepo testGit;
 	private SimpleHttpServer server;
@@ -89,7 +89,7 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 
 	@Disabled("since it is a remote repo")
 	@Test
-	public void cloneGithubTestrepo() {
+	void cloneGithubTestrepo() {
 		// not private accessable "ssh://git@github.com/github/testrepo.git"
 		ConfijSourceBuilder.URIish uri = GitResourceProvider.toUri("https://github.com/github/testrepo.git", "test/alloc.c");
 		assertThat(gitRead(uri)).contains("Linus Torvalds");

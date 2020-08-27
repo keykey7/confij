@@ -8,7 +8,7 @@ class ConfijExceptionTest {
 	private IllegalStateException someCause = new IllegalStateException("some cause");
 
 	@Test
-	public void noPlaceholders() {
+	void noPlaceholders() {
 		assertThat(new ConfijException("")).hasMessage("");
 		assertThat(new ConfijException("some text")).hasMessage("some text")
 				.hasNoCause();
@@ -17,7 +17,7 @@ class ConfijExceptionTest {
 	}
 
 	@Test
-	public void validPlaceholders() {
+	void validPlaceholders() {
 		assertThat(new ConfijException("{}", "placeholder")).hasMessage("placeholder");
 		assertThat(new ConfijException("{}", "{}\\?>.:{ }")).hasMessage("{}\\?>.:{ }");
 		assertThat(new ConfijException("{} {} {}", 1, 2, someCause)).as("placeholder wins")
@@ -25,7 +25,7 @@ class ConfijExceptionTest {
 	}
 
 	@Test
-	public void invalidPlaceholders() {
+	void invalidPlaceholders() {
 		assertThat(new ConfijException("{}{}", "")).as("missing placeholder")
 				.hasMessage("{?}");
 		assertThat(new ConfijException("{},{},{}", 1, 2)).as("missing placeholder")

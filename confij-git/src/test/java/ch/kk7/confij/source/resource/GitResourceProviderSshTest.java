@@ -22,7 +22,7 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class GitResourceProviderSshTest implements WithAssertions {
+class GitResourceProviderSshTest implements WithAssertions {
 	private GitResourceProvider git;
 	private GitTestrepo testGit;
 	protected static final String TEST_USER = "testuser";
@@ -87,7 +87,7 @@ public class GitResourceProviderSshTest implements WithAssertions {
 	}
 
 	@Test
-	public void viaSshUserAndPK() throws Exception {
+	void viaSshUserAndPK() throws Exception {
 		testGit.addAndCommit();
 		RevCommit commit2 = testGit.addAndCommit();
 		assertThat(gitRead(sshUri)).isEqualTo(commit2.getShortMessage());

@@ -45,13 +45,13 @@ class JSR303ValidatorTest implements WithAssertions {
 	}
 
 	@Test
-	public void testValid() {
+	void testValid() {
 		ConfijBuilder.of(ValidatedConfig.class)
 				.build();
 	}
 
 	@Test
-	public void testOneInvalid() {
+	void testOneInvalid() {
 		ConfijBuilder<ValidatedConfig> builder = ConfijBuilder.of(ValidatedConfig.class)
 				.loadFrom(new PropertiesSource().set("anInt", "23"));
 		assertThatExceptionOfType(ConfijValidationException.class).isThrownBy(builder::build)
@@ -60,21 +60,21 @@ class JSR303ValidatorTest implements WithAssertions {
 	}
 
 	@Test
-	public void testNestedInvalid() {
+	void testNestedInvalid() {
 		ConfijBuilder<ValidatedConfig> builder = ConfijBuilder.of(ValidatedConfig.class)
 				.loadFrom(new PropertiesSource().set("nested.aString", ""));
 		assertThatExceptionOfType(ConfijValidationException.class).isThrownBy(builder::build);
 	}
 
 	@Test
-	public void testNestedIgnored() {
+	void testNestedIgnored() {
 		ConfijBuilder.of(ValidatedConfig.class)
 				.loadFrom(new PropertiesSource().set("nestedIgnored.aString", ""))
 				.build();
 	}
 
 	@Test
-	public void testNestedSetInvalid() {
+	void testNestedSetInvalid() {
 		ConfijBuilder<ValidatedConfig> builder = ConfijBuilder.of(ValidatedConfig.class)
 				.loadFrom(new PropertiesSource()
 						.set("aSet.0.aString", "")
@@ -85,7 +85,7 @@ class JSR303ValidatorTest implements WithAssertions {
 	}
 
 	@Test
-	public void testNoValidator() {
+	void testNoValidator() {
 		ConfijBuilder.of(ValidatedConfig.class)
 				.loadFrom(new PropertiesSource().set("anInt", "23")
 						.set("aSet.0.aString", ""))

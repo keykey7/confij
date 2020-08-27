@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 public class ReloadNotifierImpl<T> implements ConfijReloadNotifier<T> {
 	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(ReloadNotifierImpl.class);
 
-	private static Set<Class<?>> NON_UNIQUE_TYPES = new HashSet<>(
+	private static final Set<Class<?>> NON_UNIQUE_TYPES = new HashSet<>(
 			Arrays.asList(Boolean.class, Integer.class, Long.class, Double.class, Float.class, Character.class));
 
 	Map<URI, List<ConfijReloadHandler<?>>> registeredHandlers = new LinkedHashMap<>();
