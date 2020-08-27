@@ -3,14 +3,17 @@ package ch.kk7.confij.pipeline.reload;
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.ConfijBuilder.ConfijWrapper;
 import ch.kk7.confij.common.ConfijException;
+import ch.kk7.confij.common.GenericType;
 import ch.kk7.confij.source.env.PropertiesSource;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 class ReloadNotifierImplTest implements WithAssertions {
 	interface A {
@@ -34,7 +37,7 @@ class ReloadNotifierImplTest implements WithAssertions {
 	private A first;
 
 	@BeforeEach
-	public void init() {
+	void init() {
 		source = new PropertiesSource().set("x1", "1")
 				.set("x2", "2")
 				.set("b.x3", "3");
@@ -53,14 +56,14 @@ class ReloadNotifierImplTest implements WithAssertions {
 	}
 
 	@Test
-	public void sameSourceMeansSameConfig() {
+	void sameSourceMeansSameConfig() {
 		reload.reload();
 		assertThat(first).as("proxy instance shouldn't change if there are no changes (not a hard requirement)")
 				.isSameAs(wrapper.get());
 	}
 
 	@Test
-	public void changedSourceMeansNewConfigInstance() {
+	void changedSourceMeansNewConfigInstance() {
 		String newValue = new Random().nextInt() + "";
 		A updated = setAndReload("x2", newValue);
 		assertThat(first).as("proxy instance must change to be thread safe")
@@ -70,7 +73,7 @@ class ReloadNotifierImplTest implements WithAssertions {
 	}
 
 	@Test
-	public void customReloadHandlerTriggers() {
+	void customReloadHandlerTriggers() {
 		String newValue = new Random().nextInt() + "";
 		AtomicBoolean handlerWasCalled = new AtomicBoolean(false);
 		wrapper.getReloadNotifier()
@@ -88,7 +91,7 @@ class ReloadNotifierImplTest implements WithAssertions {
 	}
 
 	@Test
-	public void noReloadHandlerOnPrimitiveAllowed() {
+	void noReloadHandlerOnPrimitiveAllowed() {
 		assertThatThrownBy(() -> wrapper.getReloadNotifier()
 				.registerReloadHandler(x -> {
 				}, first.b()
@@ -97,7 +100,7 @@ class ReloadNotifierImplTest implements WithAssertions {
 	}
 
 	@Test
-	public void handlerOnChildPath() {
+	void handlerOnChildPath() {
 		AtomicBoolean handlerWasCalled = new AtomicBoolean(false);
 		wrapper.getReloadNotifier()
 				.registerReloadHandler(event -> {
@@ -112,7 +115,7 @@ class ReloadNotifierImplTest implements WithAssertions {
 	}
 
 	@Test
-	public void unknownChildPath() {
+	void unknownChildPath() {
 		assertThatThrownBy(() -> wrapper.getReloadNotifier()
 				.registerReloadHandler(x -> {
 				}, first.b(), "notAChild")).isInstanceOf(ConfijException.class)
@@ -120,7 +123,7 @@ class ReloadNotifierImplTest implements WithAssertions {
 	}
 
 	@Test
-	public void noReloadHandlerPossibleOnDuplicate() {
+	void noReloadHandlerPossibleOnDuplicate() {
 		wrapper = ConfijBuilder.of(A.class)
 				.bindValuesForClassWith(x -> "always me", String.class)
 				.buildWrapper();
@@ -134,10 +137,40 @@ class ReloadNotifierImplTest implements WithAssertions {
 	}
 
 	@Test
-	public void noReloadHandlerPossibleOnUnknownValue() {
+	void noReloadHandlerPossibleOnUnknownValue() {
 		assertThatThrownBy(() -> wrapper.getReloadNotifier()
 				.registerReloadHandler(x -> {
 				}, "42")).isInstanceOf(ConfijException.class)
 				.hasMessageContaining("42");
+	}
+
+	@Test
+	void atomicInstance() {
+		AtomicReference<A> reference = wrapper.getReloadNotifier()
+				.registerAtomicReference(first);
+		assertThat(first).isSameAs(reference.get());
+		A updated = setAndReload("x2", "whatever");
+		assertThat(updated).isSameAs(reference.get());
+	}
+
+	@Test
+	void listModifications() {
+		PropertiesSource src = new PropertiesSource().set("0", "first");
+		reload = new ManualReloadStrategy();
+		ConfijWrapper<List<String>> listWrapper = ConfijBuilder.of(new GenericType<List<String>>() {
+		})
+				.loadFrom(src)
+				.reloadStrategy(reload)
+				.buildWrapper();
+		assertThat(listWrapper.get()).containsExactly("first");
+
+		src.set("1", "second");
+		reload.reload();
+		assertThat(listWrapper.get()).containsExactly("first", "second");
+
+		src.set("0", null);
+		src.set("1", null);
+		reload.reload();
+		assertThat(listWrapper.get()).isEmpty();
 	}
 }
