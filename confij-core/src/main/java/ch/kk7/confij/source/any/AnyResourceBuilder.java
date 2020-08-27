@@ -8,7 +8,6 @@ import ch.kk7.confij.source.resource.ConfijResourceProvider;
 import com.google.auto.service.AutoService;
 import lombok.ToString;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +29,7 @@ public class AnyResourceBuilder implements ConfijSourceBuilder {
 	}
 
 	@Override
-	public Optional<ConfijSource> fromURI(URI path) {
+	public Optional<ConfijSource> fromURI(URIish path) {
 		Optional<ConfijResourceProvider> resource = supportedResources.stream()
 				.filter(r -> r.canHandle(path))
 				.findFirst();

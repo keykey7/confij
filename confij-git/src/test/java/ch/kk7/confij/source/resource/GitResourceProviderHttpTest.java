@@ -1,5 +1,6 @@
 package ch.kk7.confij.source.resource;
 
+import ch.kk7.confij.source.ConfijSourceBuilder;
 import ch.kk7.confij.source.ConfijSourceException;
 import org.assertj.core.api.WithAssertions;
 import org.eclipse.jgit.api.errors.TransportException;
@@ -13,14 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
-import java.net.URI;
 
 public class GitResourceProviderHttpTest implements WithAssertions {
 	private GitResourceProvider git;
 	private GitTestrepo testGit;
 	private SimpleHttpServer server;
-	private URI httpUri;
-	private URI httpsUri;
+	private ConfijSourceBuilder.URIish httpUri;
+	private ConfijSourceBuilder.URIish httpsUri;
 
 	@BeforeEach
 	public void initServer(@TempDir File tempDir) throws Exception {
@@ -43,19 +43,25 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 		server.stop();
 	}
 
+	private String gitRead(ConfijSourceBuilder.URIish uri) {
+		return git.read(uri)
+				.findAny()
+				.orElseThrow(IllegalStateException::new);
+	}
+
 	@Test
 	void basicAuthOverHttp() throws Exception {
 		testGit.addAndCommit();
 		RevCommit commit2 = testGit.addAndCommit();
-		assertThat(git.read(httpUri)).isEqualTo(commit2.getShortMessage());
+		assertThat(gitRead(httpUri)).isEqualTo(commit2.getShortMessage());
 
 		RevCommit commit3 = testGit.addAndCommit();
-		assertThat(git.read(httpUri)).isEqualTo(commit3.getShortMessage());
+		assertThat(gitRead(httpUri)).isEqualTo(commit3.getShortMessage());
 	}
 
 	@Test
-	void invalidPassword() throws Exception {
-		URI invalidPasswordUri = GitResourceProvider.toUri(server.getUri()
+	void invalidPassword() {
+		ConfijSourceBuilder.URIish invalidPasswordUri = GitResourceProvider.toUri(server.getUri()
 				.setUser(AppServer.username)
 				.setPass("totallyWrongPassword")
 				.toPrivateString(), GitTestrepo.DEFAULT_FILE);
@@ -66,7 +72,7 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 	@Test
 	void httpsFailsDueToCerts() throws Exception {
 		testGit.addAndCommit();
-		assertThatThrownBy(() -> git.read(httpsUri)).isInstanceOf(ConfijSourceException.class)
+		assertThatThrownBy(() -> gitRead(httpsUri)).isInstanceOf(ConfijSourceException.class)
 				.hasStackTraceContaining("cert");
 	}
 
@@ -75,19 +81,19 @@ public class GitResourceProviderHttpTest implements WithAssertions {
 		git = new NoSslVerifyGitResourceProvider();
 		testGit.addAndCommit();
 		RevCommit commit2 = testGit.addAndCommit();
-		assertThat(git.read(httpUri)).isEqualTo(commit2.getShortMessage());
+		assertThat(gitRead(httpUri)).isEqualTo(commit2.getShortMessage());
 
 		RevCommit commit3 = testGit.addAndCommit();
-		assertThat(git.read(httpUri)).isEqualTo(commit3.getShortMessage());
+		assertThat(gitRead(httpUri)).isEqualTo(commit3.getShortMessage());
 	}
 
 	@Disabled("since it is a remote repo")
 	@Test
 	public void cloneGithubTestrepo() {
 		// not private accessable "ssh://git@github.com/github/testrepo.git"
-		URI uri = GitResourceProvider.toUri("https://github.com/github/testrepo.git", "test/alloc.c");
-		assertThat(git.read(uri)).contains("Linus Torvalds");
+		ConfijSourceBuilder.URIish uri = GitResourceProvider.toUri("https://github.com/github/testrepo.git", "test/alloc.c");
+		assertThat(gitRead(uri)).contains("Linus Torvalds");
 		// once more: expecting a fetch instead of clone
-		assertThat(git.read(uri)).contains("Linus Torvalds");
+		assertThat(gitRead(uri)).contains("Linus Torvalds");
 	}
 }

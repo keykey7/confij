@@ -6,7 +6,6 @@ import ch.kk7.confij.source.format.PropertiesFormat;
 import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 
-import java.net.URI;
 import java.util.Optional;
 
 @AutoService(ConfijSourceBuilder.class)
@@ -29,7 +28,7 @@ public class EnvvarSource extends PropertiesFormat implements ConfijSource, Conf
 	}
 
 	@Override
-	public Optional<ConfijSource> fromURI(URI path) {
+	public Optional<ConfijSource> fromURI(URIish path) {
 		if (SCHEME.equals(path.getScheme())) {
 			EnvvarSource source = new EnvvarSource();
 			source.setGlobalPrefix(path.getSchemeSpecificPart());

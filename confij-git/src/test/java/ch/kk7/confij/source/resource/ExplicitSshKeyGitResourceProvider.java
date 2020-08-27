@@ -1,5 +1,6 @@
 package ch.kk7.confij.source.resource;
 
+import ch.kk7.confij.source.ConfijSourceBuilder;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -10,7 +11,6 @@ import org.eclipse.jgit.transport.SshTransport;
 import org.eclipse.jgit.util.FS;
 
 import java.io.File;
-import java.net.URI;
 
 @AllArgsConstructor
 public class ExplicitSshKeyGitResourceProvider extends GitResourceProvider {
@@ -18,7 +18,7 @@ public class ExplicitSshKeyGitResourceProvider extends GitResourceProvider {
 	private final File knownHostsFile;
 
 	@Override
-	protected GitSettings uriToGitSettings(URI uri) {
+	protected GitSettings uriToGitSettings(ConfijSourceBuilder.URIish uri) {
 		return super.uriToGitSettings(uri)
 				.withTransportConfigCallback(transport -> {
 					SshTransport sshTransport = (SshTransport) transport;

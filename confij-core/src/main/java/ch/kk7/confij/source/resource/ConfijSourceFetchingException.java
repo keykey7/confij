@@ -8,6 +8,6 @@ public class ConfijSourceFetchingException extends ConfijSourceException {
 	}
 
 	public static ConfijSourceFetchingException unableToFetch(String path, String detail, Object... args) {
-		return new ConfijSourceFetchingException("unable to read configuration from '" + path + "', " + detail, args);
+		return new ConfijSourceFetchingException("unable to read configuration from '{}', " + detail, path, args);
 	}
 }

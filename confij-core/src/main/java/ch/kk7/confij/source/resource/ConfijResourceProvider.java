@@ -1,6 +1,8 @@
 package ch.kk7.confij.source.resource;
 
-import java.net.URI;
+import ch.kk7.confij.source.ConfijSourceBuilder.URIish;
+
+import java.util.stream.Stream;
 
 /**
  * A resource provider basically reads a string from anywhere given an URI.<br/>
@@ -15,7 +17,7 @@ public interface ConfijResourceProvider {
 	 * @param path the URI to read from
 	 * @return the string representation of the path's content
 	 */
-	String read(URI path);
+	Stream<String> read(URIish path);
 
 	/**
 	 * Receive a "preview" on the URI to be processed. This resouce provider can choose to accept or reject processing it.
@@ -24,5 +26,5 @@ public interface ConfijResourceProvider {
 	 * @param path an URI to be processed later.
 	 * @return true if this resouce provider accepts processing this URI (but it can still fail)
 	 */
-	boolean canHandle(URI path);
+	boolean canHandle(URIish path);
 }

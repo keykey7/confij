@@ -1,5 +1,6 @@
 package ch.kk7.confij.source.resource;
 
+import ch.kk7.confij.source.ConfijSourceBuilder;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
 import org.assertj.core.api.WithAssertions;
@@ -15,7 +16,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
@@ -27,7 +27,7 @@ public class GitResourceProviderSshTest implements WithAssertions {
 	private GitTestrepo testGit;
 	protected static final String TEST_USER = "testuser";
 	private SshTestGitServer server;
-	private URI sshUri;
+	private ConfijSourceBuilder.URIish sshUri;
 
 	private static byte[] createHostKey(OutputStream publicKey) throws Exception {
 		JSch jsch = new JSch();
@@ -80,10 +80,16 @@ public class GitResourceProviderSshTest implements WithAssertions {
 		server.stop();
 	}
 
+	private String gitRead(ConfijSourceBuilder.URIish uri) {
+		return git.read(uri)
+				.findAny()
+				.orElseThrow(IllegalStateException::new);
+	}
+
 	@Test
 	public void viaSshUserAndPK() throws Exception {
 		testGit.addAndCommit();
 		RevCommit commit2 = testGit.addAndCommit();
-		assertThat(git.read(sshUri)).isEqualTo(commit2.getShortMessage());
+		assertThat(gitRead(sshUri)).isEqualTo(commit2.getShortMessage());
 	}
 }

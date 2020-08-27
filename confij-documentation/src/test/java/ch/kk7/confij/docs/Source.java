@@ -5,13 +5,12 @@ import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.common.ServiceLoaderPriority;
 import ch.kk7.confij.common.ServiceLoaderUtil;
-import ch.kk7.confij.source.resource.ConfijResourceProvider;
+import ch.kk7.confij.source.ConfijSourceBuilder.URIish;import ch.kk7.confij.source.resource.ConfijResourceProvider;
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 import com.google.auto.service.AutoService;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,7 +21,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.UUID;import java.util.stream.Stream;
 
 public class Source extends DocTestBase {
 	// tag::interface[]
@@ -200,7 +199,7 @@ public class Source extends DocTestBase {
 	// tag::resourceprovider-service-ignored[]
 	public static class AnUnimportantFooProvider extends FooProvider implements ServiceLoaderPriority {
 		@Override
-		public String read(URI path) {
+		public Stream<String> read(URIish path) {
 			throw new RuntimeException("less important than " + FooProvider.class);
 		}
 
@@ -216,12 +215,12 @@ public class Source extends DocTestBase {
 	// +file: META-INF/services/ch.kk7.confij.source.file.resource.ConfijResourceProvider
 	public static class FooProvider implements ConfijResourceProvider {
 		@Override
-		public String read(URI path) {
-			return "foo=bar";
+		public Stream<String> read(URIish path) {
+			return Stream.of("foo=bar");
 		}
 
 		@Override
-		public boolean canHandle(URI path) {
+		public boolean canHandle(URIish path) {
 			return "foo".equals(path.getScheme());
 		}
 	}

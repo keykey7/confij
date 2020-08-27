@@ -1,12 +1,12 @@
 package ch.kk7.confij.source.format;
 
 import ch.kk7.confij.logging.ConfijLogger;
+import ch.kk7.confij.source.ConfijSourceBuilder.URIish;
 import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import com.typesafe.config.ConfigFactory;
 import lombok.ToString;
 
-import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -78,7 +78,7 @@ public class HoconResourceProvider implements ConfijSourceFormat {
 	}
 
 	@Override
-	public boolean canHandle(URI path) {
+	public boolean canHandle(URIish path) {
 		return path.getSchemeSpecificPart()
 				.matches("(?s).+\\.(json|hocon|conf)$");
 	}

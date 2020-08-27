@@ -1,16 +1,6 @@
 package ch.kk7.confij.source.format;
 
-import static ch.kk7.confij.source.format.ConfijSourceFormatException.invalidFormat;
-
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-
+import ch.kk7.confij.source.ConfijSourceBuilder.URIish;
 import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import lombok.NonNull;
@@ -19,6 +9,16 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.Tag;
+
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
+import static ch.kk7.confij.source.format.ConfijSourceFormatException.invalidFormat;
 
 @ToString
 @AutoService(ConfijSourceFormat.class)
@@ -105,7 +105,7 @@ public class YamlFormat implements ConfijSourceFormat {
 	}
 
 	@Override
-	public boolean canHandle(URI path) {
+	public boolean canHandle(URIish path) {
 		return path.getSchemeSpecificPart()
 				.matches("(?i).+\\.ya?ml$");
 	}

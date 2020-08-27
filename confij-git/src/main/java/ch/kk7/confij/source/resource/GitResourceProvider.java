@@ -1,6 +1,7 @@
 package ch.kk7.confij.source.resource;
 
 import ch.kk7.confij.logging.ConfijLogger;
+import ch.kk7.confij.source.ConfijSourceBuilder;
 import ch.kk7.confij.source.ConfijSourceException;
 import com.google.auto.service.AutoService;
 import lombok.Builder;
@@ -28,7 +29,6 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -36,6 +36,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import static ch.kk7.confij.common.Util.not;
 
@@ -63,29 +64,30 @@ public class GitResourceProvider extends AbstractResourceProvider {
 		TransportConfigCallback transportConfigCallback;
 	}
 
-	public static URI toUri(String remoteUri, String configFile) {
+	public static ConfijSourceBuilder.URIish toUri(String remoteUri, String configFile) {
 		return toUri(remoteUri, configFile, null);
 	}
 
-	public static URI toUri(@NonNull String remoteUri, @NonNull String configFile, String gitRevision) {
+	public static ConfijSourceBuilder.URIish toUri(@NonNull String remoteUri, @NonNull String configFile, String gitRevision) {
 		configFile = configFile.startsWith("/") ? configFile.substring(1) : configFile;
 		String urlFileSep = remoteUri.matches(".*\\.git/?$") ? "/" : "//";
-		return URI.create(SCHEME + ":" + remoteUri + urlFileSep + configFile + (gitRevision == null ? "" : "#" + gitRevision));
+		return ConfijSourceBuilder.URIish.create(
+				SCHEME + ":" + remoteUri + urlFileSep + configFile + (gitRevision == null ? "" : "#" + gitRevision));
 	}
 
 	@Override
-	public String read(URI path) {
+	public Stream<String> read(ConfijSourceBuilder.URIish path) {
 		GitSettings settings = uriToGitSettings(path);
 		Git git = gitCloneOrFetch(settings);
-		return readFile(git, settings);
+		return Stream.of(readFile(git, settings));
 	}
 
 	@Override
-	public boolean canHandle(URI path) {
+	public boolean canHandle(ConfijSourceBuilder.URIish path) {
 		return SCHEME.equals(path.getScheme());
 	}
 
-	protected GitSettings uriToGitSettings(URI uri) {
+	protected GitSettings uriToGitSettings(ConfijSourceBuilder.URIish uri) {
 		String urlAndFile = uri.getSchemeSpecificPart();
 		Matcher m = URL_FILE_SPLITTER.matcher(urlAndFile);
 		if (!m.matches()) {
@@ -153,7 +155,7 @@ public class GitResourceProvider extends AbstractResourceProvider {
 		}
 	}
 
-	protected Git gitFetch(Git git, GitSettings settings) throws GitAPIException, IOException {
+	protected Git gitFetch(Git git, GitSettings settings) throws GitAPIException {
 		LOGGER.debug("git fetch: {}", settings);
 		FetchResult fetchResult = git.fetch()
 				.setRemote(settings.getRemoteUrl())
@@ -197,7 +199,7 @@ public class GitResourceProvider extends AbstractResourceProvider {
 		try {
 			objectId = repository.resolve(settings.getGitRevision());
 		} catch (Exception e) {
-			throw new ConfijSourceException("failed to git resove revision {} ({})", settings.getGitRevision(), settings, e);
+			throw new ConfijSourceException("failed to git resove an objectId from rev {} ({})", settings.getGitRevision(), settings, e);
 		}
 		if (objectId == null) {
 			throw new ConfijSourceException("unable to git resove revision {} ({})", settings.getGitRevision(), settings);
