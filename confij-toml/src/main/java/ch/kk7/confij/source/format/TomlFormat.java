@@ -65,9 +65,6 @@ public class TomlFormat implements ConfijSourceFormat {
 	 * 10. TomlTable.class
 	 */
 	private Object transform(Object object) {
-		if (object == null) {
-			return null;
-		}
 		if (object instanceof String) {
 			return object;
 		}
@@ -86,10 +83,7 @@ public class TomlFormat implements ConfijSourceFormat {
 		if (object instanceof TomlArray) {
 			return transformTomlArray((TomlArray) object);
 		}
-		throw new IllegalArgumentException("This is a invalid type " +
-				object.getClass()
-						.getSimpleName() +
-				" while parsing TOML.");
+		throw new IllegalArgumentException("This is a invalid type " + object.getClass() + " while parsing TOML.");
 	}
 
 	private Map<String, Object> transformTomlTable(TomlTable table) {

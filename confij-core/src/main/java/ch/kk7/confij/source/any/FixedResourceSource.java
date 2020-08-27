@@ -42,7 +42,7 @@ public class FixedResourceSource implements ConfijSource {
 			} catch (ConfijSourceException e) {
 				LOGGER.debug("processing configuration with {} failed. Source was: \n{}", format, configAsStr);
 				throw new ConfijSourceFormatException("Sucessfully read a configuration in this pipeline step, " +
-						"but failed to apply it to the final configuration due to an invalid source format", e);
+						"but failed to apply it to the final configuration due to an invalid source format: {}", e.getMessage(), e);
 			}
 		});
 	}
