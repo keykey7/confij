@@ -10,7 +10,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MaybeSourceTest extends ConfijSourceTestBase {
-
 	private static AbstractStringAssert<?> assertThatX(ConfijSource nested) {
 		ConfigX orConfig = ConfijBuilder.of(ConfigX.class)
 				.loadFrom(setXTo("before"))

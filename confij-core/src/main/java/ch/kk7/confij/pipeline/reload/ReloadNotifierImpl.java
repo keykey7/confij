@@ -40,12 +40,9 @@ import java.util.stream.Stream;
 @NoArgsConstructor
 public class ReloadNotifierImpl<T> implements ConfijReloadNotifier<T> {
 	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(ReloadNotifierImpl.class);
-
 	private static final Set<Class<?>> NON_UNIQUE_TYPES = new HashSet<>(
 			Arrays.asList(Boolean.class, Integer.class, Long.class, Double.class, Float.class, Character.class));
-
 	Map<URI, List<ConfijReloadHandler<?>>> registeredHandlers = new LinkedHashMap<>();
-
 	@NonFinal
 	BindingResult<T> lastBindingResult = null;
 

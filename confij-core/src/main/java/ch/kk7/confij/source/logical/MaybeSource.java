@@ -11,7 +11,6 @@ import lombok.ToString;
 @RequiredArgsConstructor
 public class MaybeSource implements ConfijSource {
 	private static final ConfijLogger LOG = ConfijLogger.getLogger(MaybeSource.class.getName());
-
 	@NonNull
 	private final ConfijSource source;
 

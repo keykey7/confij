@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 class SimpleVariableResolverTest implements WithAssertions, SysPropertyAssertions {
-
 	private static String resolve(String template, String... x) {
 		NodeBindingContext settings = NodeBindingContext.newDefaultSettings(new SimpleVariableResolver());
 		NodeDefinition format = NodeDefinitionMap.anyKeyMap(settings, new NodeDefinitionLeaf(settings));

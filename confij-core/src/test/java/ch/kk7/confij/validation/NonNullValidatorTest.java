@@ -16,7 +16,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 class NonNullValidatorTest implements WithAssertions {
-
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ElementType.METHOD, ElementType.TYPE})
 	@interface Null {

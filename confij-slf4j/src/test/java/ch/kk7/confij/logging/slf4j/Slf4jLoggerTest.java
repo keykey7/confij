@@ -19,8 +19,7 @@ class Slf4jLoggerTest implements WithAssertions {
 		logger.debug("a debug msg");
 		logger.info("a info msg");
 		logger.error("a error msg");
-		assertThat(slf4j.getAllLoggingEvents()).containsOnly(LoggingEvent.debug("a debug msg"),
-				LoggingEvent.info("a info msg"),
+		assertThat(slf4j.getAllLoggingEvents()).containsOnly(LoggingEvent.debug("a debug msg"), LoggingEvent.info("a info msg"),
 				LoggingEvent.error("a error msg"));
 	}
 }

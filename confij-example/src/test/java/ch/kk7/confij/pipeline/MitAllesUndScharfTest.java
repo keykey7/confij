@@ -1,7 +1,11 @@
 package ch.kk7.confij.pipeline;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import ch.kk7.confij.ConfijBuilder;
+import ch.kk7.confij.annotation.Default;
+import ch.kk7.confij.binding.values.Base64Mapper.Base64;
+import ch.kk7.confij.binding.values.DateTimeMapper.DateTime;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -18,12 +22,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
-import ch.kk7.confij.ConfijBuilder;
-import ch.kk7.confij.annotation.Default;
-import ch.kk7.confij.binding.values.Base64Mapper.Base64;
-import ch.kk7.confij.binding.values.DateTimeMapper.DateTime;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class MitAllesUndScharfTest {
 	public interface MitAllesUndScharf {
@@ -119,7 +119,6 @@ class MitAllesUndScharfTest {
 	}
 
 	public interface Dates {
-
 		@Default("2001-12-14T21:59:43Z")
 		Date date();
 
@@ -195,7 +194,7 @@ class MitAllesUndScharfTest {
 
 		Arrays arrays = instance.arrays();
 		assertThat(arrays.aDefaultByteArray()).hasSize(3);
-		assertThat(arrays.aBase64ByteArray()).containsExactly(1,2,3);
+		assertThat(arrays.aBase64ByteArray()).containsExactly(1, 2, 3);
 	}
 
 	@Test

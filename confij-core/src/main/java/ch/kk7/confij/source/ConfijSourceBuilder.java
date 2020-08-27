@@ -17,9 +17,7 @@ public interface ConfijSourceBuilder {
 	@NonFinal
 	class URIish {
 		String scheme;
-
 		@NonNull String schemeSpecificPart;
-
 		String fragment;
 
 		public static URIish create(@NonNull String uri) {

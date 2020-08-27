@@ -15,7 +15,6 @@ import java.nio.file.Path;
 
 class FileResourceProviderTest implements WithAssertions {
 	private static Path tmpDir;
-
 	private FileResourceProvider provider;
 
 	@BeforeAll

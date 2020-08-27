@@ -24,11 +24,9 @@ public class NonNullValidator<T> implements ConfijValidator<T> {
 	Set<String> nullableNames = Stream.of(Nullable.class.getSimpleName(), "Null")
 			.map(String::toLowerCase)
 			.collect(Collectors.toSet());
-
 	Set<String> notNullableNames = Stream.of(NotNull.class.getSimpleName(), "NonNull")
 			.map(String::toLowerCase)
 			.collect(Collectors.toSet());
-
 	boolean rootIsNullable;
 
 	@Inherited

@@ -71,5 +71,4 @@ class EnvvarSourceTest implements WithAssertions {
 						.build()).isInstanceOf(ConfijSourceException.class)
 						.hasMessageContaining("PRE_a"));
 	}
-
 }

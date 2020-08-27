@@ -1,15 +1,15 @@
 package ch.kk7.confij.source.format;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import ch.kk7.confij.ConfijBuilder;
+import ch.kk7.confij.common.GenericType;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.time.ZoneId;
 import java.util.Map;
 import java.util.TimeZone;
 
-import ch.kk7.confij.ConfijBuilder;
-import ch.kk7.confij.common.GenericType;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class YamlFormatTest {
 	private static Map<String, Map<String, String>> types;
@@ -38,8 +38,7 @@ class YamlFormatTest {
 
 	@Test
 	void floats() {
-		assertThat(types.get("floats"))
-				.containsEntry("exponential", "1230.15")
+		assertThat(types.get("floats")).containsEntry("exponential", "1230.15")
 				.containsEntry("fixed", "1230.15")
 				.containsEntry("infinite negative", "-Infinity")
 				.containsEntry("not a number", "NaN");
@@ -61,8 +60,7 @@ class YamlFormatTest {
 
 	@Test
 	void miscellaneous() {
-		assertThat(types.get("miscellaneous"))
-				.containsEntry("null", null)
+		assertThat(types.get("miscellaneous")).containsEntry("null", null)
 				.containsEntry("null bis", null)
 				.containsEntry("true ter", "true")
 				.containsEntry("false bis", "false");

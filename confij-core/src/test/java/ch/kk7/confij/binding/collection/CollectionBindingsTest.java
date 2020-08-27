@@ -66,8 +66,7 @@ class CollectionBindingsTest implements WithAssertions {
 		return Arrays.stream(clazz.getMethods())
 				.sorted(Comparator.comparing(Method::getName))
 				.map(Method::getGenericReturnType)
-				.map(x -> BindingType.newBindingType(x,
-						BindingContext.newDefaultContext(ValueMapperFactory.defaultFactories())));
+				.map(x -> BindingType.newBindingType(x, BindingContext.newDefaultContext(ValueMapperFactory.defaultFactories())));
 	}
 
 	private static Stream<BindingType> validCollectionTypes() {

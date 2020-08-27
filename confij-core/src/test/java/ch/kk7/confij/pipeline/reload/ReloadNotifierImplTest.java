@@ -29,11 +29,8 @@ class ReloadNotifierImplTest implements WithAssertions {
 	}
 
 	private PropertiesSource source;
-
 	private ManualReloadStrategy reload;
-
 	private ConfijWrapper<A> wrapper;
-
 	private A first;
 
 	@BeforeEach

@@ -1,7 +1,7 @@
 package ch.kk7.confij.validation;
 
-import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.ConfijBuilder;
+import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.source.env.PropertiesSource;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
@@ -9,17 +9,15 @@ import org.junit.jupiter.api.Test;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.Set;
 
 class JSR303ValidatorTest implements WithAssertions {
-
 	public interface ValidatedConfig {
-		@Min(100)
-		@Max(1000)
+		@Min(100) @Max(1000)
 		@Default("123")
 		int anInt();
 
@@ -27,9 +25,7 @@ class JSR303ValidatorTest implements WithAssertions {
 		@Default("NOTNULL")
 		String aString();
 
-		@NotNull
-		@Valid
-		NestedValidatedConfig nested();
+		@NotNull @Valid NestedValidatedConfig nested();
 
 		NestedValidatedConfig nestedIgnored();
 
@@ -76,8 +72,7 @@ class JSR303ValidatorTest implements WithAssertions {
 	@Test
 	void testNestedSetInvalid() {
 		ConfijBuilder<ValidatedConfig> builder = ConfijBuilder.of(ValidatedConfig.class)
-				.loadFrom(new PropertiesSource()
-						.set("aSet.0.aString", "")
+				.loadFrom(new PropertiesSource().set("aSet.0.aString", "")
 						.set("aSet.1.aString", "I'm valid")
 						.set("aSet.2.aString", ""));
 		assertThatExceptionOfType(ConfijValidationException.class).isThrownBy(builder::build)

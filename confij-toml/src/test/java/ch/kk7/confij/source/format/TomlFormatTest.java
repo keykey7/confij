@@ -12,7 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings({"squid:S1192", "squid:S00100"})
 class TomlFormatTest {
-
 	interface TomlSpec {
 		String title();
 

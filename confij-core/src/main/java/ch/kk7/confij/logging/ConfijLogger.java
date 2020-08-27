@@ -5,7 +5,9 @@ import lombok.NonNull;
 
 public interface ConfijLogger {
 	void debug(String message, Object... attributes);
+
 	void info(String message, Object... attributes);
+
 	void error(String message, Object... attributes);
 
 	@NonNull

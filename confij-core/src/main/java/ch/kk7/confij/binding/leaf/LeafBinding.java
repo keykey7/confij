@@ -4,9 +4,9 @@ import ch.kk7.confij.binding.BindingResult;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
-import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionLeaf;
-import ch.kk7.confij.tree.NodeBindingContext;
 import ch.kk7.confij.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeBindingContext;
+import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionLeaf;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.ToString;
@@ -32,8 +32,7 @@ public class LeafBinding<T> implements ConfigBinding<T> {
 		try {
 			converted = valueMapper.fromString(strValue);
 		} catch (Exception e) {
-			throw new ConfijBindingException(
-					"failed to convert string '{}' to an actual configuration object at '{}'. message: {}",
+			throw new ConfijBindingException("failed to convert string '{}' to an actual configuration object at '{}'. message: {}",
 					strValue, leafNode.getUri(), e.getMessage(), e);
 		}
 		return BindingResult.ofLeaf(converted, leafNode);

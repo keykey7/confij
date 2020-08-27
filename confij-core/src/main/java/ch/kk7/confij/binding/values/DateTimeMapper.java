@@ -1,5 +1,8 @@
 package ch.kk7.confij.binding.values;
 
+import ch.kk7.confij.annotation.ValueMapper;
+import ch.kk7.confij.binding.BindingType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
@@ -16,11 +19,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Optional;
 
-import ch.kk7.confij.annotation.ValueMapper;
-import ch.kk7.confij.binding.BindingType;
-
 public class DateTimeMapper implements ValueMapperFactory {
-
 	/**
 	 * to be put on any of the supported Temporal types to define the format of the string to be parsed.
 	 */
@@ -82,10 +81,11 @@ public class DateTimeMapper implements ValueMapperFactory {
 				.filter(DateTime.class::isInstance)
 				.map(DateTime.class::cast)
 				.map(annon -> {
-					DateTimeFormatter formatter =
-							annon.value().isEmpty() ? defaultFormatter : DateTimeFormatter.ofPattern(annon.value());
+					DateTimeFormatter formatter = annon.value()
+							.isEmpty() ? defaultFormatter : DateTimeFormatter.ofPattern(annon.value());
 					final Locale formatLang = Locale.forLanguageTag(annon.lang());
 					return formatter.withLocale(formatLang);
-				}).orElse(defaultFormatter);
+				})
+				.orElse(defaultFormatter);
 	}
 }

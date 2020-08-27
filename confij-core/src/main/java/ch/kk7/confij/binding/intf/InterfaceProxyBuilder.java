@@ -32,18 +32,14 @@ public class InterfaceProxyBuilder<T> {
 	private static final Map<Class<?>, Object> PRIMITIVE_ZEROS = Stream.of(boolean.class, byte.class, char.class, double.class, float.class,
 			int.class, long.class, short.class)
 			.collect(toMap(clazz -> clazz, clazz -> Array.get(Array.newInstance(clazz, 1), 0)));
-
 	/**
 	 * make comparator serializable to allow serialization of this TreeMap and thus the Proxy
 	 */
 	protected static final Comparator<Method> methodNameComparator = (Comparator<Method> & Serializable) (m1, m2) -> Comparator.comparing(
 			Method::getName)
 			.compare(m1, m2);
-
 	private final ResolvedInterfaceType type;
-
 	private final Set<ResolvedMethod> allowedMethods;
-
 	private final Set<ResolvedMethod> mandatoryMethods;
 
 	public interface ConfijHandled {

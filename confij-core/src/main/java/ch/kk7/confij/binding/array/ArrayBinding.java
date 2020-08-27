@@ -5,9 +5,9 @@ import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBinding;
 import ch.kk7.confij.binding.collection.CollectionUtil;
-import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionList;
-import ch.kk7.confij.tree.NodeBindingContext;
 import ch.kk7.confij.tree.ConfijNode;
+import ch.kk7.confij.tree.NodeBindingContext;
+import ch.kk7.confij.tree.NodeDefinition.NodeDefinitionList;
 import com.fasterxml.classmate.ResolvedType;
 import lombok.ToString;
 

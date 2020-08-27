@@ -10,7 +10,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 class ExplicitMapperTest implements WithAssertions {
-
 	interface Explicit {
 		@Default("str")
 		String string();

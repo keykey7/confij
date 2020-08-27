@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 @NonFinal
 public class FixedResourceSource implements ConfijSource {
 	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(FixedResourceSource.class);
-
 	@NonNull ConfijSourceBuilder.URIish path;
 	@NonNull ConfijResourceProvider resource;
 	@NonNull ConfijSourceFormat format;
@@ -42,9 +41,8 @@ public class FixedResourceSource implements ConfijSource {
 				format.override(rootNode, configAsStr);
 			} catch (ConfijSourceException e) {
 				LOGGER.debug("processing configuration with {} failed. Source was: \n{}", format, configAsStr);
-				throw new ConfijSourceFormatException(
-						"Sucessfully read a configuration in this pipeline step, " +
-								"but failed to apply it to the final configuration due to an invalid source format", e);
+				throw new ConfijSourceFormatException("Sucessfully read a configuration in this pipeline step, " +
+						"but failed to apply it to the final configuration due to an invalid source format", e);
 			}
 		});
 	}

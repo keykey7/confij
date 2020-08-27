@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class YamlFormatCanHandleTest {
-
 	public static AbstractBooleanAssert<?> assertCanHandle(String file) {
 		return assertThat(new YamlFormat().canHandle(URIish.create(file)));
 	}
@@ -24,6 +23,4 @@ class YamlFormatCanHandleTest {
 	void cannotHandle(String file) {
 		assertCanHandle(file).isFalse();
 	}
-
-
 }

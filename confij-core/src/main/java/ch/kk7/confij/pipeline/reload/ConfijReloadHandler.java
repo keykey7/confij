@@ -28,22 +28,18 @@ public interface ConfijReloadHandler<X> {
 		 * timestamp after which the configuration was read and validated, but before anyone got notified.
 		 */
 		@NonNull Instant timestamp;
-
 		/**
 		 * the previous value
 		 */
 		X oldValue;
-
 		/**
 		 * the updated configuration value (could be equal to {@link #getOldValue()} for example when a nested value changed).
 		 */
 		X newValue;
-
 		/**
 		 * the URI representing the current node itself. heps detecting changes in conjunction with {@link #getChangedPaths()}.
 		 */
 		@NonNull URI eventPath;
-
 		/**
 		 * all the changed config values from all the nested objects combined. Always contains {@link #getEventPath()}, too.
 		 */

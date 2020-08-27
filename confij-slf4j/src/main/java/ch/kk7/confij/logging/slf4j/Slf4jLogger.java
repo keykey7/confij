@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 @Value
 public class Slf4jLogger implements ConfijLogger {
-
 	private final Logger logger;
 
 	@Override
@@ -29,7 +28,6 @@ public class Slf4jLogger implements ConfijLogger {
 
 	@AutoService(ConfijLogFactory.class)
 	public static class JulLogFactory implements ConfijLogFactory {
-
 		@Override
 		public Slf4jLogger getLogger(String name) {
 			return new Slf4jLogger(LoggerFactory.getLogger(name));

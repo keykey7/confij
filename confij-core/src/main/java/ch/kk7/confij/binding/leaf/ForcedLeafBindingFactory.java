@@ -1,9 +1,9 @@
 package ch.kk7.confij.binding.leaf;
 
-import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.binding.BindingType;
 import ch.kk7.confij.binding.ConfigBinder;
 import ch.kk7.confij.binding.ConfigBindingFactory;
+import ch.kk7.confij.binding.ConfijBindingException;
 import lombok.ToString;
 
 import java.util.Optional;

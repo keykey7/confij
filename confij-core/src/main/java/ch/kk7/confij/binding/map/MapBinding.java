@@ -31,11 +31,12 @@ public class MapBinding<T> implements ConfigBinding<Map<String, T>> {
 	public BindingResult<Map<String, T>> bind(ConfijNode config) {
 		List<BindingResult<?>> bindingResultChildren = new ArrayList<>();
 		Map<String, T> map = builder.newInstance();
-		config.getChildren().forEach((key,childConfig) -> {
-			BindingResult<T> childValue = componentDescription.bind(childConfig);
-			map.put(key, childValue.getValue());
-			bindingResultChildren.add(childValue);
-		});
+		config.getChildren()
+				.forEach((key, childConfig) -> {
+					BindingResult<T> childValue = componentDescription.bind(childConfig);
+					map.put(key, childValue.getValue());
+					bindingResultChildren.add(childValue);
+				});
 		Map<String, T> hardenedMap = builder.tryHarden(map);
 		return BindingResult.of(hardenedMap, config, bindingResultChildren);
 	}

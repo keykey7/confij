@@ -44,7 +44,8 @@ public class InterfaceBinding<T> implements ConfigBinding<T> {
 			BindingType methodBindingType = bindingType.bindingFor(method.getReturnType(),
 					classBindingContext.settingsFor(method.getRawMember(), true));
 			ConfigBinding<?> methodDescription = configBinder.toConfigBinding(methodBindingType);
-			String configKey = AnnotationUtil.findAnnotation(method.getRawMember(), Key.class).map(Key::value)
+			String configKey = AnnotationUtil.findAnnotation(method.getRawMember(), Key.class)
+					.map(Key::value)
 					.orElse(method.getName());
 			siblingsByName.put(configKey, new AttributeInformation(methodDescription, method));
 		}

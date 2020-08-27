@@ -52,8 +52,9 @@ class GitResourceProviderFileTest implements WithAssertions {
 	void customRevision() throws Exception {
 		RevCommit commit1 = testGit.addAndCommit();
 		testGit.addAndCommit();
-		ConfijSourceBuilder.URIish revUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, commit1.abbreviate(7)
-				.name());
+		ConfijSourceBuilder.URIish revUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE,
+				commit1.abbreviate(7)
+						.name());
 		assertThat(gitRead(revUri)).isEqualTo(commit1.getShortMessage());
 
 		ConfijSourceBuilder.URIish relUri = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "HEAD~1");
@@ -127,10 +128,12 @@ class GitResourceProviderFileTest implements WithAssertions {
 		RevCommit branch2 = testGit.addAndCommit();
 
 		assertThat(gitRead(fileUri)).isEqualTo(commit2.getShortMessage());
-		ConfijSourceBuilder.URIish branchFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "refs/heads/fuu");
+		ConfijSourceBuilder.URIish branchFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE,
+				"refs/heads/fuu");
 		assertThat(gitRead(branchFile)).isEqualTo(branch2.getShortMessage());
 
-		ConfijSourceBuilder.URIish olderBranchFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "refs/heads/fuu~1");
+		ConfijSourceBuilder.URIish olderBranchFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE,
+				"refs/heads/fuu~1");
 		assertThat(gitRead(olderBranchFile)).isEqualTo(branch1.getShortMessage());
 	}
 
@@ -141,10 +144,10 @@ class GitResourceProviderFileTest implements WithAssertions {
 		testGit.createTag("v1.0.42");
 		testGit.addAndCommit();
 
-		ConfijSourceBuilder.URIish tagFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE, "refs/tags/v1.0.42");
+		ConfijSourceBuilder.URIish tagFile = GitResourceProvider.toUri(testGit.getWorkingDir(), GitTestrepo.DEFAULT_FILE,
+				"refs/tags/v1.0.42");
 		assertThat(gitRead(tagFile)).isEqualTo(commit2.getShortMessage());
 	}
-
 
 	@Test
 	void gitRepoIsEmpty() {

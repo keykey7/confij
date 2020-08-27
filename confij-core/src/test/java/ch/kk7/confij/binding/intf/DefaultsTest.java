@@ -161,7 +161,7 @@ public class DefaultsTest extends AbstractProxyBuilderTest<WithDefaults> {
 			throw new RuntimeException("isn't serializable", e);
 		}
 		WithDefaults second;
-		try(ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()))) {
+		try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(baos.toByteArray()))) {
 			second = (WithDefaults) in.readObject();
 		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException("isn't deserializable", e);

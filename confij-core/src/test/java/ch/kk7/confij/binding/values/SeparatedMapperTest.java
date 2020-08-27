@@ -1,7 +1,7 @@
 package ch.kk7.confij.binding.values;
 
-import ch.kk7.confij.binding.values.SeparatedMapper.Separated;
 import ch.kk7.confij.ConfijBuilder;
+import ch.kk7.confij.binding.values.SeparatedMapper.Separated;
 import ch.kk7.confij.source.env.PropertiesSource;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,6 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 class SeparatedMapperTest implements WithAssertions {
-
 	interface Stringings {
 		@Separated
 		List<String> listOfStrings();

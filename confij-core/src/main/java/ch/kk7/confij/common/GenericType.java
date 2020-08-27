@@ -10,12 +10,12 @@ import lombok.NoArgsConstructor;
  * It is based on ideas from
  * <a href="http://gafter.blogspot.com/2006/12/super-type-tokens.html"
  * >http://gafter.blogspot.com/2006/12/super-type-tokens.html</a>,
- *<p>
+ * <p>
  * Usage is by sub-classing: here is one way to instantiate reference
  * to generic type <code>List&lt;Integer&gt;</code>:
- *<pre>
+ * <pre>
  *  GenericType type = new GenericType&lt;List&lt;Integer&gt;&gt;() { };
- *</pre>
+ * </pre>
  */
 @SuppressWarnings("java:S2176")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

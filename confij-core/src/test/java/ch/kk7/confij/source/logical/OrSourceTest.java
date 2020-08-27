@@ -11,7 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class OrSourceTest extends ConfijSourceTestBase {
-
 	private static AbstractStringAssert<?> assertThatX(ConfijSource one, ConfijSource or, ConfijSource... orEven) {
 		ConfigX orConfig = ConfijBuilder.of(ConfigX.class)
 				.loadFrom(setXTo("before"))

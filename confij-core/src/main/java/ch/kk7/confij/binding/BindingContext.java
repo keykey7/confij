@@ -31,12 +31,9 @@ import java.util.Optional;
 @NonFinal
 public class BindingContext {
 	ValueMapperFactory forcedMapperFactory;
-
 	@Getter
 	@NonNull List<ValueMapperFactory> mapperFactories;
-
 	@NonNull Map<Class<? extends ValueMapperFactory>, Annotation> factoryConfigs;
-
 	@ToString.Exclude
 	@With(AccessLevel.NONE)
 	@NonNull ClassToImplCache implCache;

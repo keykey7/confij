@@ -39,24 +39,17 @@ import static ch.kk7.confij.source.resource.ConfijSourceFetchingException.unable
 @AutoService(ConfijResourceProvider.class)
 public class FileResourceProvider extends URLResourceProvider {
 	public static final String SCHEME = "file";
-
 	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(FileResourceProvider.class);
-
 	int maxFileMatches = 50;
-
 	int maxFilesTraversed = 10000;
-
 	Pattern globPattern = Pattern.compile("(^|.*[^\\\\])([*?]|\\[.+]|\\{.+}).*");
 
 	@Value
 	@NonFinal
 	protected static class PathAndMatcher {
 		Path basePath;
-
 		PathMatcher pathMatcher;
-
 		String originalPath;
-
 		int maxDepth;
 	}
 

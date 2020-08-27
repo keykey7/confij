@@ -22,12 +22,9 @@ import java.util.stream.Stream;
 @Getter
 @AutoService(ConfijSourceFormat.class)
 public class PropertiesFormat implements ConfijSourceFormat {
-
 	private static final Pattern BRACKETS_ARRAY_FORMAT = Pattern.compile("(\\S+)\\[(\\d+)]");
-
 	@NonNull
 	private String separator = ".";
-
 	private String globalPrefix = null;
 
 	@Override
