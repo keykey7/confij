@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <h1>ConfiJ Reference Guide</h1>
 <div class="details">
-<span id="revnumber">version 0.6.0-rc.0.5+4810f57</span>
+<span id="revnumber">version 0.6.0-rc.0.6+ec51fb7</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -547,7 +547,7 @@ dependencies {
 </div>
 </div>
 <div class="paragraph">
-<p>The latest snapshot version <code>0.6.0-rc.0.5+4810f57</code> will be removed after 30 days.</p>
+<p>The latest snapshot version <code>0.6.0-rc.0.6+ec51fb7</code> will be removed after 30 days.</p>
 </div>
 </div>
 </div>
@@ -1450,12 +1450,12 @@ In this service file you list the fully qualified classnames of your constraint 
 <pre class="prettyprint highlight"><code data-lang="java">// +file: META-INF/services/ch.kk7.confij.source.file.resource.ConfijResourceProvider
 public static class FooProvider implements ConfijResourceProvider {
 	@Override
-	public String read(URI path) {
-		return "foo=bar";
+	public Stream&lt;String&gt; read(URIish path) {
+		return Stream.of("foo=bar");
 	}
 
 	@Override
-	public boolean canHandle(URI path) {
+	public boolean canHandle(URIish path) {
 		return "foo".equals(path.getScheme());
 	}
 }
@@ -1481,7 +1481,7 @@ interface Foo {
 <div class="content">
 <pre class="prettyprint highlight"><code data-lang="java">public static class AnUnimportantFooProvider extends FooProvider implements ServiceLoaderPriority {
 	@Override
-	public String read(URI path) {
+	public Stream&lt;String&gt; read(URIish path) {
 		throw new RuntimeException("less important than " + FooProvider.class);
 	}
 
