@@ -1,6 +1,7 @@
 package ch.kk7.confij.docs;
 
 import ch.kk7.confij.source.resource.ClasspathResource;
+import ch.kk7.confij.source.resource.ConfijResource.ResourceContent;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,6 +20,7 @@ public abstract class DocTestBase implements WithAssertions {
 	public static String classpath(String file) {
 		return ClasspathResource.ofName(file)
 				.read(x -> x)
+				.map(ResourceContent::getContent)
 				.findAny()
 				.orElseThrow(IllegalStateException::new);
 	}

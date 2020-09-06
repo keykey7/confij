@@ -17,9 +17,11 @@ import ch.kk7.confij.pipeline.reload.PeriodicReloadStrategy;
 import ch.kk7.confij.pipeline.reload.ReloadNotifierImpl;
 import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.any.AnySourceImpl;
+import ch.kk7.confij.source.any.FixResourceAnyFormatSource;
 import ch.kk7.confij.source.defaults.DefaultSource;
 import ch.kk7.confij.source.logical.MaybeSource;
 import ch.kk7.confij.source.logical.OrSource;
+import ch.kk7.confij.source.resource.ConfijResource;
 import ch.kk7.confij.template.NoopValueResolver;
 import ch.kk7.confij.template.SimpleVariableResolver;
 import ch.kk7.confij.template.ValueResolver;
@@ -126,6 +128,13 @@ public class ConfijBuilder<T> {
 	 */
 	public ConfijBuilder<T> loadFrom(ConfijSource... source) {
 		sources.addAll(Arrays.asList(source));
+		return this;
+	}
+
+	public ConfijBuilder<T> loadFrom(ConfijResource... resources) {
+		sources.addAll(Stream.of(resources)
+				.map(FixResourceAnyFormatSource::new)
+				.collect(Collectors.toList()));
 		return this;
 	}
 

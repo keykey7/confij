@@ -53,7 +53,7 @@ public class GitResource implements ConfijResource {
 	GitSettings gitSettings;
 
 	@Override
-	public Stream<String> read(StringResolver resolver) {
+	public Stream<ResourceContent> read(StringResolver resolver) {
 		// TODO: support templating for all settings
 		GitSettings settings = gitSettings;
 		if (gitSettings.getLocalDir() == null) {
@@ -150,14 +150,17 @@ public class GitResource implements ConfijResource {
 		}
 	}
 
-	protected String readFile(Git git, GitSettings settings) {
+	protected ResourceContent readFile(Git git, GitSettings settings) {
 		RevCommit revCommit = getRevCommit(git, settings);
 		try (TreeWalk walk = TreeWalk.forPath(git.getRepository(), settings.getConfigFile(), revCommit.getTree())) {
 			if (walk != null) {
+				ObjectId objectId = walk.getObjectId(0);
 				byte[] bytes = git.getRepository()
-						.open(walk.getObjectId(0))
+						.open(objectId)
 						.getBytes();
-				return new String(bytes, ReadUtil.STANDARD_CHARSET); // TODO: make charset configurable
+				String content = new String(bytes, Defaults.CHARSET_NAME); // TODO: make charset configurable
+				String filePathAndSha = settings.getConfigFile() + "#" + objectId.getName();
+				return new ResourceContent(content, filePathAndSha);
 			} else {
 				throw new ConfijSourceException("File {} not found within git repo at commit {}", settings.getConfigFile(), revCommit);
 			}

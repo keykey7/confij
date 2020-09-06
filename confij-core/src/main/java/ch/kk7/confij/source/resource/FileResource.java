@@ -54,7 +54,7 @@ public class FileResource implements ConfijResource {
 	int maxFilesTraversed;
 
 	public FileResource(String fileTemplate) {
-		this(fileTemplate, ReadUtil.STANDARD_CHARSET.name(), 50, 10000);
+		this(fileTemplate, Defaults.CHARSET_NAME, 50, 10000);
 	}
 
 	public static FileResource ofFile(String file) {
@@ -135,7 +135,7 @@ public class FileResource implements ConfijResource {
 
 	@Override
 	@SneakyThrows
-	public Stream<String> read(StringResolver resolver) {
+	public Stream<ResourceContent> read(StringResolver resolver) {
 		String fileStr = Util.getSchemeSpecificPart(resolver.resolve(fileTemplate));
 		String charsetStr = resolver.resolve(charsetTemplate);
 		Charset charset = Charset.forName(charsetStr);
@@ -147,7 +147,7 @@ public class FileResource implements ConfijResource {
 			matchingFiles = getFilesMatching(query);
 		}
 		return matchingFiles.stream()
-				.map(x -> fileToStr(x, charset));
+				.map(file -> new ResourceContent(fileToStr(file, charset), file.toString()));
 	}
 
 	protected String fileToStr(Path path, Charset charset) {

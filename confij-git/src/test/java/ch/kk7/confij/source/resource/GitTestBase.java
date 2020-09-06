@@ -34,9 +34,9 @@ abstract class GitTestBase implements WithAssertions {
 
 	public ObjectAssert<String> assertThatGitRead(GitSettings gitSettings) {
 		GitResource gitResource = new GitResource(gitSettings);
-		return assertThat(gitResource.read(x -> x)).hasSize(1)
+		return (ObjectAssert<String>) assertThat(gitResource.read(x -> x)).hasSize(1)
 				.element(0)
-				.as("with settings " + gitSettings);
+				.extracting(x -> x.getContent());
 	}
 
 	public AbstractThrowableAssert<?, ? extends Throwable> assertThatGitReadThrows(GitSettings gitSettings) {

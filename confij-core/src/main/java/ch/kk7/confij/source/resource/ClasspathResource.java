@@ -31,7 +31,7 @@ public class ClasspathResource implements ConfijResource {
 	}
 
 	public static ClasspathResource ofName(String nameTemplate) {
-		return new ClasspathResource(nameTemplate, ReadUtil.STANDARD_CHARSET.name(), null);
+		return new ClasspathResource(nameTemplate, Defaults.CHARSET_NAME, null);
 	}
 
 	@NonNull
@@ -49,11 +49,11 @@ public class ClasspathResource implements ConfijResource {
 	}
 
 	@Override
-	public Stream<String> read(StringResolver resolver) {
+	public Stream<ResourceContent> read(StringResolver resolver) {
 		String name = resolver.resolve(nameTemplate);
-		String charsetStr = resolver.resolve(charsetTemplate);
+		Charset charset = Charset.forName(resolver.resolve(charsetTemplate));
 		URL classpathUrl = asUrl(name);
-		return Stream.of(ReadUtil.readUrl(classpathUrl.toString(), charsetStr));
+		return Stream.of(new ResourceContent(URLResource.readUrl(classpathUrl, charset), name));
 	}
 
 	@ToString

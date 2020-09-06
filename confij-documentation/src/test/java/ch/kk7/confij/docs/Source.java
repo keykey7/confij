@@ -7,6 +7,7 @@ import ch.kk7.confij.common.ServiceLoaderPriority;
 import ch.kk7.confij.common.ServiceLoaderUtil;
 import ch.kk7.confij.source.any.ConfijAnyResource;
 import ch.kk7.confij.source.resource.ConfijResource;
+import ch.kk7.confij.source.resource.ConfijResource.ResourceContent;
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 import com.google.auto.service.AutoService;
 import org.junit.jupiter.api.Test;
@@ -208,7 +209,7 @@ class Source extends DocTestBase {
 
 		@Override
 		public Optional<ConfijResource> maybeHandle(String path) {
-			return Optional.of((ConfijResource) resolver -> Stream.of("foo=less important than " + FooResource.class))
+			return Optional.of((ConfijResource) resolver -> Stream.of(new ResourceContent("foo=OTHER", path)))
 					.filter(__ -> path.startsWith("foo:"));
 		}
 	}
@@ -220,7 +221,7 @@ class Source extends DocTestBase {
 	public static class FooResource implements ConfijAnyResource {
 		@Override
 		public Optional<ConfijResource> maybeHandle(String path) {
-			return Optional.of((ConfijResource) resolver -> Stream.of("foo=bar"))
+			return Optional.of((ConfijResource) resolver -> Stream.of(new ResourceContent("foo=bar", path)))
 					.filter(__ -> path.startsWith("foo:"));
 		}
 	}
