@@ -5,7 +5,8 @@ import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.common.ServiceLoaderPriority;
 import ch.kk7.confij.common.ServiceLoaderUtil;
-import ch.kk7.confij.source.ConfijSourceBuilder.URIish;import ch.kk7.confij.source.resource.ConfijResourceProvider;
+import ch.kk7.confij.source.any.ConfijAnyResource;
+import ch.kk7.confij.source.resource.ConfijResource;
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 import com.google.auto.service.AutoService;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;import java.util.stream.Stream;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 class Source extends DocTestBase {
 	// tag::interface[]
@@ -195,33 +198,30 @@ class Source extends DocTestBase {
 
 	}
 
-	@AutoService(ConfijResourceProvider.class)
+	@AutoService(ConfijAnyResource.class)
 	// tag::resourceprovider-service-ignored[]
-	public static class AnUnimportantFooProvider extends FooProvider implements ServiceLoaderPriority {
-		@Override
-		public Stream<String> read(URIish path) {
-			throw new RuntimeException("less important than " + FooProvider.class);
-		}
-
+	public static class AnUnimportantFoo extends FooResource implements ServiceLoaderPriority {
 		@Override
 		public int getPriority() {
 			return ServiceLoaderPriority.DEFAULT_PRIORITY - 1000;
 		}
+
+		@Override
+		public Optional<ConfijResource> maybeHandle(String path) {
+			return Optional.of((ConfijResource) resolver -> Stream.of("foo=less important than " + FooResource.class))
+					.filter(__ -> path.startsWith("foo:"));
+		}
 	}
 	// end::resourceprovider-service-ignored[]
 
-	@AutoService(ConfijResourceProvider.class)
+	@AutoService(ConfijAnyResource.class)
 	// tag::resourceprovider-service[]
-	// +file: META-INF/services/ch.kk7.confij.source.file.resource.ConfijResourceProvider
-	public static class FooProvider implements ConfijResourceProvider {
+	// +file: META-INF/services/ch.kk7.confij.source.file.resource.ConfijAnyResource
+	public static class FooResource implements ConfijAnyResource {
 		@Override
-		public Stream<String> read(URIish path) {
-			return Stream.of("foo=bar");
-		}
-
-		@Override
-		public boolean canHandle(URIish path) {
-			return "foo".equals(path.getScheme());
+		public Optional<ConfijResource> maybeHandle(String path) {
+			return Optional.of((ConfijResource) resolver -> Stream.of("foo=bar"))
+					.filter(__ -> path.startsWith("foo:"));
 		}
 	}
 
@@ -238,7 +238,7 @@ class Source extends DocTestBase {
 				.build();
 		// end::resourceprovider[]
 		assertThat(foo.foo()).isEqualTo("bar");
-		assertThat(ServiceLoaderUtil.requireInstancesOf(ConfijResourceProvider.class)).anySatisfy(
-				x -> assertThat(x).isInstanceOf(AnUnimportantFooProvider.class));
+		assertThat(ServiceLoaderUtil.requireInstancesOf(ConfijAnyResource.class)).anySatisfy(
+				x -> assertThat(x).isInstanceOf(AnUnimportantFoo.class));
 	}
 }

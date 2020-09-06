@@ -16,7 +16,7 @@ import ch.kk7.confij.pipeline.reload.NeverReloadStrategy;
 import ch.kk7.confij.pipeline.reload.PeriodicReloadStrategy;
 import ch.kk7.confij.pipeline.reload.ReloadNotifierImpl;
 import ch.kk7.confij.source.ConfijSource;
-import ch.kk7.confij.source.any.AnySource;
+import ch.kk7.confij.source.any.AnySourceImpl;
 import ch.kk7.confij.source.defaults.DefaultSource;
 import ch.kk7.confij.source.logical.MaybeSource;
 import ch.kk7.confij.source.logical.OrSource;
@@ -112,7 +112,7 @@ public class ConfijBuilder<T> {
 	 */
 	public ConfijBuilder<T> loadFrom(String... sourceStr) {
 		Stream.of(sourceStr)
-				.map(AnySource::new)
+				.map(AnySourceImpl::new)
 				.forEachOrdered(sources::add);
 		return this;
 	}
@@ -140,7 +140,7 @@ public class ConfijBuilder<T> {
 	 */
 	public ConfijBuilder<T> loadOptionalFrom(String... maybeSourceStr) {
 		return loadFrom(Stream.of(maybeSourceStr)
-				.map(AnySource::new)
+				.map(AnySourceImpl::new)
 				.map(MaybeSource::new)
 				.collect(Collectors.toList())
 				.toArray(new MaybeSource[]{}));
@@ -158,10 +158,10 @@ public class ConfijBuilder<T> {
 	 * @see OrSource
 	 */
 	public ConfijBuilder<T> loadFromFirstOf(String firstSource, String secondSource, String... otherSources) {
-		return loadFrom(new OrSource(new AnySource(firstSource), new AnySource(secondSource), Stream.of(otherSources)
-				.map(AnySource::new)
+		return loadFrom(new OrSource(new AnySourceImpl(firstSource), new AnySourceImpl(secondSource), Stream.of(otherSources)
+				.map(AnySourceImpl::new)
 				.collect(Collectors.toList())
-				.toArray(new AnySource[]{})));
+				.toArray(new AnySourceImpl[]{})));
 	}
 
 	public ConfijBuilder<T> validateOnlyWith(@NonNull ConfijValidator<T> validator) {

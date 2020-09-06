@@ -1,10 +1,7 @@
 package ch.kk7.confij.source.format;
 
-import ch.kk7.confij.source.ConfijSourceBuilder.URIish;
 import ch.kk7.confij.tree.ConfijNode;
 
-public interface ConfijSourceFormat {
+public interface ConfijFormat {
 	void override(ConfijNode rootNode, String configAsStr);
-
-	boolean canHandle(URIish path);
 }

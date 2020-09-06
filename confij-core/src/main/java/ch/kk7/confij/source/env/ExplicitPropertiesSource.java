@@ -3,26 +3,28 @@ package ch.kk7.confij.source.env;
 import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.format.PropertiesFormat;
 import ch.kk7.confij.tree.ConfijNode;
+import lombok.ToString;
 
 import java.util.Properties;
 
-public class PropertiesSource extends PropertiesFormat implements ConfijSource {
+@ToString
+public class ExplicitPropertiesSource extends PropertiesFormat implements ConfijSource {
 	private final Properties properties;
 
-	public PropertiesSource() {
+	public ExplicitPropertiesSource() {
 		this(new Properties());
 	}
 
-	public PropertiesSource(Properties properties) {
+	public ExplicitPropertiesSource(Properties properties) {
 		this.properties = properties;
 		setSeparator(".");
 	}
 
-	public static PropertiesSource of(String key, String value) {
-		return new PropertiesSource().set(key, value);
+	public static ExplicitPropertiesSource of(String key, String value) {
+		return new ExplicitPropertiesSource().set(key, value);
 	}
 
-	public PropertiesSource set(String key, String value) {
+	public ExplicitPropertiesSource set(String key, String value) {
 		if (value == null) {
 			properties.remove(key);
 		} else {

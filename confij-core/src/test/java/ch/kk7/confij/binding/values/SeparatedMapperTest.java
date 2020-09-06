@@ -2,7 +2,7 @@ package ch.kk7.confij.binding.values;
 
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.binding.values.SeparatedMapper.Separated;
-import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -28,7 +28,7 @@ class SeparatedMapperTest implements WithAssertions {
 
 	private void assertThatStringingsAll(String source, String[] expected) {
 		Stringings stringings = ConfijBuilder.of(Stringings.class)
-				.loadFrom(new PropertiesSource().set("listOfStrings", source)
+				.loadFrom(new ExplicitPropertiesSource().set("listOfStrings", source)
 						.set("stringArray", source)
 						.set("setOfStrings", source)
 						.set("notAnnotated", source))
@@ -66,7 +66,7 @@ class SeparatedMapperTest implements WithAssertions {
 	@Test
 	void testOtherValidTypes() {
 		OtherValidTypes otherValidTypes = ConfijBuilder.of(OtherValidTypes.class)
-				.loadFrom(new PropertiesSource().set("intArray", "0,1,2,3,4,5")
+				.loadFrom(new ExplicitPropertiesSource().set("intArray", "0,1,2,3,4,5")
 						.set("longHashSet", "0"))
 				.build();
 		assertThat(otherValidTypes.intArray()).containsExactly(0, 1, 2, 3, 4, 5);
@@ -76,7 +76,7 @@ class SeparatedMapperTest implements WithAssertions {
 	@Test
 	void unmappableValue() {
 		assertThatThrownBy(() -> ConfijBuilder.of(OtherValidTypes.class)
-				.loadFrom(new PropertiesSource().set("intArray", "0 ,1,2,3,4,5")
+				.loadFrom(new ExplicitPropertiesSource().set("intArray", "0 ,1,2,3,4,5")
 						.set("longHashSet", "0"))
 				.build());
 	}
@@ -117,7 +117,7 @@ class SeparatedMapperTest implements WithAssertions {
 	@Test
 	void customAnnotation() {
 		CustomAnnotation customAnnotation = ConfijBuilder.of(CustomAnnotation.class)
-				.loadFrom(new PropertiesSource().set("semicolon", "a, b ;c;; ")
+				.loadFrom(new ExplicitPropertiesSource().set("semicolon", "a, b ;c;; ")
 						.set("semicolonTrimmed", "a, b;c;; ")
 						.set("intTrimmed", "1 SPLIT 2 SPLUNK 3"))
 				.build();

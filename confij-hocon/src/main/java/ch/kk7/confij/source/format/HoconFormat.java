@@ -1,22 +1,38 @@
 package ch.kk7.confij.source.format;
 
+import ch.kk7.confij.common.Util;
 import ch.kk7.confij.logging.ConfijLogger;
-import ch.kk7.confij.source.ConfijSourceBuilder.URIish;
+import ch.kk7.confij.source.ConfijSourceException;
+import ch.kk7.confij.source.any.ConfijAnyFormat;
 import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import com.typesafe.config.ConfigFactory;
 import lombok.ToString;
+import lombok.Value;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Optional;
 
-@ToString
-@AutoService(ConfijSourceFormat.class)
-public class HoconResourceProvider implements ConfijSourceFormat {
-	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(HoconResourceProvider.class);
+@Value
+public class HoconFormat implements ConfijFormat {
+	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(HoconFormat.class);
+
+	@ToString
+	@AutoService(ConfijAnyFormat.class)
+	public static class HoconAnyFormat implements ConfijAnyFormat {
+		@Override
+		public Optional<ConfijFormat> maybeHandle(String pathTemplate) {
+			if (Util.getSchemeSpecificPart(pathTemplate)
+					.matches("(?s).+\\.(json|hocon|conf)$")) {
+				return Optional.of(new HoconFormat());
+			}
+			return Optional.empty();
+		}
+	}
 
 	@Override
 	public void override(ConfijNode rootNode, String configAsStr) {
@@ -34,8 +50,8 @@ public class HoconResourceProvider implements ConfijSourceFormat {
 					.root()
 					.unwrapped();
 		} catch (Exception e) {
-			LOGGER.debug("parsing HOCON from failed for string:\n{}", configAsStr);
-			throw new ConfijSourceFormatException("invalid HOCON format", e);
+			LOGGER.debug("parsing HOCON failed for string:\n{}", configAsStr);
+			throw new ConfijSourceException("invalid HOCON format", e);
 		}
 		return simplify(unwrapped);
 	}
@@ -75,11 +91,5 @@ public class HoconResourceProvider implements ConfijSourceFormat {
 			result.put(String.valueOf(index), simpleValue);
 		}
 		return result;
-	}
-
-	@Override
-	public boolean canHandle(URIish path) {
-		return path.getSchemeSpecificPart()
-				.matches("(?s).+\\.(json|hocon|conf)$");
 	}
 }

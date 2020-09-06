@@ -1,7 +1,7 @@
 package ch.kk7.confij.source.format;
 
 import ch.kk7.confij.ConfijBuilder;
-import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 class PropertiesFormatTest implements WithAssertions {
 	private PropertiesFormat propertiesFormat;
@@ -20,9 +19,9 @@ class PropertiesFormatTest implements WithAssertions {
 		propertiesFormat = new PropertiesFormat();
 	}
 
-	private static Properties props(String testString) {
+	private static java.util.Properties props(String testString) {
 		String withNewline = testString.replace('|', '\n');
-		Properties properties = new Properties();
+		java.util.Properties properties = new java.util.Properties();
 		try (StringReader r = new StringReader(withNewline)) {
 			properties.load(r);
 		} catch (IOException e) {
@@ -70,7 +69,7 @@ class PropertiesFormatTest implements WithAssertions {
 	void bracketListFormat() {
 		String testString = "values[0]=1|values[1]=2|values[2]=3";
 		ListValueHolder holder = ConfijBuilder.of(ListValueHolder.class)
-				.loadFrom(new PropertiesSource(props(testString)))
+				.loadFrom(new ExplicitPropertiesSource(props(testString)))
 				.build();
 
 		assertThat(holder.values()).containsExactly("1", "2", "3");

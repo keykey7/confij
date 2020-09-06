@@ -57,7 +57,7 @@ include::{src}[tag=defaults]
 
 == The AnySource [[anysource]]
 
-The `AnySource` simply takes a URI-string and determines resource location and type based on it.
+The `AnySourceImpl` simply takes a URI-string and determines resource location and type based on it.
 It is the most compact form to specify a source unless you require special settings.
 
 .Load from multiple sources of dynamic type and location
@@ -139,7 +139,7 @@ git:git://example.com/repo.git/file.yaml#refs/tags/v1.0.42
 ====
 
 For more complex scenarios like custom SSL authentication consider extending
-the existing `GitResourceProvider`.
+the existing `GitResource`.
 
 
 === YAML Format
@@ -150,7 +150,7 @@ YAML is a recommended configuration source format since it maps nicely on a tree
 Collection types can be represented as lists or as maps with numerical keys.
 
 YAML can be loaded from all the <<resource-locations>>.
-The `AnySource` expects a case-insensitive file ending of `.yaml` or `.yml`.
+The `AnySourceImpl` expects a case-insensitive file ending of `.yaml` or `.yml`.
 
 .Load from multiple sources of dynamic type and location
 ====
@@ -175,7 +175,7 @@ https://github.com/lightbend/config/blob/master/HOCON.md[HOCON] (Human-Optimized
 is a format for human-readable data, and a superset of JSON and .properties.
 
 HOCON can be loaded from all the <<resource-locations>>.
-The `AnySource` expects a case-insensitive file ending of `.hocon`, `.json` or `.conf`.
+The `AnySourceImpl` expects a case-insensitive file ending of `.hocon`, `.json` or `.conf`.
 
 The default behaviour will first perform substitutions according to the
 https://github.com/lightbend/config/blob/master/HOCON.md#substitutions[HOCON Specification],
@@ -199,7 +199,7 @@ Java properties files are part of the `{group}:confij-core` due to not having an
 but are otherwise not recommended, since it is a flat key-value format.
 
 Property files can be loaded from all <<resource-locations>>.
-The `AnySource` expects a case-insensitive file ending of `.properties`.
+The `AnySourceImpl` expects a case-insensitive file ending of `.properties`.
 
 .Nested configuration loading from properties file
 ====

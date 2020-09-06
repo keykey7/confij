@@ -1,7 +1,7 @@
 package ch.kk7.confij.docs;
 
 import ch.kk7.confij.ConfijBuilder;
-import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import ch.kk7.confij.validation.ConfijValidationException;
 import ch.kk7.confij.validation.NonNullValidator.Nullable;
 import org.assertj.core.api.WithAssertions;
@@ -45,7 +45,7 @@ class Validation implements WithAssertions {
 		assertThatThrownBy(() -> ConfijBuilder.of(NothingIsNull.class)
         				.build()).isInstanceOf(ConfijValidationException.class);
 		assertThat(ConfijBuilder.of(NothingIsNull.class)
-								.loadFrom(PropertiesSource.of("willCrashIfNull", "xxx"))
+								.loadFrom(ExplicitPropertiesSource.of("willCrashIfNull", "xxx"))
                 				.build().willCrashIfNull()).isEqualTo("xxx");
 		assertThatThrownBy(() -> ConfijBuilder.of(NothingIsNull.class)
                 				.build()).isInstanceOf(ConfijValidationException.class);

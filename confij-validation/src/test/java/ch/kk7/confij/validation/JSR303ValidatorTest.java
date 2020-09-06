@@ -2,7 +2,7 @@ package ch.kk7.confij.validation;
 
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.annotation.Default;
-import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +49,7 @@ class JSR303ValidatorTest implements WithAssertions {
 	@Test
 	void testOneInvalid() {
 		ConfijBuilder<ValidatedConfig> builder = ConfijBuilder.of(ValidatedConfig.class)
-				.loadFrom(new PropertiesSource().set("anInt", "23"));
+				.loadFrom(new ExplicitPropertiesSource().set("anInt", "23"));
 		assertThatExceptionOfType(ConfijValidationException.class).isThrownBy(builder::build)
 				.withCauseExactlyInstanceOf(ConstraintViolationException.class)
 				.satisfies(e -> assertThat(((ConstraintViolationException) e.getCause()).getConstraintViolations()).hasSize(1));
@@ -58,21 +58,21 @@ class JSR303ValidatorTest implements WithAssertions {
 	@Test
 	void testNestedInvalid() {
 		ConfijBuilder<ValidatedConfig> builder = ConfijBuilder.of(ValidatedConfig.class)
-				.loadFrom(new PropertiesSource().set("nested.aString", ""));
+				.loadFrom(new ExplicitPropertiesSource().set("nested.aString", ""));
 		assertThatExceptionOfType(ConfijValidationException.class).isThrownBy(builder::build);
 	}
 
 	@Test
 	void testNestedIgnored() {
 		ConfijBuilder.of(ValidatedConfig.class)
-				.loadFrom(new PropertiesSource().set("nestedIgnored.aString", ""))
+				.loadFrom(new ExplicitPropertiesSource().set("nestedIgnored.aString", ""))
 				.build();
 	}
 
 	@Test
 	void testNestedSetInvalid() {
 		ConfijBuilder<ValidatedConfig> builder = ConfijBuilder.of(ValidatedConfig.class)
-				.loadFrom(new PropertiesSource().set("aSet.0.aString", "")
+				.loadFrom(new ExplicitPropertiesSource().set("aSet.0.aString", "")
 						.set("aSet.1.aString", "I'm valid")
 						.set("aSet.2.aString", ""));
 		assertThatExceptionOfType(ConfijValidationException.class).isThrownBy(builder::build)
@@ -82,7 +82,7 @@ class JSR303ValidatorTest implements WithAssertions {
 	@Test
 	void testNoValidator() {
 		ConfijBuilder.of(ValidatedConfig.class)
-				.loadFrom(new PropertiesSource().set("anInt", "23")
+				.loadFrom(new ExplicitPropertiesSource().set("anInt", "23")
 						.set("aSet.0.aString", ""))
 				.validationDisabled()
 				.build();

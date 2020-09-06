@@ -1,12 +1,11 @@
 package ch.kk7.confij.docs;
 
-import ch.kk7.confij.source.ConfijSourceBuilder.URIish;import ch.kk7.confij.source.resource.ClasspathResourceProvider;
+import ch.kk7.confij.source.resource.ClasspathResource;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeAll;
 
 import java.io.File;
-import java.net.URI;
 
 public abstract class DocTestBase implements WithAssertions {
 	@BeforeAll
@@ -18,6 +17,9 @@ public abstract class DocTestBase implements WithAssertions {
 	}
 
 	public static String classpath(String file) {
-		return new ClasspathResourceProvider().read(URIish.create(file)).findAny().orElseThrow(IllegalStateException::new);
+		return ClasspathResource.ofName(file)
+				.read(x -> x)
+				.findAny()
+				.orElseThrow(IllegalStateException::new);
 	}
 }

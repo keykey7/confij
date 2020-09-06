@@ -4,7 +4,7 @@ import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.annotation.VariableResolver;
 import ch.kk7.confij.template.NoopValueResolver.NoopResolver;
 import ch.kk7.confij.ConfijBuilder;
-import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import ch.kk7.confij.template.ValueResolver;import ch.kk7.confij.tree.ConfijNode;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
@@ -24,11 +24,11 @@ class Templates implements WithAssertions {
 	@Test
 	void simple() {
 		Salutation salutation = ConfijBuilder.of(Salutation.class)
-				.loadFrom(new PropertiesSource().set("name", "Bob"))
+				.loadFrom(new ExplicitPropertiesSource().set("name", "Bob"))
 				.build();
 		assertThat(salutation.hello()).isEqualTo("Hi Bob");
 		salutation = ConfijBuilder.of(Salutation.class)
-				.loadFrom(new PropertiesSource().set("hello", "Cya"))
+				.loadFrom(new ExplicitPropertiesSource().set("hello", "Cya"))
 				.build();
 		assertThat(salutation.hello()).isEqualTo("Cya");
 	}
@@ -101,17 +101,17 @@ class Templates implements WithAssertions {
 	@Test
 	void noop() {
 		assertThat(ConfijBuilder.of(Noop.class)
-				.loadFrom(new PropertiesSource().set("canContainDollar", "${variable}"))
+				.loadFrom(new ExplicitPropertiesSource().set("canContainDollar", "${variable}"))
 				.build().canContainDollar()).isEqualTo("${variable}");
 		assertThat(ConfijBuilder.of(GlobalNoop.class)
-				.loadFrom(new PropertiesSource().set("canContainDollar", "${variable}"))
+				.loadFrom(new ExplicitPropertiesSource().set("canContainDollar", "${variable}"))
 				.build().canContainDollar()).isEqualTo("${variable}");
 
 		assertThat(
 				// tag::builder-noop[]
 		ConfijBuilder.of(BuilderNoop.class).templatingDisabled()
 				// end::builder-noop[]
-				.loadFrom(new PropertiesSource().set("canContainDollar", "${variable}"))
+				.loadFrom(new ExplicitPropertiesSource().set("canContainDollar", "${variable}"))
 				.build().canContainDollar()).isEqualTo("${variable}");
 	}
 

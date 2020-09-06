@@ -1,21 +1,19 @@
 package ch.kk7.confij.source.resource;
 
-import ch.kk7.confij.source.ConfijSourceBuilder.URIish;
 import ch.kk7.confij.source.ConfijSourceException;
 import org.assertj.core.api.ListAssert;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.Function;
 
-class FileResourceProviderTest implements WithAssertions {
+class FileResourceTest implements WithAssertions {
 	private static Path tmpDir;
-	private FileResourceProvider provider;
 
 	@BeforeAll
 	public static void setupTestFiles(@TempDir Path tmpDir) throws IOException {
@@ -29,16 +27,16 @@ class FileResourceProviderTest implements WithAssertions {
 			Files.write(tmpDir.resolve("d" + i)
 					.resolve("f" + i + ".txt"), ("xxx#" + i).getBytes());
 		}
-		FileResourceProviderTest.tmpDir = tmpDir;
+		FileResourceTest.tmpDir = tmpDir;
 	}
 
-	@BeforeEach
-	public void init() {
-		provider = new FileResourceProvider();
+	ListAssert<String> assertGlob(String glob, Function<FileResource, FileResource> mod) {
+		return assertThat(mod.apply(FileResource.ofFile(tmpDir.toString() + glob))
+				.read(x -> x));
 	}
 
-	public ListAssert<String> assertGlob(String glob) {
-		return assertThat(provider.read(URIish.create(tmpDir.toString() + glob)));
+	ListAssert<String> assertGlob(String glob) {
+		return assertGlob(glob, Function.identity());
 	}
 
 	@Test
@@ -52,23 +50,23 @@ class FileResourceProviderTest implements WithAssertions {
 
 	@Test
 	void searchOnlyPossibleMatches() {
-		provider.setMaxFilesTraversed(11); // it shouldn't search through all 20 files now:
-		assertGlob("/*1.txt").containsExactly("content#1");
+		assertGlob("/*1.txt", x -> x.withMaxFilesTraversed(11)).as("it shouldn't search through all 20 files now")
+				.containsExactly("content#1");
 	}
 
 	@Test
-	void maxFilesTraversed(@TempDir Path tmpDir) {
-		provider.setMaxFilesTraversed(15);
-		URIish urIish = URIish.create(tmpDir.toString() + "/**");
-		assertThatThrownBy(() -> provider.read(urIish)).isInstanceOf(ConfijSourceException.class)
+	void maxFilesTraversed() {
+		assertThatThrownBy(() -> FileResource.ofFile(tmpDir.toString() + "/**")
+				.withMaxFilesTraversed(15)
+				.read(x -> x)).isInstanceOf(ConfijSourceException.class)
 				.hasMessageContaining("traversed too many files");
 	}
 
 	@Test
-	void maxFileMatches(@TempDir Path tmpDir) {
-		provider.setMaxFileMatches(1);
-		URIish urIish = URIish.create(tmpDir.toString() + "/*.txt");
-		assertThatThrownBy(() -> provider.read(urIish)).isInstanceOf(ConfijSourceException.class)
+	void maxFileMatches() {
+		assertThatThrownBy(() -> FileResource.ofFile(tmpDir.toString() + "/*.txt")
+				.withMaxFileMatches(1)
+				.read(x -> x)).isInstanceOf(ConfijSourceException.class)
 				.hasMessageContaining("found too many files");
 	}
 }

@@ -1,8 +1,10 @@
 package ch.kk7.confij.source.resource;
 
+import ch.kk7.confij.common.Util;
 import ch.kk7.confij.logging.ConfijLogger;
-import ch.kk7.confij.source.ConfijSourceBuilder;
 import ch.kk7.confij.source.ConfijSourceException;
+import ch.kk7.confij.source.any.ConfijAnyResource;
+import ch.kk7.confij.template.ValueResolver.StringResolver;
 import com.google.auto.service.AutoService;
 import lombok.Builder;
 import lombok.NonNull;
@@ -34,101 +36,36 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static ch.kk7.confij.common.Util.not;
 
-@ToString
-@AutoService(ConfijResourceProvider.class)
-public class GitResourceProvider extends AbstractResourceProvider {
+@Value
+@NonFinal
+public class GitResource implements ConfijResource {
 	protected static final String TEMP_DIR_PREFIX = "confij-";
 	protected static final Path TEMP_DIR = Paths.get(System.getProperty("java.io.tmpdir"));
-	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(GitResourceProvider.class);
-	private static final String SCHEME = "git";
-	private static final Pattern URL_FILE_SPLITTER = Pattern.compile("^(?<url>.+(?:\\.git/?|[^:]/))/(?<file>.+)$");
+	private static final ConfijLogger LOGGER = ConfijLogger.getLogger(GitResource.class);
 	private static final String FETCH_REFSPEC = "+refs/*:refs/*";
-
-	@Value
-	@With
-	@Builder
-	@NonFinal
-	public static class GitSettings {
-		@NonNull String gitRevision;
-		@NonNull String remoteUrl;
-		@NonNull File localDir;
-		@NonNull String configFile;
-		CredentialsProvider credentialsProvider;
-		int timeoutInSeconds;
-		TransportConfigCallback transportConfigCallback;
-	}
-
-	public static ConfijSourceBuilder.URIish toUri(String remoteUri, String configFile) {
-		return toUri(remoteUri, configFile, null);
-	}
-
-	public static ConfijSourceBuilder.URIish toUri(@NonNull String remoteUri, @NonNull String configFile, String gitRevision) {
-		configFile = configFile.startsWith("/") ? configFile.substring(1) : configFile;
-		String urlFileSep = remoteUri.matches(".*\\.git/?$") ? "/" : "//";
-		return ConfijSourceBuilder.URIish.create(
-				SCHEME + ":" + remoteUri + urlFileSep + configFile + (gitRevision == null ? "" : "#" + gitRevision));
-	}
+	GitSettings gitSettings;
 
 	@Override
-	public Stream<String> read(ConfijSourceBuilder.URIish path) {
-		GitSettings settings = uriToGitSettings(path);
+	public Stream<String> read(StringResolver resolver) {
+		// TODO: support templating for all settings
+		GitSettings settings = gitSettings;
+		if (gitSettings.getLocalDir() == null) {
+			settings = settings.withLocalDir(getFileForSeed(settings.getRemoteUrl()));
+		}
 		Git git = gitCloneOrFetch(settings);
 		return Stream.of(readFile(git, settings));
 	}
 
-	@Override
-	public boolean canHandle(ConfijSourceBuilder.URIish path) {
-		return SCHEME.equals(path.getScheme());
-	}
-
-	protected GitSettings uriToGitSettings(ConfijSourceBuilder.URIish uri) {
-		String urlAndFile = uri.getSchemeSpecificPart();
-		Matcher m = URL_FILE_SPLITTER.matcher(urlAndFile);
-		if (!m.matches()) {
-			throw new ConfijSourceException("expected the git source to have a format like " +
-					"'git:https://example.com/repo.git/path/to/file.yaml' (repo ending in '.git') or " +
-					"'git:/var/opt/dir//path/to/file.yaml' (repo separated from file by double slash). " +
-					"However the provided '{}' does not match: {}", urlAndFile, URL_FILE_SPLITTER.pattern());
-		}
-		// we might also support: git://example.com/repo.git/... and ssh+git://... as a shortform
-		// for http this might be confusing however
-
-		String remoteUrl = m.group("url");
-		String configFile = m.group("file");
-		return GitSettings.builder()
-				.gitRevision(Optional.ofNullable(uri.getFragment())
-						.filter(not(String::isEmpty))
-						.orElse(Constants.HEAD))
-				.remoteUrl(remoteUrl)
-				.configFile(configFile)
-				.localDir(getFileForSeed(remoteUrl))
-				.credentialsProvider(getCredentialsProvider(remoteUrl))
-				.build();
-	}
-
-	protected CredentialsProvider getCredentialsProvider(String remoteUrl) {
-		final URIish urIish;
-		try {
-			urIish = new URIish(remoteUrl);
-		} catch (URISyntaxException e) {
-			throw new ConfijSourceException("not URIish: " + remoteUrl, e);
-		}
-		if (urIish.getUser() != null) {
-			// that's not 100% correct, you can very well send creds in the URL and ignore Authorization headers...
-			return new UsernamePasswordCredentialsProvider(urIish.getUser(), Optional.ofNullable(urIish.getPass())
-					.orElse(""));
-		}
-		return null;
-	}
-
-	protected File getFileForSeed(@NonNull String seed) {
-		// another idea would be to use the SHA1 hash of the first git commit instead
+	public static File getFileForSeed(@NonNull String seed) {
+		// a more stable idea would be to use the SHA hash of the first git commit instead
+		// but that's a bit of a chicken egg-issue...
 		String name = UUID.nameUUIDFromBytes(seed.getBytes())
 				.toString()
 				.replace("-", "");
@@ -182,14 +119,16 @@ public class GitResourceProvider extends AbstractResourceProvider {
 				.setDirectory(settings.getLocalDir())
 				.setBare(true)
 				.call();
-		// updating the configuration here is only for convenience if used manually
 		StoredConfig config = git.getRepository()
 				.getConfig();
+		// updating the configuration here is mainly for convenience if used manually
 		config.setString(ConfigConstants.CONFIG_REMOTE_SECTION, Constants.DEFAULT_REMOTE_NAME, ConfigConstants.CONFIG_KEY_URL,
 				settings.getRemoteUrl());
 		config.setString(ConfigConstants.CONFIG_REMOTE_SECTION, Constants.DEFAULT_REMOTE_NAME, ConfigConstants.CONFIG_FETCH_SECTION,
 				FETCH_REFSPEC);
-		config.save();
+		Optional.ofNullable(settings.getGitInitHook())
+				.ifPresent(x -> x.accept(git));
+		config.save(); // save after init hook
 		return git;
 	}
 
@@ -218,12 +157,102 @@ public class GitResourceProvider extends AbstractResourceProvider {
 				byte[] bytes = git.getRepository()
 						.open(walk.getObjectId(0))
 						.getBytes();
-				return new String(bytes, getCharset());
+				return new String(bytes, ReadUtil.STANDARD_CHARSET); // TODO: make charset configurable
 			} else {
 				throw new ConfijSourceException("File {} not found within git repo at commit {}", settings.getConfigFile(), revCommit);
 			}
 		} catch (IOException e) {
 			throw new ConfijSourceException("failed to read file {} within git repo at commit {}", settings.getConfigFile(), revCommit, e);
+		}
+	}
+
+	@ToString
+	@AutoService(ConfijAnyResource.class)
+	public static class GitAnyResource implements ConfijAnyResource {
+		private static final String SCHEME = "git";
+		private static final Pattern URL_FILE_SPLITTER = Pattern.compile("^(?<url>.+(?:\\.git/?|[^:]/))/(?<file>.+)$");
+
+		public static String toUri(String remoteUri, String configFile) {
+			return toUri(remoteUri, configFile, null);
+		}
+
+		public static String toUri(@NonNull String remoteUri, @NonNull String configFile, String gitRevision) {
+			configFile = configFile.startsWith("/") ? configFile.substring(1) : configFile;
+			String urlFileSep = remoteUri.matches(".*\\.git/?$") ? "/" : "//";
+			return SCHEME + ":" + remoteUri + urlFileSep + configFile + (gitRevision == null ? "" : "#" + gitRevision);
+		}
+
+		@Override
+		public Optional<GitResource> maybeHandle(String path) {
+			if (Util.getScheme(path)
+					.filter(SCHEME::equals)
+					.isPresent()) {
+				GitSettings settings = uriToGitSettings(path);
+				return Optional.of(new GitResource(settings));
+			}
+			return Optional.empty();
+		}
+
+		protected GitSettings uriToGitSettings(String pathTemplate) {
+			String urlAndFile = Util.getSchemeSpecificPart(pathTemplate);
+			Matcher m = URL_FILE_SPLITTER.matcher(urlAndFile);
+			if (!m.matches()) {
+				throw new ConfijSourceException("expected the git source to have a format like " +
+						"'git:https://example.com/repo.git/path/to/file.yaml' (repo ending in '.git') or " +
+						"'git:/var/opt/dir//path/to/file.yaml' (repo separated from file by double slash). " +
+						"However the provided '{}' does not match: {}", urlAndFile, URL_FILE_SPLITTER.pattern());
+			}
+			// we might also support: git://example.com/repo.git/... and ssh+git://... as a shortform
+			// for http this might be confusing however
+
+			String remoteUrl = m.group("url");
+			String configFile = m.group("file");
+			return GitSettings.builder()
+					.gitRevision(Util.getFragment(pathTemplate)
+							.filter(not(String::isEmpty))
+							.orElse(Constants.HEAD))
+					.remoteUrl(remoteUrl)
+					.configFile(configFile)
+					.credentialsProvider(getCredentialsProvider(remoteUrl))
+					.build();
+		}
+
+		protected CredentialsProvider getCredentialsProvider(String remoteUrl) {
+			final URIish urIish;
+			try {
+				urIish = new URIish(remoteUrl);
+			} catch (URISyntaxException e) {
+				throw new ConfijSourceException("not URIish: " + remoteUrl, e);
+			}
+			if (urIish.getUser() != null) {
+				// that's not 100% correct, you can very well send creds in the URL and ignore Authorization headers...
+				return new UsernamePasswordCredentialsProvider(urIish.getUser(), Optional.ofNullable(urIish.getPass())
+						.orElse(""));
+			}
+			return null;
+		}
+	}
+
+	@Value
+	@With
+	@Builder
+	@NonFinal
+	public static class GitSettings {
+		@NonNull String remoteUrl;
+		@NonNull String configFile;
+		@Builder.Default
+		@NonNull String gitRevision = Constants.HEAD;
+		File localDir;
+		CredentialsProvider credentialsProvider;
+		@Builder.Default
+		int timeoutInSeconds = 60;
+		TransportConfigCallback transportConfigCallback;
+		Consumer<Git> gitInitHook;
+
+		public static class GitSettingsBuilder {
+			GitSettingsBuilder usernamePasswordCredential(String username, String password) {
+				return credentialsProvider(new UsernamePasswordCredentialsProvider(username, password));
+			}
 		}
 	}
 }

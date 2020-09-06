@@ -1,10 +1,12 @@
 package ch.kk7.confij.source.format;
 
-import ch.kk7.confij.source.ConfijSourceBuilder.URIish;
+import ch.kk7.confij.common.Util;
+import ch.kk7.confij.source.any.ConfijAnyFormat;
 import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import lombok.NonNull;
 import lombok.ToString;
+import lombok.Value;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.nodes.Node;
@@ -17,32 +19,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.Optional;
 
 import static ch.kk7.confij.source.format.ConfijSourceFormatException.invalidFormat;
 
-@ToString
-@AutoService(ConfijSourceFormat.class)
-public class YamlFormat implements ConfijSourceFormat {
-	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_ZONED_DATE_TIME;
-	private final Yaml yaml = new Yaml(new SafeConstructorWithDateTime());
-
-	static class SafeConstructorWithDateTime extends SafeConstructor {
-		public SafeConstructorWithDateTime() {
-			super();
-			this.yamlConstructors.put(Tag.TIMESTAMP, new ConstructYamlOffsetDateTime());
-		}
-
-		static class ConstructYamlOffsetDateTime extends ConstructYamlTimestamp {
-			@Override
-			public OffsetDateTime construct(Node node) {
-				Date yamlDate = (Date) super.construct(node);
-				return yamlDate.toInstant()
-						.atZone(getCalendar().getTimeZone()
-								.toZoneId())
-						.toOffsetDateTime();
-			}
-		}
-	}
+@Value
+public class YamlFormat implements ConfijFormat {
+	Yaml yaml = new Yaml(new SafeConstructorWithDateTime());
 
 	@Override
 	public void override(ConfijNode rootNode, String content) {
@@ -103,9 +86,35 @@ public class YamlFormat implements ConfijSourceFormat {
 		return result;
 	}
 
-	@Override
-	public boolean canHandle(URIish path) {
-		return path.getSchemeSpecificPart()
-				.matches("(?i).+\\.ya?ml$");
+	@ToString
+	@AutoService(ConfijAnyFormat.class)
+	public static class YamlAnyFormat implements ConfijAnyFormat {
+		@Override
+		public Optional<ConfijFormat> maybeHandle(String pathTemplate) {
+			if (Util.getSchemeSpecificPart(pathTemplate)
+					.matches("(?i).+\\.ya?ml$")) {
+				return Optional.of(new YamlFormat());
+			}
+			return Optional.empty();
+		}
+	}
+
+	@ToString
+	static class SafeConstructorWithDateTime extends SafeConstructor {
+		public SafeConstructorWithDateTime() {
+			super();
+			this.yamlConstructors.put(Tag.TIMESTAMP, new ConstructYamlOffsetDateTime());
+		}
+
+		static class ConstructYamlOffsetDateTime extends ConstructYamlTimestamp {
+			@Override
+			public OffsetDateTime construct(Node node) {
+				Date yamlDate = (Date) super.construct(node);
+				return yamlDate.toInstant()
+						.atZone(getCalendar().getTimeZone()
+								.toZoneId())
+						.toOffsetDateTime();
+			}
+		}
 	}
 }

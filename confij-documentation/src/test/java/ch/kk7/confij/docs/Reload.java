@@ -2,7 +2,7 @@ package ch.kk7.confij.docs;
 
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.ConfijBuilder.ConfijWrapper;
-import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import org.junit.jupiter.api.Test;
 import java.net.URL;
 import java.time.Duration;
@@ -26,7 +26,7 @@ class Reload extends DocTestBase {
 
 	@Test
 	void reloadHandlers(){
-		PropertiesSource source = PropertiesSource.of("database.url", "http://example.com/db")
+		ExplicitPropertiesSource source = ExplicitPropertiesSource.of("database.url", "http://example.com/db")
 			.set("backend.url", "http://example.com/be");
 
 		// tag::reload-builder[]

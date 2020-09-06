@@ -9,7 +9,7 @@ import ch.kk7.confij.binding.values.SeparatedMapper.Separated;
 import ch.kk7.confij.binding.values.ValueMapperFactory;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
 import ch.kk7.confij.ConfijBuilder;
-import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -83,7 +83,7 @@ public class Binding extends DocTestBase {
 	void nested() {
 		// tag::nestedBuild[]
 		DbConfig dbConfig = ConfijBuilder.of(DbConfig.class)
-			.loadFrom(new PropertiesSource()
+			.loadFrom(new ExplicitPropertiesSource()
 				.set("dbConnections.0.url", "https://db0.example.com")
 				.set("dbConnections.0.timing.keepAlive", "30s")
 				.set("additionalParameters.somekey", "somevalue"))
@@ -113,7 +113,7 @@ public class Binding extends DocTestBase {
 	@Test
 	void customValueMappingWithAnnotation() {
 		Favourites favourites = ConfijBuilder.of(Favourites.class)
-				.loadFrom(new PropertiesSource().set("favouriteColor", "#000000"))
+				.loadFrom(new ExplicitPropertiesSource().set("favouriteColor", "#000000"))
 				.build();
 		assertThat(favourites.favouriteColor()).isEqualTo(Color.BLACK);
 	}
@@ -129,7 +129,7 @@ public class Binding extends DocTestBase {
 		EmptyColorHolder colorHolder = ConfijBuilder.of(EmptyColorHolder.class)
 				.bindValuesForClassWith(Color::decode, java.awt.Color.class)
 				// end::custom-value-mapping[]
-				.loadFrom(new PropertiesSource().set("black", "#000000")
+				.loadFrom(new ExplicitPropertiesSource().set("black", "#000000")
 						.set("green", "#00FF00"))
 				.build();
 		assertThat(colorHolder.black()).isEqualTo(Color.BLACK);
@@ -149,7 +149,7 @@ public class Binding extends DocTestBase {
 	@Test
 	void testBuiltinCustomMappings() {
 		Base64Encoded builtInMappers = ConfijBuilder.of(Base64Encoded.class)
-				.loadFrom(new PropertiesSource().set("base64Arr", "AQIDBA==")
+				.loadFrom(new ExplicitPropertiesSource().set("base64Arr", "AQIDBA==")
 						.set("base64List", "AQIDBA=="))
 				.build();
 		assertThat(builtInMappers.base64Arr()).containsExactly(1, 2, 3, 4);
