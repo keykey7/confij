@@ -16,12 +16,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Readme extends DocTestBase {
-
 	interface HouseConfiguration {
 		@Default("true")
 		boolean hasRoof();
 
-		Map<String,Room> rooms();
+		Map<String, Room> rooms();
 
 		Set<@NotEmpty String> inhabitants();
 
@@ -32,14 +31,15 @@ public class Readme extends DocTestBase {
 	}
 
 	interface Room {
-		@Positive
-		int numberOfWindows();
+		@Positive int numberOfWindows();
 
 		@Default("Wood")
 		FloorType floor();
 
 		enum FloorType {
-			Wood, Carpet, Stone
+			Wood,
+			Carpet,
+			Stone
 		}
 	}
 
@@ -55,7 +55,8 @@ public class Readme extends DocTestBase {
 	@Test
 	void readmeMatches() throws Exception {
 		assertThatContains(projectRootReadme(), "(?msi)^```java(.+?)^```", simplify(thisJavaFile()));
-		String yaml = new Scanner(new File("johnshouse.yaml")).useDelimiter("\\A").next();
+		String yaml = new Scanner(new File("johnshouse.yaml")).useDelimiter("\\A")
+				.next();
 		assertThatContains(projectRootReadme(), "(?msi)^```yaml(.+?)^```", simplify(yaml));
 	}
 
@@ -72,7 +73,8 @@ public class Readme extends DocTestBase {
 	}
 
 	private static String simplify(String content) {
-		return content.replaceAll("[\t\n\r ]+", " ").trim();
+		return content.replaceAll("[\t\n\r ]+", " ")
+				.trim();
 	}
 
 	private static File projectRoot() {
@@ -88,12 +90,15 @@ public class Readme extends DocTestBase {
 	}
 
 	private static String projectRootReadme() throws FileNotFoundException {
-		return new Scanner(new File(projectRoot(), "README.md")).useDelimiter("\\A").next();
+		return new Scanner(new File(projectRoot(), "README.md")).useDelimiter("\\A")
+				.next();
 	}
 
 	private static String thisJavaFile() throws FileNotFoundException {
-		return new Scanner(new File(projectRoot(),
-				"confij-documentation/src/test/java/" + Readme.class.getName().replaceAll("\\.", "/") + ".java"))
-				.useDelimiter("\\A").next();
+		return new Scanner(new File(projectRoot(), "confij-documentation/src/test/java/" +
+				Readme.class.getName()
+						.replaceAll("\\.", "/") +
+				".java")).useDelimiter("\\A")
+				.next();
 	}
 }

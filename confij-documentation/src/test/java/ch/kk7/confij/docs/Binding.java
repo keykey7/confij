@@ -1,5 +1,6 @@
 package ch.kk7.confij.docs;
 
+import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.annotation.ValueMapper;
 import ch.kk7.confij.binding.BindingType;
@@ -8,11 +9,10 @@ import ch.kk7.confij.binding.values.Base64Mapper.Base64Decoder;
 import ch.kk7.confij.binding.values.SeparatedMapper.Separated;
 import ch.kk7.confij.binding.values.ValueMapperFactory;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
-import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
+import java.awt.Color;
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.Set;
 
 public class Binding extends DocTestBase {
-
 	// tag::builtinMapping[]
 	interface MappedConfig {
 		String aString();
@@ -120,6 +119,7 @@ public class Binding extends DocTestBase {
 
 	interface EmptyColorHolder {
 		Color black();
+
 		Color green();
 	}
 

@@ -1,16 +1,16 @@
 package ch.kk7.confij.docs;
 
+import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.annotation.VariableResolver;
-import ch.kk7.confij.template.NoopValueResolver.NoopResolver;
-import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.source.env.ExplicitPropertiesSource;
-import ch.kk7.confij.template.ValueResolver;import ch.kk7.confij.tree.ConfijNode;
+import ch.kk7.confij.template.NoopValueResolver.NoopResolver;
+import ch.kk7.confij.template.ValueResolver;
+import ch.kk7.confij.tree.ConfijNode;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
 class Templates implements WithAssertions {
-
 	// tag::simple[]
 	interface Salutation {
 		@Default("John")
@@ -76,7 +76,8 @@ class Templates implements WithAssertions {
 
 	@Test
 	void recursive() {
-		Recursive recursive = ConfijBuilder.of(Recursive.class).build();
+		Recursive recursive = ConfijBuilder.of(Recursive.class)
+				.build();
 		assertThat(recursive.victim()).isEqualTo("Poor Alice!");
 	}
 
@@ -102,17 +103,20 @@ class Templates implements WithAssertions {
 	void noop() {
 		assertThat(ConfijBuilder.of(Noop.class)
 				.loadFrom(new ExplicitPropertiesSource().set("canContainDollar", "${variable}"))
-				.build().canContainDollar()).isEqualTo("${variable}");
+				.build()
+				.canContainDollar()).isEqualTo("${variable}");
 		assertThat(ConfijBuilder.of(GlobalNoop.class)
 				.loadFrom(new ExplicitPropertiesSource().set("canContainDollar", "${variable}"))
-				.build().canContainDollar()).isEqualTo("${variable}");
+				.build()
+				.canContainDollar()).isEqualTo("${variable}");
 
 		assertThat(
 				// tag::builder-noop[]
 		ConfijBuilder.of(BuilderNoop.class).templatingDisabled()
 				// end::builder-noop[]
 				.loadFrom(new ExplicitPropertiesSource().set("canContainDollar", "${variable}"))
-				.build().canContainDollar()).isEqualTo("${variable}");
+				.build()
+				.canContainDollar()).isEqualTo("${variable}");
 	}
 
 	// tag::customresolver[]

@@ -103,8 +103,10 @@ class Source extends DocTestBase {
 				.loadFrom("nested.properties")
 				.build();
 		assertThat(config.key()).isEqualTo("value");
-		assertThat(config.nest().x()).isEqualTo(0);
-		assertThat(config.nest().y()).isEqualTo(1);
+		assertThat(config.nest()
+				.x()).isEqualTo(0);
+		assertThat(config.nest()
+				.y()).isEqualTo(1);
 		assertThat(config.listOfNest()).hasSize(3);
 		assertThat(config.mapOfNest()).containsOnlyKeys("mykey", "myotherkey")
 				.hasEntrySatisfying("myotherkey", nested -> assertThat(nested.y()).isEqualTo(0));
@@ -150,19 +152,20 @@ class Source extends DocTestBase {
 		> java -Danother.prefix.fromSysprop="another value" ...
 		// end::set-envvarsyspropsource[]
 		*/
-		SystemLambda.withEnvironmentVariable("A_PREFIX_fromEnvvar", value1).execute(() -> {
-			SystemLambda.restoreSystemProperties(() -> {
-				System.setProperty("another.prefix.fromSysprop", value2);
-				Configs configs = ConfijBuilder.of(Configs.class)
-						.loadFrom("env:A_PREFIX")
-						.loadFrom("sys:another.prefix")
-						.build();
-				assertThat(configs.fromEnvvar()).isEqualTo(value1);
-				assertThat(configs.fromSysprop()).isEqualTo(value2);
-				assertThat(configs.myHome()).isEqualTo(Paths.get(System.getenv("HOME")));
-				assertThat(configs.fileSep()).isEqualTo(File.separator);
-			});
-		});
+		SystemLambda.withEnvironmentVariable("A_PREFIX_fromEnvvar", value1)
+				.execute(() -> {
+					SystemLambda.restoreSystemProperties(() -> {
+						System.setProperty("another.prefix.fromSysprop", value2);
+						Configs configs = ConfijBuilder.of(Configs.class)
+								.loadFrom("env:A_PREFIX")
+								.loadFrom("sys:another.prefix")
+								.build();
+						assertThat(configs.fromEnvvar()).isEqualTo(value1);
+						assertThat(configs.fromSysprop()).isEqualTo(value2);
+						assertThat(configs.myHome()).isEqualTo(Paths.get(System.getenv("HOME")));
+						assertThat(configs.fileSep()).isEqualTo(File.separator);
+					});
+				});
 	}
 
 	// tag::yaml-interface[]
@@ -192,11 +195,6 @@ class Source extends DocTestBase {
 				.toOffsetDateTime());
 		assertThat(yaml.isTrue()).isTrue();
 		assertThat(yaml.isFalse()).isFalse();
-	}
-
-	// tag::hocon-interface[]
-	interface ComplexHocon {
-
 	}
 
 	@AutoService(ConfijAnyResource.class)

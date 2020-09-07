@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.net.URL;
 
 class Setup extends DocTestBase {
-
 	// tag::simple_interface[]
 	interface ServerConfig { // <1>
 		String name();
