@@ -6,8 +6,12 @@ import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.common.ServiceLoaderPriority;
 import ch.kk7.confij.common.ServiceLoaderUtil;
 import ch.kk7.confij.source.any.ConfijAnyResource;
+import ch.kk7.confij.source.env.SystemPropertiesSource;
+import ch.kk7.confij.source.format.PropertiesFormat;
+import ch.kk7.confij.source.resource.ClasspathResource;
 import ch.kk7.confij.source.resource.ConfijResource;
 import ch.kk7.confij.source.resource.ConfijResource.ResourceContent;
+import ch.kk7.confij.source.resource.FileResource;
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 import com.google.auto.service.AutoService;
 import org.junit.jupiter.api.Test;
@@ -43,16 +47,18 @@ class Source extends DocTestBase {
 	// end::interface[]
 
 	@Test
-	void pipedSources() {
-		System.setProperty("app.line", "3");
-		// tag::pipedsource[]
-		ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
-				.loadFrom("classpath:generic.properties") // <2>
-				.loadFrom("server.properties") // <3>
-				.loadFrom("sys:app") // <4>
-				.build();
-		// end::pipedsource[]
-		assertThat(serverConfig.toString()).isEqualToIgnoringWhitespace(classpath("pipedsource.txt"));
+	void pipedSources() throws Exception {
+		SystemLambda.restoreSystemProperties(() -> {
+			System.setProperty("app.line", "3");
+			// tag::pipedsource[]
+			ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
+					.loadFrom("classpath:generic.properties") // <2>
+					.loadFrom("server.properties") // <3>
+					.loadFrom("sys:app") // <4>
+					.build();
+			// end::pipedsource[]
+			assertThat(serverConfig.toString()).isEqualToIgnoringWhitespace(classpath("pipedsource.txt"));
+		});
 	}
 
 	// tag::defaults[]
@@ -239,5 +245,20 @@ class Source extends DocTestBase {
 		assertThat(foo.foo()).isEqualTo("bar");
 		assertThat(ServiceLoaderUtil.requireInstancesOf(ConfijAnyResource.class)).anySatisfy(
 				x -> assertThat(x).isInstanceOf(AnUnimportantFoo.class));
+	}
+
+	@Test
+	void explicitSources() throws Exception {
+		SystemLambda.restoreSystemProperties(() -> {
+			System.setProperty("app.line", "3");
+			// tag::pipedsource-explicit[]
+			ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
+					.loadFrom(ClasspathResource.ofName("generic.properties"))
+					.loadFrom(FileResource.ofFile("server.properties"), PropertiesFormat.withoutPrefix())
+					.loadFrom(SystemPropertiesSource.withPrefix("app"))
+					.build();
+			// end::pipedsource-explicit[]
+			assertThat(serverConfig.toString()).isEqualToIgnoringWhitespace(classpath("pipedsource.txt"));
+		});
 	}
 }

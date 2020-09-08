@@ -4,10 +4,12 @@ import ch.kk7.confij.common.Util;
 import ch.kk7.confij.source.any.ConfijAnyFormat;
 import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
 import lombok.ToString;
+import lombok.Value;
+import lombok.With;
+import lombok.experimental.NonFinal;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -21,13 +23,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-@Setter
-@Getter
+@With
+@Value
+@NonFinal
+@AllArgsConstructor
 public class PropertiesFormat implements ConfijFormat {
 	private static final Pattern BRACKETS_ARRAY_FORMAT = Pattern.compile("(\\S+)\\[(\\d+)]");
 	@NonNull
-	private String separator = ".";
-	private String globalPrefix = null;
+	String separator;
+	String globalPrefix;
+
+	public PropertiesFormat() {
+		this(".", null);
+	}
+
+	public static PropertiesFormat withoutPrefix() {
+		return new PropertiesFormat();
+	}
 
 	@Override
 	public void override(ConfijNode rootNode, String configAsStr) {

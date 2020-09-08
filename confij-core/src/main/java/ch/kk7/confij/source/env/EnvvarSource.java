@@ -14,8 +14,12 @@ import java.util.Optional;
 public class EnvvarSource extends PropertiesFormat implements ConfijSource {
 	private Object deepMap;
 
-	public EnvvarSource() {
-		setSeparator("_");
+	protected EnvvarSource(String prefix) {
+		super("_", prefix);
+	}
+
+	public static EnvvarSource withPrefix(String prefix) {
+		return new EnvvarSource(prefix);
 	}
 
 	@Override
@@ -38,9 +42,7 @@ public class EnvvarSource extends PropertiesFormat implements ConfijSource {
 					.filter(scheme -> scheme.equals(SCHEME))
 					.map(scheme -> {
 						String path = Util.getSchemeSpecificPart(pathTemplate);
-						EnvvarSource source = new EnvvarSource();
-						source.setGlobalPrefix(path);
-						return source;
+						return EnvvarSource.withPrefix(path);
 					});
 		}
 	}

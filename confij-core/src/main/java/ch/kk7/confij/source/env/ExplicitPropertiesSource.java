@@ -17,7 +17,6 @@ public class ExplicitPropertiesSource extends PropertiesFormat implements Confij
 
 	public ExplicitPropertiesSource(Properties properties) {
 		this.properties = properties;
-		setSeparator(".");
 	}
 
 	public static ExplicitPropertiesSource of(String key, String value) {

@@ -112,6 +112,9 @@ subprojects {
 			}
 		}
 	}
+	configurations { // allow test reuse
+		testOutput.extendsFrom(testImplementation)
+	}
 }
 
 // coverage

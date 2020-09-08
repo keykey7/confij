@@ -2,54 +2,54 @@ package ch.kk7.confij.docs;
 
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.annotation.Default;
+import ch.kk7.confij.source.env.EnvvarSource;
+import ch.kk7.confij.validation.NonNullValidator.NotNull;
 import org.junit.jupiter.api.Test;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Positive;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.time.Period;
+import java.time.LocalDate;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Readme extends DocTestBase {
-	interface HouseConfiguration {
-		@Default("true")
-		boolean hasRoof();
-
-		Map<String, Room> rooms();
-
-		Set<@NotEmpty String> inhabitants();
-
-		Period chimneyCheckEvery();
-
-		@Default("${chimneyCheckEvery}")
-		Period boilerCheckEvery();
+	// tag:readme-unused[]
+	interface HouseConfiguration {     // configuration definition as interfaces (or any)
+		boolean hasRoof();             // bind to primitives
+		LocalDate constructedAt();     // ...or to complex types, like temporal ones
+		Room livingRoom();             // nested configurations
+		Map<String, Room> rooms();     // ...even in Maps (usually immutable)
+		Set<String> inhabitants();     // ...or Collections, Arrays
 	}
-
-	interface Room {
-		@Positive int numberOfWindows();
-
-		@Default("Wood")
-		FloorType floor();
-
-		enum FloorType {
-			Wood,
-			Carpet,
-			Stone
-		}
+	@NotNull
+	interface Room {                   // nested definition
+		@Default("1")                  // defaults and other customizations
+		@Positive                      // optional full JSR303 bean validation
+		int numberOfDoors();           // will become 1 if not defined otherwise
+		@Default("${numberOfDoors}")   // templating support: referencing other keys
+		Optional<Integer> lockCount(); // explicit optionals
 	}
+	// end:readme-unused[]
 
 	@Test
 	void houseTest() {
 		HouseConfiguration johnsHouse = ConfijBuilder.of(HouseConfiguration.class)
-				.loadFrom("classpath:house.properties", "johnshouse.yaml")
+				.loadFrom("classpath:house.properties")   // first read properties from classpath
+				.loadFrom("johnshouse.yaml")              // override with a YAML file on disk
+				.loadOptionalFrom("*-test.${sys:ending}") // wildcards, variables, optional,...
+				.loadFrom(EnvvarSource.withPrefix("APP")) // then read EnvVars like APP_hasRoof=true
 				.build();
-		assertThat(johnsHouse.chimneyCheckEvery()).isEqualTo(Period.ofYears(2));
-		assertThat(johnsHouse.boilerCheckEvery()).isEqualTo(Period.ofYears(2));
+		assertThat(johnsHouse.hasRoof()).isTrue();
+		assertThat(johnsHouse.livingRoom()
+				.lockCount()).hasValue(1);
+		assertThat(johnsHouse.rooms()
+				.get("bathRoom")
+				.lockCount()).hasValue(42);
 	}
 
 	@Test
@@ -73,7 +73,8 @@ public class Readme extends DocTestBase {
 	}
 
 	private static String simplify(String content) {
-		return content.replaceAll("[\t\n\r ]+", " ")
+		return content.replaceAll("//.*", "")
+				.replaceAll("[\t\n\r ]+", " ")
 				.trim();
 	}
 

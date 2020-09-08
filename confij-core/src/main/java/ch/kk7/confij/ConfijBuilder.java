@@ -18,7 +18,9 @@ import ch.kk7.confij.pipeline.reload.ReloadNotifierImpl;
 import ch.kk7.confij.source.ConfijSource;
 import ch.kk7.confij.source.any.AnySourceImpl;
 import ch.kk7.confij.source.any.FixResourceAnyFormatSource;
+import ch.kk7.confij.source.any.FixResourceFixFormatSource;
 import ch.kk7.confij.source.defaults.DefaultSource;
+import ch.kk7.confij.source.format.ConfijFormat;
 import ch.kk7.confij.source.logical.MaybeSource;
 import ch.kk7.confij.source.logical.OrSource;
 import ch.kk7.confij.source.resource.ConfijResource;
@@ -45,7 +47,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @ToString(onlyExplicitlyIncluded = true)
@@ -107,19 +108,6 @@ public class ConfijBuilder<T> {
 	}
 
 	/**
-	 * Read configuration values from these ordered {@code AnySource}s.
-	 *
-	 * @param sourceStr list of path's to configuration sources
-	 * @return self
-	 */
-	public ConfijBuilder<T> loadFrom(String... sourceStr) {
-		Stream.of(sourceStr)
-				.map(AnySourceImpl::new)
-				.forEachOrdered(sources::add);
-		return this;
-	}
-
-	/**
 	 * Read configuration values from these ordered sources.
 	 * Intended for more complex scenarios, where {@link #loadFrom(String...)} isn't good enough.
 	 *
@@ -131,11 +119,41 @@ public class ConfijBuilder<T> {
 		return this;
 	}
 
+	/**
+	 * Read configuration values from these ordered {@code AnySource}s.
+	 *
+	 * @param sourceStr list of path's to configuration sources
+	 * @return self
+	 */
+	public ConfijBuilder<T> loadFrom(String... sourceStr) {
+		return loadFrom(Stream.of(sourceStr)
+				.map(AnySourceImpl::new)
+				.toArray(AnySourceImpl[]::new));
+	}
+
+	/**
+	 * Read configuration values from these ordered resources (like from FS, git,...).
+	 * The format of the content is guessed.
+	 *
+	 * @param resources list of resources (like files,...) to read configurations from
+	 * @return self
+	 */
 	public ConfijBuilder<T> loadFrom(ConfijResource... resources) {
-		sources.addAll(Stream.of(resources)
+		return loadFrom(Stream.of(resources)
 				.map(FixResourceAnyFormatSource::new)
-				.collect(Collectors.toList()));
-		return this;
+				.toArray(FixResourceAnyFormatSource[]::new));
+	}
+
+	/**
+	 * Read configuration values from a well defined source and format.
+	 * Equivalent to {@link #loadFrom(ConfijSource...)}.
+	 *
+	 * @param resource resource (like files,...) to read configurations from
+	 * @param format the actual format which understants the content of <i>resource</i>
+	 * @return self
+	 */
+	public ConfijBuilder<T> loadFrom(ConfijResource resource, ConfijFormat format) {
+		return loadFrom(new FixResourceFixFormatSource(resource, format));
 	}
 
 	/**
@@ -151,8 +169,7 @@ public class ConfijBuilder<T> {
 		return loadFrom(Stream.of(maybeSourceStr)
 				.map(AnySourceImpl::new)
 				.map(MaybeSource::new)
-				.collect(Collectors.toList())
-				.toArray(new MaybeSource[]{}));
+				.toArray(MaybeSource[]::new));
 	}
 
 	/**
@@ -169,10 +186,17 @@ public class ConfijBuilder<T> {
 	public ConfijBuilder<T> loadFromFirstOf(String firstSource, String secondSource, String... otherSources) {
 		return loadFrom(new OrSource(new AnySourceImpl(firstSource), new AnySourceImpl(secondSource), Stream.of(otherSources)
 				.map(AnySourceImpl::new)
-				.collect(Collectors.toList())
-				.toArray(new AnySourceImpl[]{})));
+				.toArray(AnySourceImpl[]::new)));
 	}
 
+	/**
+	 * replace the default validation/post-processing steps with this new validator.
+	 * The default is to load all {@link java.util.ServiceLoader}s implementing {@link ConfijValidator}.
+	 * To combine multiple validators use a {@link MultiValidator}.
+	 *
+	 * @param validator the new validator
+	 * @return self
+	 */
 	public ConfijBuilder<T> validateOnlyWith(@NonNull ConfijValidator<T> validator) {
 		this.validator = validator;
 		return this;
@@ -183,6 +207,12 @@ public class ConfijBuilder<T> {
 		return this;
 	}
 
+	/**
+	 * Explicitly disable all validation/post-processing steps.
+	 *
+	 * @see #validateOnlyWith(ConfijValidator)
+	 * @return self
+	 */
 	public ConfijBuilder<T> validationDisabled() {
 		return validateOnlyWith(ConfijValidator.noopValidator());
 	}
@@ -192,16 +222,41 @@ public class ConfijBuilder<T> {
 		return this;
 	}
 
+	/**
+	 * disables templating (variable substitution), such that your values containing {@code ${variables}} just stay as they are.
+	 *
+	 * @return self
+	 */
 	public ConfijBuilder<T> templatingDisabled() {
 		return templatingWith(new NoopValueResolver());
 	}
 
+	/**
+	 * Globally register an additional {@link ValueMapperFactory}. This allows for custom classes in your configuration definition.
+	 * Same as writing
+	 * <pre>{@code
+	 *   @ValueMapper(CustomMapper.class)
+	 *   interface MyConfigRoot { ... }
+	 * }</pre>
+	 *
+	 * @param valueMapperFactory the new mapper with highest preference
+	 * @return self
+	 * @see #bindValuesForClassWith(ValueMapperInstance, Class)
+	 */
 	public ConfijBuilder<T> bindValuesWith(ValueMapperFactory valueMapperFactory) {
 		// put the new value mapper first to give it preference
 		valueMapperFactories.add(0, valueMapperFactory);
 		return this;
 	}
 
+	/**
+	 * Convenience method to register a {@link ValueMapperFactory} which will only handle a single class.
+	 *
+	 * @param valueMapper functional interface to convert a string to {@code I}
+	 * @param forClass the class of {@code I}
+	 * @param <I> the target type
+	 * @return self
+	 */
 	public <I> ConfijBuilder<T> bindValuesForClassWith(ValueMapperInstance<I> valueMapper, Class<I> forClass) {
 		return bindValuesWith(ValueMapperFactory.forClass(valueMapper, forClass));
 	}
@@ -217,6 +272,12 @@ public class ConfijBuilder<T> {
 		return this;
 	}
 
+	/**
+	 * A {@link PeriodicReloadStrategy} with initial delay equal to interval duration
+	 *
+	 * @param duration time between reload attempts
+	 * @return self
+	 */
 	public ConfijBuilder<T> reloadPeriodically(@NonNull Duration duration) {
 		return reloadStrategy(new PeriodicReloadStrategy(duration, duration));
 	}

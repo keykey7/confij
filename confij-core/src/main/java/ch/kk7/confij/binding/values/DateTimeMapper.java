@@ -61,7 +61,7 @@ public class DateTimeMapper implements ValueMapperFactory {
 		}
 		if (type.equals(LocalDate.class)) {
 			DateTimeFormatter formatter = newDateTimeFormatter(bindingType, DateTimeFormatter.ISO_LOCAL_DATE);
-			return Optional.of(x -> LocalDate.parse(x, formatter));
+			return Optional.of(x -> LocalDate.parse(dateHack00(x), formatter));
 		}
 		if (type.equals(LocalTime.class)) {
 			DateTimeFormatter formatter = newDateTimeFormatter(bindingType, DateTimeFormatter.ISO_LOCAL_TIME);
@@ -73,6 +73,14 @@ public class DateTimeMapper implements ValueMapperFactory {
 			return Optional.of(x -> Date.from(formatter.parse(x, Instant::from)));
 		}
 		return Optional.empty();
+	}
+
+	protected static String dateHack00(String str) {
+		String zeroTime = "T00:00:00Z";
+		if (str.endsWith(zeroTime)) { // easiest workaround for yaml dateTime ineropability
+			return str.substring(0, str.length() - zeroTime.length());
+		}
+		return str;
 	}
 
 	protected DateTimeFormatter newDateTimeFormatter(BindingType bindingType, DateTimeFormatter defaultFormatter) {

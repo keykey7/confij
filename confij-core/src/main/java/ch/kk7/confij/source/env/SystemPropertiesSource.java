@@ -12,6 +12,14 @@ import java.util.Optional;
 
 @ToString
 public class SystemPropertiesSource extends PropertiesFormat implements ConfijSource {
+	protected SystemPropertiesSource(String prefix) {
+		super(".", prefix);
+	}
+
+	public static SystemPropertiesSource withPrefix(String prefix) {
+		return new SystemPropertiesSource(prefix);
+	}
+
 	@Override
 	public void override(ConfijNode rootNode) {
 		overrideWithProperties(rootNode, System.getProperties());
@@ -28,9 +36,7 @@ public class SystemPropertiesSource extends PropertiesFormat implements ConfijSo
 					.filter(scheme -> scheme.equals(SCHEME))
 					.map(__ -> {
 						String path = Util.getSchemeSpecificPart(pathTemplate);
-						SystemPropertiesSource source = new SystemPropertiesSource();
-						source.setGlobalPrefix(path);
-						return source;
+						return SystemPropertiesSource.withPrefix(path);
 					});
 		}
 	}

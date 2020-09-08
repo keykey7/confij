@@ -4,8 +4,8 @@ apply plugin: 'org.asciidoctor.jvm.convert'
 dependencies {
 	testImplementation project(':confij-yaml')
 	testImplementation project(':confij-validation')
-	testImplementation project(':confij-git')
 	testImplementation project(':confij-hocon')
+	testImplementation project(path: ':confij-git', configuration: 'testOutput')
 }
 
 asciidoctor {
@@ -32,5 +32,4 @@ tasks.assemble.dependsOn 'asciidoctor'
 
 test {
 	workingDir file('src/test/home')
-
 }
