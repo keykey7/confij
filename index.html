@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <h1>ConfiJ Reference Guide</h1>
 <div class="details">
-<span id="revnumber">version 0.6.0-rc.0.8+4eac21b</span>
+<span id="revnumber">version 0.6.0-rc.0.9+1b73426</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -457,7 +457,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_source_pipelines">3. Source Pipelines</a></li>
 <li><a href="#format-default">4. Default Values</a></li>
 <li><a href="#anysource">5. The AnySource</a></li>
-<li><a href="#_sources_and_formats">6. Sources and Formats</a>
+<li><a href="#_source_as_code">6. Source as Code</a>
 <ul class="sectlevel2">
 <li><a href="#resource-locations">6.1. Resource Providers</a></li>
 <li><a href="#git">6.2. GIT Resource Provider</a></li>
@@ -553,7 +553,7 @@ dependencies {
 </div>
 </div>
 <div class="paragraph">
-<p>The latest snapshot version <code>0.6.0-rc.0.8+4eac21b</code> will be removed after 30 days.</p>
+<p>The latest snapshot version <code>0.6.0-rc.0.9+1b73426</code> will be removed after 30 days.</p>
 </div>
 </div>
 </div>
@@ -610,18 +610,27 @@ ConfiJ will make sure no unknown keys are present and bind all configuration str
 </div>
 </div>
 <h1 id="_configuration_sources" class="sect0"><a class="anchor" href="#_configuration_sources"></a>Configuration Sources</h1>
+<div class="openblock partintro">
+<div class="content">
+Sources are where configuration values come from.
+This can be anything from a file to git to envvars in various formats.
+Confij will aways fail fast upon encountering an unknown value.
+</div>
+</div>
 <div class="sect1">
 <h2 id="_source_pipelines"><a class="anchor" href="#_source_pipelines"></a>3. Source Pipelines</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>ConfiJ loads sources one after the other.
 Each consecutive source overrides (merges) attributes of the previous ones.
+The last source therefore has the highest preference.
 Typically, this is useful to load a set of default values first,
 then continue with application specifics and environment specific values
 getting more and more detailed.
-Source types can be freely mixed, meaning you can load from classpath, then from a remote file, then from envionment variables and so on.</p>
+Source types can be freely mixed, meaning you can load from classpath,
+then from a remote file, then from envionment variables and so on.</p>
 </div>
-<div class="exampleblock">
+<div id="pipedsource" class="exampleblock">
 <div class="title">Example 3. Merge multiple configuration files across all formats</div>
 <div class="content">
 <div class="listingblock">
@@ -703,7 +712,10 @@ externalUrl=https://example.com:8042/think</code></pre>
 </div>
 <div class="paragraph">
 <p>Validation generally only applies to the final configuration.
-It is allowed to have incomplete configurations while there are still more configuration sources to load.</p>
+It is allowed to have incomplete configurations while there are
+still more configuration sources to load.
+However, it is never allowed to have an unknown configuration value.
+Confij has a default fail-fast strategy such that you don&#8217;t have to worry about legacy configs.</p>
 </div>
 </div>
 </div>
@@ -739,13 +751,17 @@ use a <code>default</code> method.</p>
 </div>
 </div>
 </div>
+<div class="paragraph">
+<p>The default method is called only when no other configuration values is defined.
+However only <code>@Default</code> values can be used for templating.</p>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="anysource"><a class="anchor" href="#anysource"></a>5. The AnySource</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>The <code>AnySource</code> simply takes a URI-string and determines resource location and type based on it.
+<p>The <code>AnySource</code> simply takes a string and determines resource location and type based on it.
 It is the most compact form to specify a source unless you require special settings.</p>
 </div>
 <div class="exampleblock">
@@ -772,14 +788,33 @@ They take into account the previously loaded configuration keys.
 Replacement keys are always absolute (relative to the configuration root).</p>
 </div>
 <div class="paragraph">
-<p>Most commonly the resource location (file, classpath,&#8230;&#8203;) is detected based on the URI scheme (see <a href="#resource-locations">Section 6.1, &#8220;Resource Providers&#8221;</a>).
-The configuration format (yaml, json,&#8230;&#8203;) is detected based on the ending.</p>
+<p>Most commonly the resource location (file, classpath,&#8230;&#8203;)
+is detected based on a URI scheme (see <a href="#resource-locations">Section 6.1, &#8220;Resource Providers&#8221;</a>).
+The configuration format (yaml, json,&#8230;&#8203;) is usually detected based on the ending.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_sources_and_formats"><a class="anchor" href="#_sources_and_formats"></a>6. Sources and Formats</h2>
+<h2 id="_source_as_code"><a class="anchor" href="#_source_as_code"></a>6. Source as Code</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>For more complicated scenarios where <a href="#anysource">Chapter 5, <em>The AnySource</em></a> is not suited, a <code>ConfijSource</code> must be passed explicitly.
+Confij distinguishes between where something is read from (Resource) and what format it is.</p>
+</div>
+<div class="exampleblock">
+<div class="title">Example 6. Explicitly written, but same sample as "<a href="#pipedsource">Example 3, &#8220;Merge multiple configuration files across all formats&#8221;</a>"</div>
+<div class="content">
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="java">ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
+		.loadFrom(ClasspathResource.ofName("generic.properties"))
+		.loadFrom(FileResource.ofFile("server.properties"), PropertiesFormat.withoutPrefix())
+		.loadFrom(SystemPropertiesSource.withPrefix("app"))
+		.build();</code></pre>
+</div>
+</div>
+</div>
+</div>
 <div class="sect2">
 <h3 id="resource-locations"><a class="anchor" href="#resource-locations"></a>6.1. Resource Providers</h3>
 <div class="paragraph">
@@ -806,7 +841,7 @@ For those, the source location and source format can be combined freely.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Register custom resource providers using a <a href="#serviceloader">Chapter 7, <em>ConfiJ&#8217;s ServiceLoaders</em></a> for <code>ch.kk7.confij.source.file.resource.ConfijResourceProvider</code>.</p>
+<p>Register custom resource providers using a <a href="#serviceloader">Chapter 7, <em>ConfiJ&#8217;s ServiceLoaders</em></a> for <code>ch.kk7.confij.source.any.ConfijAnyResource</code>.</p>
 </div>
 </div>
 <div class="sect2">
@@ -846,7 +881,7 @@ The default refspec is HEAD.</p>
 </ul>
 </div>
 <div class="exampleblock">
-<div class="title">Example 6. Valid AnySource-URLs specifying the path to a file in a GIT-repository</div>
+<div class="title">Example 7. Valid AnySource-URLs specifying the path to a file in a GIT-repository</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -882,7 +917,7 @@ git:git://example.com/repo.git/file.yaml#refs/tags/v1.0.42</code></pre>
 </div>
 <div class="paragraph">
 <p>For more complex scenarios like custom SSL authentication consider extending
-the existing <code>GitResourceProvider</code>.</p>
+the existing <code>GitResource</code>.</p>
 </div>
 </div>
 <div class="sect2">
@@ -908,7 +943,7 @@ Collection types can be represented as lists or as maps with numerical keys.</p>
 The <code>AnySource</code> expects a case-insensitive file ending of <code>.yaml</code> or <code>.yml</code>.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 7. Load from multiple sources of dynamic type and location</div>
+<div class="title">Example 8. Load from multiple sources of dynamic type and location</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -973,7 +1008,7 @@ is a format for human-readable data, and a superset of JSON and .properties.</p>
 </div>
 <div class="paragraph">
 <p>HOCON can be loaded from all the <a href="#resource-locations">Section 6.1, &#8220;Resource Providers&#8221;</a>.
-The <code>AnySource</code> expects a case-insensitive file ending of <code>.hocon</code>, <code>.json</code> or <code>.conf</code>.</p>
+The <code>AnySourceImpl</code> expects a case-insensitive file ending of <code>.hocon</code>, <code>.json</code> or <code>.conf</code>.</p>
 </div>
 <div class="paragraph">
 <p>The default behaviour will first perform substitutions according to the
@@ -981,7 +1016,7 @@ The <code>AnySource</code> expects a case-insensitive file ending of <code>.hoco
 before ConfiJ&#8217;s templating will kick in.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 8. Two substitution mechanisms</div>
+<div class="title">Example 9. Two substitution mechanisms</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1008,10 +1043,10 @@ but are otherwise not recommended, since it is a flat key-value format.</p>
 </div>
 <div class="paragraph">
 <p>Property files can be loaded from all <a href="#resource-locations">Section 6.1, &#8220;Resource Providers&#8221;</a>.
-The <code>AnySource</code> expects a case-insensitive file ending of <code>.properties</code>.</p>
+The <code>AnySourceImpl</code> expects a case-insensitive file ending of <code>.properties</code>.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 9. Nested configuration loading from properties file</div>
+<div class="title">Example 10. Nested configuration loading from properties file</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1075,7 +1110,7 @@ must start with that prefix and will have that prefix stripped away.
 For example an envvar <code>FUU_bar_xy</code> with a prefix <code>FUU</code> is mapped to a property called <code>bar.xy</code> (case-sensitive).</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 10. Read configuration values from envvars and Java sys props</div>
+<div class="title">Example 11. Read configuration values from envvars and Java sys props</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1116,20 +1151,16 @@ All you have to do is to add the file with the service-interface name to META-IN
 In this service file you list the fully qualified classnames of your constraint validator classes (one per line).</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 11. Custom Resource Provider as ServiceLoader</div>
+<div class="title">Example 12. Custom Resource Provider as ServiceLoader</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code data-lang="java">// +file: META-INF/services/ch.kk7.confij.source.file.resource.ConfijResourceProvider
-public static class FooProvider implements ConfijResourceProvider {
+<pre class="prettyprint highlight"><code data-lang="java">// +file: META-INF/services/ch.kk7.confij.source.file.resource.ConfijAnyResource
+public static class FooResource implements ConfijAnyResource {
 	@Override
-	public Stream&lt;String&gt; read(URIish path) {
-		return Stream.of("foo=bar");
-	}
-
-	@Override
-	public boolean canHandle(URIish path) {
-		return "foo".equals(path.getScheme());
+	public Optional&lt;ConfijResource&gt; maybeHandle(String path) {
+		return Optional.of((ConfijResource) resolver -&gt; Stream.of(new ResourceContent("foo=bar", path)))
+				.filter(__ -&gt; path.startsWith("foo:"));
 	}
 }
 
@@ -1148,19 +1179,20 @@ interface Foo {
 <p>To change the priority of a service loader instance implement the <code>ServiceLoaderPriority</code>.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 12. Custom Resource Provider as ServiceLoader with lowered priority</div>
+<div class="title">Example 13. Custom Resource Provider as ServiceLoader with lowered priority</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code data-lang="java">public static class AnUnimportantFooProvider extends FooProvider implements ServiceLoaderPriority {
-	@Override
-	public Stream&lt;String&gt; read(URIish path) {
-		throw new RuntimeException("less important than " + FooProvider.class);
-	}
-
+<pre class="prettyprint highlight"><code data-lang="java">public static class AnUnimportantFoo extends FooResource implements ServiceLoaderPriority {
 	@Override
 	public int getPriority() {
 		return ServiceLoaderPriority.DEFAULT_PRIORITY - 1000;
+	}
+
+	@Override
+	public Optional&lt;ConfijResource&gt; maybeHandle(String path) {
+		return Optional.of((ConfijResource) resolver -&gt; Stream.of(new ResourceContent("foo=OTHER", path)))
+				.filter(__ -&gt; path.startsWith("foo:"));
 	}
 }</code></pre>
 </div>
@@ -1185,7 +1217,7 @@ Each configuration is organized in a tree-structure and generally immutable.
 They are then transparently mapped to Objects or pimitives to match the defined type.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 13. Value Mapping to known types in a flat configuration</div>
+<div class="title">Example 14. Value Mapping to known types in a flat configuration</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1302,7 +1334,7 @@ configuration string to a <code>string[]</code> you have to annotate it with <co
 <p><code>@Base64</code> expects to bind a base64-encoded string to an array or collection of bytes.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 14. Mapping base64 encoded configuration properties</div>
+<div class="title">Example 15. Mapping base64 encoded configuration properties</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1324,7 +1356,7 @@ configuration string to a <code>string[]</code> you have to annotate it with <co
 <p><code>@Separated</code> expects to bind a delimited string to an array or collection of arbitrary type.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 15. @Separated as a short-form for collection types</div>
+<div class="title">Example 16. @Separated as a short-form for collection types</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1363,7 +1395,7 @@ two options: programmatic the ConfiJBuilder or with an annotation on the affecte
 it&#8217;s easiest to set it in the builder when creating the configuration instance.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 16. Global support to map RGB codes like "#0F0F0F" to Color</div>
+<div class="title">Example 17. Global support to map RGB codes like "#0F0F0F" to Color</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1379,7 +1411,7 @@ annotate them with <code>@ValueMapper(Class)</code>.
 The mapper class must have an accessible empty constructor.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 17. Annotation based support to map RGB codes like "#0F0F0F" to Color</div>
+<div class="title">Example 18. Annotation based support to map RGB codes like "#0F0F0F" to Color</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1414,7 +1446,7 @@ See for example the implementation of <a href="#separated-mapping">Section 8.2.2
 Since every configuration is organized in a tree-structure, we call them branches.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 18. Simple nested configuration</div>
+<div class="title">Example 19. Simple nested configuration</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1451,7 +1483,7 @@ interface Timing {
 </ul>
 </div>
 <div class="exampleblock">
-<div class="title">Example 19. Nested branches of child configurations</div>
+<div class="title">Example 20. Nested branches of child configurations</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1471,7 +1503,7 @@ interface Nested&lt;T&gt; {
 <div class="listingblock">
 <div class="content">
 <pre class="prettyprint highlight"><code data-lang="java">DbConfig dbConfig = ConfijBuilder.of(DbConfig.class)
-	.loadFrom(new PropertiesSource()
+	.loadFrom(new ExplicitPropertiesSource()
 		.set("dbConnections.0.url", "https://db0.example.com")
 		.set("dbConnections.0.timing.keepAlive", "30s")
 		.set("additionalParameters.somekey", "somevalue"))
@@ -1523,7 +1555,7 @@ Therefore it is possible for an unfinished configuration to contain undefined re
 These referenced properties can themselves reference other properties.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 20. Simple Variable replacement</div>
+<div class="title">Example 21. Simple Variable replacement</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1559,7 +1591,7 @@ yields: hello → Cya</code></pre>
 <p>Variables are always relative to the node that defines them.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 21. Referencing nested properties</div>
+<div class="title">Example 22. Referencing nested properties</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1611,7 +1643,7 @@ In this example <code>Letter</code> is the root.</td>
 <p>Variables themselves can be built out of other variables.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 22. Recursive Variable replacement</div>
+<div class="title">Example 23. Recursive Variable replacement</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1640,7 +1672,7 @@ In this example <code>Letter</code> is the root.</td>
 One use case is to disable templating per property.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 23. Disable templating per property using an annotation</div>
+<div class="title">Example 24. Disable templating per property using an annotation</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1653,7 +1685,7 @@ One use case is to disable templating per property.</p>
 </div>
 </div>
 <div class="exampleblock">
-<div class="title">Example 24. Disable templating for interface and all its children</div>
+<div class="title">Example 25. Disable templating for interface and all its children</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1666,7 +1698,7 @@ interface GlobalNoop {
 </div>
 </div>
 <div class="exampleblock">
-<div class="title">Example 25. Disable templating programmatically at initialization</div>
+<div class="title">Example 26. Disable templating programmatically at initialization</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1680,7 +1712,7 @@ interface GlobalNoop {
 Every custom resolver must provide an empty constructor.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 26. Custom sample templating</div>
+<div class="title">Example 27. Custom sample templating</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1714,7 +1746,7 @@ To again allow for null values, use the opposite <code>@Nullable</code>.
 Any annotation named alike will do as long as it is available at runtime.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 27. Non-Null Validator activation</div>
+<div class="title">Example 28. Non-Null Validator activation</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1748,7 +1780,7 @@ using the <a href="#jsr303-validator">Chapter 13, <em>JSR303 Validator</em></a> 
 <p>This validator can be disabled for the whole configuration:</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 28. Disable the Non-Null Validator globally</div>
+<div class="title">Example 29. Disable the Non-Null Validator globally</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1779,7 +1811,7 @@ JSR303 Validator format requires the <code>ch.kk7:confij-validation</code> maven
 Validation is applied to the configuration as a last step after templating.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 29. JSR303 Bean validation</div>
+<div class="title">Example 30. JSR303 Bean validation</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1832,7 +1864,7 @@ In any case ConfiJ will always create a completely new configuration if one of t
 <p>If a reload strategy is used, the <code>ConfiJBuilder.buildWrapper()</code> must be used, as it allows to register to change notifications.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 30. Register a reload strategy which will update the configuration every 2 seconds</div>
+<div class="title">Example 31. Register a reload strategy which will update the configuration every 2 seconds</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
@@ -1864,7 +1896,7 @@ If one of the nested configuration values changes, all parent objects will be no
 For example if <code>database.active</code> swaps, a change handler on <code>database</code> will trigger too.</p>
 </div>
 <div class="exampleblock">
-<div class="title">Example 31. Register change handlers on individual configuration values</div>
+<div class="title">Example 32. Register change handlers on individual configuration values</div>
 <div class="content">
 <div class="listingblock">
 <div class="content">
