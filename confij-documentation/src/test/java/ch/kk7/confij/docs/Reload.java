@@ -2,8 +2,9 @@ package ch.kk7.confij.docs;
 
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.ConfijBuilder.ConfijWrapper;
-import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import org.junit.jupiter.api.Test;
+
 import java.net.URL;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -11,7 +12,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.awaitility.Awaitility.await;
 
 class Reload extends DocTestBase {
-
 	// tag::reload-interface[]
 	interface ClientConfig {
 		Endpoint database();
@@ -25,9 +25,9 @@ class Reload extends DocTestBase {
 	// end::reload-interface[]
 
 	@Test
-	void reloadHandlers(){
-		PropertiesSource source = PropertiesSource.of("database.url", "http://example.com/db")
-			.set("backend.url", "http://example.com/be");
+	void reloadHandlers() {
+		ExplicitPropertiesSource source = ExplicitPropertiesSource.of("database.url", "http://example.com/db")
+				.set("backend.url", "http://example.com/be");
 
 		// tag::reload-builder[]
 		ConfijWrapper<ClientConfig> wrapper = ConfijBuilder.of(ClientConfig.class)
@@ -48,11 +48,13 @@ class Reload extends DocTestBase {
 		// end::reload-handler[]
 
 		assertThat(dbIsActive).isFalse();
-        source.set("database.active", "true");
-        //noinspection ConstantConditions
+		source.set("database.active", "true");
+		//noinspection ConstantConditions
 		await().atMost(Duration.ofSeconds(5))
-        	.untilAsserted(() -> assertThat(dbIsActive).isTrue());
-		assertThat(wrapper.get().database().active()).isTrue();
+				.untilAsserted(() -> assertThat(dbIsActive).isTrue());
+		assertThat(wrapper.get()
+				.database()
+				.active()).isTrue();
 	}
 
 	private static void resetHttpClient(Endpoint endpoint) {
@@ -60,7 +62,8 @@ class Reload extends DocTestBase {
 	}
 
 	AtomicBoolean dbIsActive = new AtomicBoolean(false);
+
 	private void setDbActivityTo(boolean isActive) {
-    		dbIsActive.set(isActive);
+		dbIsActive.set(isActive);
 	}
 }

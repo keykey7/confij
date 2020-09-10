@@ -7,70 +7,70 @@
 
 See the full documentation at <https://keykey7.github.io/confij/>
 
+<img align="right" height="300" width="206" src="confij-documentation/src/docs/resources/confij-logo.png" alt="ConfiJ Logo">
+
 ConfiJ is a Java configuration framework to facilitate loading and validating
 configurations from various sources in a type-safe manner. 
-This includes features such as
+This includes features such as:
 
 - configuration definition as interfaces
 - even as lists/maps/arrays/... of nested configurations
-- support for various source formats: properties, YAML, HOCON, JSON
+- support for various source formats: properties, YAML, HOCON, JSON, TOML
 - load from various sources at once with different merge strategies
-- load from: Git, File, Classpath, HTTP, system properties, environment variables
+- load from: git, file, classpath, system properties, environment variables
 - binding support to various immutable property types like URL, DateTime, Duration, enums, Period,...
 - templating support (variable substitutions), even within paths
 - plugin support for more formats and sources
 - from simple non-null validation to powerful JSR303 bean validation
 - live reloading hooks for change detection
-- no dependencies
+- no external dependencies required by the core package
 
 ## Example
 
-Sample configuration of a house with nested properties, defaults and validation-annotations
+Define your configuration in code:
 ```java
-interface HouseConfiguration {
-	@Default("true")
-	boolean hasRoof();
-
-	Map<String,Room> rooms();
-
-	Set<@NotEmpty String> inhabitants();
-
-	Period chimneyCheckEvery();
-
-	@Default("${chimneyCheckEvery}")
-	Period boilerCheckEvery();
+interface HouseConfiguration {     // configuration definition as interfaces (or any)
+    boolean hasRoof();             // bind to primitives
+    LocalDate constructedAt();     // ...or to complex types, like temporal ones
+    Room livingRoom();             // nested configurations
+    Map<String, Room> rooms();     // ...even in Maps (usually immutable)
+    Set<String> inhabitants();     // ...or Collections, Arrays
 }
-
-interface Room {
-	@Positive
-	int numberOfWindows();
-
-	@Default("Wood")
-	FloorType floor();
-
-	enum FloorType {
-		Wood, Carpet, Stone
-	}
+@NotNull                           // enforce well defined values (recursive)
+interface Room {                   // nested definition
+    @Default("1")                  // defaults and other customizations
+    @Positive                      // optional full JSR303 bean validation
+    int numberOfDoors();           // will become 1 if not defined otherwise
+                                   //
+    @Default("${numberOfDoors}")   // templating support: referencing other keys
+    Optional<Integer> lockCount(); // explicit optionals
 }
 ```
-Load an immutable configuration instance with base settings from
-a property file on the classpath and override it with a YAML configuration from
-the local filesystem.
+Load it as flexible as you need it (but always fail fast on unknown values):
 ```java
 HouseConfiguration johnsHouse = ConfijBuilder.of(HouseConfiguration.class)
-	.loadFrom("classpath:house.properties", "johnshouse.yaml")
-	.build();
+    .loadFrom("classpath:house.properties")   // first read properties from classpath 
+    .loadFrom("johnshouse.yaml")              // override with a YAML file on disk
+    .loadOptionalFrom("*-test.${sys:ending}") // wildcards, variables, optional,...
+    .loadFrom(EnvvarSource.withPrefix("APP")) // then read EnvVars like APP_hasRoof=true
+    .build();                                 // build an immutable instance
 ```
 ```yaml
-# johnshouse.yaml
+# sample johnshouse.yaml
+hasRoof: yes
+constructedAt: 2000-12-24
+livingRoom:
+  numberOfDoors: 4
+  lockCount: 1
 rooms:
-  livingroom:
-    numberOfWindows: 4
-  bedroom:
-    numberOfWindows: 1
-    floor: Wood
+  bathRoom: {}
+  kitchen:
+    numberOfDoors: 2
 inhabitants:
   - John
   - Alice
-chimneyCheckEvery: 2years
 ```
+
+See the full documentation at <https://keykey7.github.io/confij/>
+
+-- ☕⚙️

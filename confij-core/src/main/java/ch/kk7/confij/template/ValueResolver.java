@@ -9,4 +9,9 @@ public interface ValueResolver {
 	default String resolveLeaf(ConfijNode leaf) {
 		return resolveValue(leaf, leaf.getValue());
 	}
+
+	@FunctionalInterface
+	interface StringResolver {
+		String resolve(String template);
+	}
 }

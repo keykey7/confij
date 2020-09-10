@@ -2,7 +2,7 @@ package ch.kk7.confij.validation;
 
 import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.annotation.Default;
-import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import ch.kk7.confij.validation.NonNullValidator.NotNull;
 import ch.kk7.confij.validation.NonNullValidator.Nullable;
 import org.assertj.core.api.WithAssertions;
@@ -68,7 +68,7 @@ class NonNullValidatorTest implements WithAssertions {
 		String value = UUID.randomUUID() + "";
 		assertThat(ConfijBuilder.of(WithNulls.class)
 				.validateOnlyWith(NonNullValidator.initiallyNotNull())
-				.loadFrom(PropertiesSource.of(FIELD_NAME, value))
+				.loadFrom(ExplicitPropertiesSource.of(FIELD_NAME, value))
 				.build()
 				.aField()).isEqualTo(value);
 	}
@@ -84,7 +84,7 @@ class NonNullValidatorTest implements WithAssertions {
 	void okIfNotNullAsDefinedInCode() {
 		String value = UUID.randomUUID() + "";
 		assertThat(ConfijBuilder.of(WithNullsAnnotated.class)
-				.loadFrom(PropertiesSource.of(FIELD_NAME, value))
+				.loadFrom(ExplicitPropertiesSource.of(FIELD_NAME, value))
 				.build()
 				.aField()).isEqualTo(value);
 	}

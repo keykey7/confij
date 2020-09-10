@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.net.URL;
 
-class HoconResourceProviderTest implements WithAssertions {
+class HoconFormatTest implements WithAssertions {
 	interface Hocon {
 		AandB aandb();
 

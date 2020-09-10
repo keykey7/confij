@@ -3,15 +3,22 @@
 :resources: ../../test/resources
 :home: ../../test/home
 
+Sources are where configuration values come from.
+This can be anything from a file to git to envvars in various formats.
+Confij will aways fail fast upon encountering an unknown value.
+
 == Source Pipelines
 ConfiJ loads sources one after the other.
 Each consecutive source overrides (merges) attributes of the previous ones.
+The last source therefore has the highest preference.
 Typically, this is useful to load a set of default values first,
 then continue with application specifics and environment specific values
 getting more and more detailed.
-Source types can be freely mixed, meaning you can load from classpath, then from a remote file, then from envionment variables and so on.
+Source types can be freely mixed, meaning you can load from classpath,
+then from a remote file, then from envionment variables and so on.
 
 .Merge multiple configuration files across all formats
+[[pipedsource]]
 ====
 [source]
 ----
@@ -39,7 +46,10 @@ include::{resources}/pipedsource.txt[]
 ----
 
 Validation generally only applies to the final configuration.
-It is allowed to have incomplete configurations while there are still more configuration sources to load.
+It is allowed to have incomplete configurations while there are
+still more configuration sources to load.
+However, it is never allowed to have an unknown configuration value.
+Confij has a default fail-fast strategy such that you don't have to worry about legacy configs.
 
 == Default Values [[format-default]]
 
@@ -55,9 +65,12 @@ include::{src}[tag=defaults]
 ----
 ====
 
+The default method is called only when no other configuration values is defined.
+However only `@Default` values can be used for templating.
+
 == The AnySource [[anysource]]
 
-The `AnySource` simply takes a URI-string and determines resource location and type based on it.
+The `AnySource` simply takes a string and determines resource location and type based on it.
 It is the most compact form to specify a source unless you require special settings.
 
 .Load from multiple sources of dynamic type and location
@@ -72,10 +85,22 @@ Variable substitutions are supported anywhere in the template string (see <<vari
 They take into account the previously loaded configuration keys.
 Replacement keys are always absolute (relative to the configuration root).
 
-Most commonly the resource location (file, classpath,...) is detected based on the URI scheme (see <<resource-locations>>).
-The configuration format (yaml, json,...) is detected based on the ending.
+Most commonly the resource location (file, classpath,...)
+is detected based on a URI scheme (see <<resource-locations>>).
+The configuration format (yaml, json,...) is usually detected based on the ending.
 
-== Sources and Formats
+== Source as Code
+
+For more complicated scenarios where <<anysource>> is not suited, a `ConfijSource` must be passed explicitly.
+Confij distinguishes between where something is read from (Resource) and what format it is.
+
+.Explicitly written, but same sample as "<<pipedsource>>"
+====
+[source]
+----
+include::{src}[tag=pipedsource-explicit]
+----
+====
 
 === Resource Providers [[resource-locations]]
 
@@ -89,7 +114,7 @@ For those, the source location and source format can be combined freely.
 - `http:` or any other registered URL format
 - `git:` for GIT repositories, see <<git>>
 
-Register custom resource providers using a <<serviceloader>> for `ch.kk7.confij.source.file.resource.ConfijResourceProvider`.
+Register custom resource providers using a <<serviceloader>> for `ch.kk7.confij.source.any.ConfijAnyResource`.
 
 === GIT Resource Provider [[git]]
 
@@ -139,7 +164,7 @@ git:git://example.com/repo.git/file.yaml#refs/tags/v1.0.42
 ====
 
 For more complex scenarios like custom SSL authentication consider extending
-the existing `GitResourceProvider`.
+the existing `GitResource`.
 
 
 === YAML Format
@@ -175,7 +200,7 @@ https://github.com/lightbend/config/blob/master/HOCON.md[HOCON] (Human-Optimized
 is a format for human-readable data, and a superset of JSON and .properties.
 
 HOCON can be loaded from all the <<resource-locations>>.
-The `AnySource` expects a case-insensitive file ending of `.hocon`, `.json` or `.conf`.
+The `AnySourceImpl` expects a case-insensitive file ending of `.hocon`, `.json` or `.conf`.
 
 The default behaviour will first perform substitutions according to the
 https://github.com/lightbend/config/blob/master/HOCON.md#substitutions[HOCON Specification],
@@ -199,7 +224,7 @@ Java properties files are part of the `{group}:confij-core` due to not having an
 but are otherwise not recommended, since it is a flat key-value format.
 
 Property files can be loaded from all <<resource-locations>>.
-The `AnySource` expects a case-insensitive file ending of `.properties`.
+The `AnySourceImpl` expects a case-insensitive file ending of `.properties`.
 
 .Nested configuration loading from properties file
 ====

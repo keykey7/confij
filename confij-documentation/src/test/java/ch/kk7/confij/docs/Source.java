@@ -5,7 +5,13 @@ import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.common.ServiceLoaderPriority;
 import ch.kk7.confij.common.ServiceLoaderUtil;
-import ch.kk7.confij.source.ConfijSourceBuilder.URIish;import ch.kk7.confij.source.resource.ConfijResourceProvider;
+import ch.kk7.confij.source.any.ConfijAnyResource;
+import ch.kk7.confij.source.env.SystemPropertiesSource;
+import ch.kk7.confij.source.format.PropertiesFormat;
+import ch.kk7.confij.source.resource.ClasspathResource;
+import ch.kk7.confij.source.resource.ConfijResource;
+import ch.kk7.confij.source.resource.ConfijResource.ResourceContent;
+import ch.kk7.confij.source.resource.FileResource;
 import com.github.stefanbirkner.systemlambda.SystemLambda;
 import com.google.auto.service.AutoService;
 import org.junit.jupiter.api.Test;
@@ -21,7 +27,9 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;import java.util.stream.Stream;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
 
 class Source extends DocTestBase {
 	// tag::interface[]
@@ -39,16 +47,18 @@ class Source extends DocTestBase {
 	// end::interface[]
 
 	@Test
-	void pipedSources() {
-		System.setProperty("app.line", "3");
-		// tag::pipedsource[]
-		ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
-				.loadFrom("classpath:generic.properties") // <2>
-				.loadFrom("server.properties") // <3>
-				.loadFrom("sys:app") // <4>
-				.build();
-		// end::pipedsource[]
-		assertThat(serverConfig.toString()).isEqualToIgnoringWhitespace(classpath("pipedsource.txt"));
+	void pipedSources() throws Exception {
+		SystemLambda.restoreSystemProperties(() -> {
+			System.setProperty("app.line", "3");
+			// tag::pipedsource[]
+			ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
+					.loadFrom("classpath:generic.properties") // <2>
+					.loadFrom("server.properties") // <3>
+					.loadFrom("sys:app") // <4>
+					.build();
+			// end::pipedsource[]
+			assertThat(serverConfig.toString()).isEqualToIgnoringWhitespace(classpath("pipedsource.txt"));
+		});
 	}
 
 	// tag::defaults[]
@@ -99,8 +109,10 @@ class Source extends DocTestBase {
 				.loadFrom("nested.properties")
 				.build();
 		assertThat(config.key()).isEqualTo("value");
-		assertThat(config.nest().x()).isEqualTo(0);
-		assertThat(config.nest().y()).isEqualTo(1);
+		assertThat(config.nest()
+				.x()).isEqualTo(0);
+		assertThat(config.nest()
+				.y()).isEqualTo(1);
 		assertThat(config.listOfNest()).hasSize(3);
 		assertThat(config.mapOfNest()).containsOnlyKeys("mykey", "myotherkey")
 				.hasEntrySatisfying("myotherkey", nested -> assertThat(nested.y()).isEqualTo(0));
@@ -146,19 +158,20 @@ class Source extends DocTestBase {
 		> java -Danother.prefix.fromSysprop="another value" ...
 		// end::set-envvarsyspropsource[]
 		*/
-		SystemLambda.withEnvironmentVariable("A_PREFIX_fromEnvvar", value1).execute(() -> {
-			SystemLambda.restoreSystemProperties(() -> {
-				System.setProperty("another.prefix.fromSysprop", value2);
-				Configs configs = ConfijBuilder.of(Configs.class)
-						.loadFrom("env:A_PREFIX")
-						.loadFrom("sys:another.prefix")
-						.build();
-				assertThat(configs.fromEnvvar()).isEqualTo(value1);
-				assertThat(configs.fromSysprop()).isEqualTo(value2);
-				assertThat(configs.myHome()).isEqualTo(Paths.get(System.getenv("HOME")));
-				assertThat(configs.fileSep()).isEqualTo(File.separator);
-			});
-		});
+		SystemLambda.withEnvironmentVariable("A_PREFIX_fromEnvvar", value1)
+				.execute(() -> {
+					SystemLambda.restoreSystemProperties(() -> {
+						System.setProperty("another.prefix.fromSysprop", value2);
+						Configs configs = ConfijBuilder.of(Configs.class)
+								.loadFrom("env:A_PREFIX")
+								.loadFrom("sys:another.prefix")
+								.build();
+						assertThat(configs.fromEnvvar()).isEqualTo(value1);
+						assertThat(configs.fromSysprop()).isEqualTo(value2);
+						assertThat(configs.myHome()).isEqualTo(Paths.get(System.getenv("HOME")));
+						assertThat(configs.fileSep()).isEqualTo(File.separator);
+					});
+				});
 	}
 
 	// tag::yaml-interface[]
@@ -190,38 +203,30 @@ class Source extends DocTestBase {
 		assertThat(yaml.isFalse()).isFalse();
 	}
 
-	// tag::hocon-interface[]
-	interface ComplexHocon {
-
-	}
-
-	@AutoService(ConfijResourceProvider.class)
+	@AutoService(ConfijAnyResource.class)
 	// tag::resourceprovider-service-ignored[]
-	public static class AnUnimportantFooProvider extends FooProvider implements ServiceLoaderPriority {
-		@Override
-		public Stream<String> read(URIish path) {
-			throw new RuntimeException("less important than " + FooProvider.class);
-		}
-
+	public static class AnUnimportantFoo extends FooResource implements ServiceLoaderPriority {
 		@Override
 		public int getPriority() {
 			return ServiceLoaderPriority.DEFAULT_PRIORITY - 1000;
 		}
+
+		@Override
+		public Optional<ConfijResource> maybeHandle(String path) {
+			return Optional.of((ConfijResource) resolver -> Stream.of(new ResourceContent("foo=OTHER", path)))
+					.filter(__ -> path.startsWith("foo:"));
+		}
 	}
 	// end::resourceprovider-service-ignored[]
 
-	@AutoService(ConfijResourceProvider.class)
+	@AutoService(ConfijAnyResource.class)
 	// tag::resourceprovider-service[]
-	// +file: META-INF/services/ch.kk7.confij.source.file.resource.ConfijResourceProvider
-	public static class FooProvider implements ConfijResourceProvider {
+	// +file: META-INF/services/ch.kk7.confij.source.file.resource.ConfijAnyResource
+	public static class FooResource implements ConfijAnyResource {
 		@Override
-		public Stream<String> read(URIish path) {
-			return Stream.of("foo=bar");
-		}
-
-		@Override
-		public boolean canHandle(URIish path) {
-			return "foo".equals(path.getScheme());
+		public Optional<ConfijResource> maybeHandle(String path) {
+			return Optional.of((ConfijResource) resolver -> Stream.of(new ResourceContent("foo=bar", path)))
+					.filter(__ -> path.startsWith("foo:"));
 		}
 	}
 
@@ -238,7 +243,22 @@ class Source extends DocTestBase {
 				.build();
 		// end::resourceprovider[]
 		assertThat(foo.foo()).isEqualTo("bar");
-		assertThat(ServiceLoaderUtil.requireInstancesOf(ConfijResourceProvider.class)).anySatisfy(
-				x -> assertThat(x).isInstanceOf(AnUnimportantFooProvider.class));
+		assertThat(ServiceLoaderUtil.requireInstancesOf(ConfijAnyResource.class)).anySatisfy(
+				x -> assertThat(x).isInstanceOf(AnUnimportantFoo.class));
+	}
+
+	@Test
+	void explicitSources() throws Exception {
+		SystemLambda.restoreSystemProperties(() -> {
+			System.setProperty("app.line", "3");
+			// tag::pipedsource-explicit[]
+			ServerConfig serverConfig = ConfijBuilder.of(ServerConfig.class)
+					.loadFrom(ClasspathResource.ofName("generic.properties"))
+					.loadFrom(FileResource.ofFile("server.properties"), PropertiesFormat.withoutPrefix())
+					.loadFrom(SystemPropertiesSource.withPrefix("app"))
+					.build();
+			// end::pipedsource-explicit[]
+			assertThat(serverConfig.toString()).isEqualToIgnoringWhitespace(classpath("pipedsource.txt"));
+		});
 	}
 }

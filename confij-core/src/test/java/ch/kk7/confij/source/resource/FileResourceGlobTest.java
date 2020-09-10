@@ -1,22 +1,14 @@
 package ch.kk7.confij.source.resource;
 
 import org.assertj.core.api.WithAssertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Paths;
 
-class FileResourceProviderGlobTest implements WithAssertions {
-	private FileResourceProvider provider;
-
-	@BeforeEach
-	public void init() {
-		provider = new FileResourceProvider();
-	}
-
+class FileResourceGlobTest implements WithAssertions {
 	@Test
 	void oneGlob() {
-		assertThat(provider.extractGlob("/fuu/bar/a*.txt")).satisfies(x -> {
+		assertThat(FileResource.extractGlob("/fuu/bar/a*.txt")).satisfies(x -> {
 			assertThat(x.getBasePath()).isEqualTo(Paths.get("/fuu/bar"));
 			assertThat(x.getMaxDepth()).isEqualTo(1);
 			assertThat(x.getPathMatcher()
@@ -32,21 +24,21 @@ class FileResourceProviderGlobTest implements WithAssertions {
 
 	@Test
 	void globAtRoot() {
-		assertThat(provider.extractGlob("x**.txt")).satisfies(x -> {
+		assertThat(FileResource.extractGlob("x**.txt")).satisfies(x -> {
 			assertThat(x.getBasePath()).isEqualTo(Paths.get(""));
 		});
 	}
 
 	@Test
 	void escapedGlob() {
-		assertThat(provider.extractGlob("fuu/BA\\*")).satisfies(x -> {
+		assertThat(FileResource.extractGlob("fuu/BA\\*")).satisfies(x -> {
 			assertThat(x.getBasePath()).isEqualTo(Paths.get("fuu/BA\\*"));
 		});
 	}
 
 	@Test
 	void multiGlob() {
-		assertThat(provider.extractGlob("fuu/**/xxx/?.x")).satisfies(x -> {
+		assertThat(FileResource.extractGlob("fuu/**/xxx/?.x")).satisfies(x -> {
 			assertThat(x.getBasePath()).isEqualTo(Paths.get("fuu"));
 			assertThat(x.getPathMatcher()
 					.matches(Paths.get("fuu/a/b/c/d/e/xxx/xxx/f.x"))).isTrue();

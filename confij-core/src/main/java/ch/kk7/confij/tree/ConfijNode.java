@@ -2,6 +2,7 @@ package ch.kk7.confij.tree;
 
 import ch.kk7.confij.binding.ConfijBindingException;
 import ch.kk7.confij.common.ConfijException;
+import ch.kk7.confij.template.ValueResolver.StringResolver;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
@@ -20,7 +21,7 @@ import java.util.Map;
  */
 @ToString(onlyExplicitlyIncluded = true, doNotUseGetters = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class ConfijNode {
+public class ConfijNode implements StringResolver {
 	@Getter
 	@NonNull
 	private final NodeDefinition config;
@@ -62,6 +63,13 @@ public class ConfijNode {
 
 	public static ConfijNode newRootFor(NodeDefinition nodeDefinition) {
 		return new ConfijNode(nodeDefinition);
+	}
+
+	@Override
+	public String resolve(String template) {
+		return getConfig().getNodeBindingContext()
+				.getValueResolver()
+				.resolveValue(this, template);
 	}
 
 	public ConfijNode deepClone() {

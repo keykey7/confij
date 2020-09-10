@@ -1,11 +1,13 @@
-# johnshouse.yaml
+# sample johnshouse.yaml
+hasRoof: yes
+constructedAt: 2000-12-24
+livingRoom:
+  numberOfDoors: 4
+  lockCount: 1
 rooms:
-  livingroom:
-    numberOfWindows: 4
-  bedroom:
-    numberOfWindows: 1
-    floor: Wood
+  bathRoom: {}
+  kitchen:
+    numberOfDoors: 2
 inhabitants:
   - John
   - Alice
-chimneyCheckEvery: 2years

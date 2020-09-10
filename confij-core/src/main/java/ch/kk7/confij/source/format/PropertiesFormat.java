@@ -1,11 +1,15 @@
 package ch.kk7.confij.source.format;
 
-import ch.kk7.confij.source.ConfijSourceBuilder.URIish;
+import ch.kk7.confij.common.Util;
+import ch.kk7.confij.source.any.ConfijAnyFormat;
 import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
-import lombok.Setter;
+import lombok.ToString;
+import lombok.Value;
+import lombok.With;
+import lombok.experimental.NonFinal;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -13,19 +17,29 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-@Setter
-@Getter
-@AutoService(ConfijSourceFormat.class)
-public class PropertiesFormat implements ConfijSourceFormat {
+@With
+@Value
+@NonFinal
+@AllArgsConstructor
+public class PropertiesFormat implements ConfijFormat {
 	private static final Pattern BRACKETS_ARRAY_FORMAT = Pattern.compile("(\\S+)\\[(\\d+)]");
 	@NonNull
-	private String separator = ".";
-	private String globalPrefix = null;
+	String separator;
+	String globalPrefix;
+
+	public PropertiesFormat() {
+		this(".", null);
+	}
+
+	public static PropertiesFormat withoutPrefix() {
+		return new PropertiesFormat();
+	}
 
 	@Override
 	public void override(ConfijNode rootNode, String configAsStr) {
@@ -114,9 +128,16 @@ public class PropertiesFormat implements ConfijSourceFormat {
 				prefixStr + key1, prefixStr + key2);
 	}
 
-	@Override
-	public boolean canHandle(URIish path) {
-		return path.getSchemeSpecificPart()
-				.matches("(?s).+\\.prop(ertie)?s?$");
+	@ToString
+	@AutoService(ConfijAnyFormat.class)
+	public static class PropertiesAnyFormat implements ConfijAnyFormat {
+		@Override
+		public Optional<ConfijFormat> maybeHandle(String pathTemplate) {
+			if (Util.getSchemeSpecificPart(pathTemplate)
+					.matches("(?s).+\\.prop(ertie)?s?$")) {
+				return Optional.of(new PropertiesFormat());
+			}
+			return Optional.empty();
+		}
 	}
 }

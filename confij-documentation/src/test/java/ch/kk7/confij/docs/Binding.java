@@ -1,5 +1,6 @@
 package ch.kk7.confij.docs;
 
+import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.annotation.Key;
 import ch.kk7.confij.annotation.ValueMapper;
 import ch.kk7.confij.binding.BindingType;
@@ -8,11 +9,10 @@ import ch.kk7.confij.binding.values.Base64Mapper.Base64Decoder;
 import ch.kk7.confij.binding.values.SeparatedMapper.Separated;
 import ch.kk7.confij.binding.values.ValueMapperFactory;
 import ch.kk7.confij.binding.values.ValueMapperInstance;
-import ch.kk7.confij.ConfijBuilder;
-import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import org.junit.jupiter.api.Test;
 
-import java.awt.*;
+import java.awt.Color;
 import java.net.URL;
 import java.time.Duration;
 import java.util.List;
@@ -21,7 +21,6 @@ import java.util.Optional;
 import java.util.Set;
 
 public class Binding extends DocTestBase {
-
 	// tag::builtinMapping[]
 	interface MappedConfig {
 		String aString();
@@ -83,7 +82,7 @@ public class Binding extends DocTestBase {
 	void nested() {
 		// tag::nestedBuild[]
 		DbConfig dbConfig = ConfijBuilder.of(DbConfig.class)
-			.loadFrom(new PropertiesSource()
+			.loadFrom(new ExplicitPropertiesSource()
 				.set("dbConnections.0.url", "https://db0.example.com")
 				.set("dbConnections.0.timing.keepAlive", "30s")
 				.set("additionalParameters.somekey", "somevalue"))
@@ -113,13 +112,14 @@ public class Binding extends DocTestBase {
 	@Test
 	void customValueMappingWithAnnotation() {
 		Favourites favourites = ConfijBuilder.of(Favourites.class)
-				.loadFrom(new PropertiesSource().set("favouriteColor", "#000000"))
+				.loadFrom(new ExplicitPropertiesSource().set("favouriteColor", "#000000"))
 				.build();
 		assertThat(favourites.favouriteColor()).isEqualTo(Color.BLACK);
 	}
 
 	interface EmptyColorHolder {
 		Color black();
+
 		Color green();
 	}
 
@@ -129,7 +129,7 @@ public class Binding extends DocTestBase {
 		EmptyColorHolder colorHolder = ConfijBuilder.of(EmptyColorHolder.class)
 				.bindValuesForClassWith(Color::decode, java.awt.Color.class)
 				// end::custom-value-mapping[]
-				.loadFrom(new PropertiesSource().set("black", "#000000")
+				.loadFrom(new ExplicitPropertiesSource().set("black", "#000000")
 						.set("green", "#00FF00"))
 				.build();
 		assertThat(colorHolder.black()).isEqualTo(Color.BLACK);
@@ -149,7 +149,7 @@ public class Binding extends DocTestBase {
 	@Test
 	void testBuiltinCustomMappings() {
 		Base64Encoded builtInMappers = ConfijBuilder.of(Base64Encoded.class)
-				.loadFrom(new PropertiesSource().set("base64Arr", "AQIDBA==")
+				.loadFrom(new ExplicitPropertiesSource().set("base64Arr", "AQIDBA==")
 						.set("base64List", "AQIDBA=="))
 				.build();
 		assertThat(builtInMappers.base64Arr()).containsExactly(1, 2, 3, 4);

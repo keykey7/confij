@@ -4,7 +4,7 @@ import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.ConfijBuilder.ConfijWrapper;
 import ch.kk7.confij.common.ConfijException;
 import ch.kk7.confij.common.GenericType;
-import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,14 +28,14 @@ class ReloadNotifierImplTest implements WithAssertions {
 		int x3();
 	}
 
-	private PropertiesSource source;
+	private ExplicitPropertiesSource source;
 	private ManualReloadStrategy reload;
 	private ConfijWrapper<A> wrapper;
 	private A first;
 
 	@BeforeEach
 	void init() {
-		source = new PropertiesSource().set("x1", "1")
+		source = new ExplicitPropertiesSource().set("x1", "1")
 				.set("x2", "2")
 				.set("b.x3", "3");
 		reload = new ManualReloadStrategy();
@@ -152,7 +152,7 @@ class ReloadNotifierImplTest implements WithAssertions {
 
 	@Test
 	void listModifications() {
-		PropertiesSource src = new PropertiesSource().set("0", "first");
+		ExplicitPropertiesSource src = new ExplicitPropertiesSource().set("0", "first");
 		reload = new ManualReloadStrategy();
 		ConfijWrapper<List<String>> listWrapper = ConfijBuilder.of(new GenericType<List<String>>() {
 		})

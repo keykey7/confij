@@ -13,9 +13,9 @@ import java.util.stream.StreamSupport;
 
 @UtilityClass
 public class ServiceLoaderUtil {
-	private static Map<Class<?>, List<?>> serviceInstances = new ConcurrentHashMap<>();
+	private Map<Class<?>, List<?>> serviceInstances = new ConcurrentHashMap<>();
 
-	public static <T> List<T> requireInstancesOf(Class<T> serviceClass) {
+	public <T> List<T> requireInstancesOf(Class<T> serviceClass) {
 		List<T> services = instancesOf(serviceClass);
 		if (services.isEmpty()) {
 			throw new IllegalStateException("Failed to loadFrom any instance of " + serviceClass + ". Check your AnnotationProcessor.");
@@ -30,7 +30,7 @@ public class ServiceLoaderUtil {
 	 * @return list of initialized singletons of given type in deterministic order
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> List<T> instancesOf(Class<T> serviceClass) {
+	public <T> List<T> instancesOf(Class<T> serviceClass) {
 		// Note: not using computeIfAbsent due to Java8 bug: https://bugs.java.com/bugdatabase/view_bug.do?bug_id=8161372
 		List<T> result = (List<T>) serviceInstances.get(serviceClass);
 		if (result == null) {
@@ -43,7 +43,7 @@ public class ServiceLoaderUtil {
 		return result;
 	}
 
-	public static <T> List<T> maybeNewOf(Class<T> serviceClass) {
+	public <T> List<T> maybeNewOf(Class<T> serviceClass) {
 		ServiceLoader<T> resourceFormatLoader = ServiceLoader.load(serviceClass);
 		return Collections.unmodifiableList(StreamSupport.stream(resourceFormatLoader.spliterator(), false)
 				.sorted(Comparator.comparing(o -> o.getClass()

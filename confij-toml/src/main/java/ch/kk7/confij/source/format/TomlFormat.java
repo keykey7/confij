@@ -1,9 +1,11 @@
 package ch.kk7.confij.source.format;
 
-import ch.kk7.confij.source.ConfijSourceBuilder.URIish;
+import ch.kk7.confij.common.Util;
+import ch.kk7.confij.source.any.ConfijAnyFormat;
 import ch.kk7.confij.tree.ConfijNode;
 import com.google.auto.service.AutoService;
 import lombok.ToString;
+import lombok.Value;
 import org.tomlj.Toml;
 import org.tomlj.TomlArray;
 import org.tomlj.TomlParseError;
@@ -16,14 +18,14 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static ch.kk7.confij.source.format.ConfijSourceFormatException.invalidFormat;
 import static java.util.stream.Collectors.joining;
 
-@ToString
-@AutoService(ConfijSourceFormat.class)
-public class TomlFormat implements ConfijSourceFormat {
+@Value
+public class TomlFormat implements ConfijFormat {
 	@Override
 	public void override(ConfijNode rootNode, String content) {
 		TomlParseResult result;
@@ -109,9 +111,16 @@ public class TomlFormat implements ConfijSourceFormat {
 		return result;
 	}
 
-	@Override
-	public boolean canHandle(URIish path) {
-		return path.getSchemeSpecificPart()
-				.matches("(?i).+\\.toml$");
+	@ToString
+	@AutoService(ConfijAnyFormat.class)
+	public static class TomlAnyFormat implements ConfijAnyFormat {
+		@Override
+		public Optional<ConfijFormat> maybeHandle(String pathTemplate) {
+			if (Util.getSchemeSpecificPart(pathTemplate)
+					.matches("(?i).+\\.toml$")) {
+				return Optional.of(new TomlFormat());
+			}
+			return Optional.empty();
+		}
 	}
 }

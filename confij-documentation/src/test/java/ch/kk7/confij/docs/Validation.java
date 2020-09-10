@@ -1,7 +1,7 @@
 package ch.kk7.confij.docs;
 
 import ch.kk7.confij.ConfijBuilder;
-import ch.kk7.confij.source.env.PropertiesSource;
+import ch.kk7.confij.source.env.ExplicitPropertiesSource;
 import ch.kk7.confij.validation.ConfijValidationException;
 import ch.kk7.confij.validation.NonNullValidator.Nullable;
 import org.assertj.core.api.WithAssertions;
@@ -14,7 +14,6 @@ import javax.validation.constraints.Pattern;
 import java.util.Optional;
 
 class Validation implements WithAssertions {
-
 	// tag::jsr303-interface[]
 	interface Jsr303Validated {
 		@NotEmpty
@@ -43,21 +42,21 @@ class Validation implements WithAssertions {
 	@Test
 	void isNotNullValidated() {
 		assertThatThrownBy(() -> ConfijBuilder.of(NothingIsNull.class)
-        				.build()).isInstanceOf(ConfijValidationException.class);
+				.build()).isInstanceOf(ConfijValidationException.class);
 		assertThat(ConfijBuilder.of(NothingIsNull.class)
-								.loadFrom(PropertiesSource.of("willCrashIfNull", "xxx"))
-                				.build().willCrashIfNull()).isEqualTo("xxx");
+				.loadFrom(ExplicitPropertiesSource.of("willCrashIfNull", "xxx"))
+				.build()
+				.willCrashIfNull()).isEqualTo("xxx");
 		assertThatThrownBy(() -> ConfijBuilder.of(NothingIsNull.class)
-                				.build()).isInstanceOf(ConfijValidationException.class);
+				.build()).isInstanceOf(ConfijValidationException.class);
 	}
 
 	@Test
 	void isNotNullDisabled() {
 		assertThat(
-			// tag::notnull-disabled-builder[]
+				// tag::notnull-disabled-builder[]
 			ConfijBuilder.of(NothingIsNull.class).validationAllowsNull().build()
 			// end::notnull-disabled-builder[]
-			.willCrashIfNull()
-		).isNull();
+					.willCrashIfNull()).isNull();
 	}
 }
