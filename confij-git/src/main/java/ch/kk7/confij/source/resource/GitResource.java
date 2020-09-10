@@ -175,16 +175,6 @@ public class GitResource implements ConfijResource {
 		private static final String SCHEME = "git";
 		private static final Pattern URL_FILE_SPLITTER = Pattern.compile("^(?<url>.+(?:\\.git/?|[^:]/))/(?<file>.+)$");
 
-		public static String toUri(String remoteUri, String configFile) {
-			return toUri(remoteUri, configFile, null);
-		}
-
-		public static String toUri(@NonNull String remoteUri, @NonNull String configFile, String gitRevision) {
-			configFile = configFile.startsWith("/") ? configFile.substring(1) : configFile;
-			String urlFileSep = remoteUri.matches(".*\\.git/?$") ? "/" : "//";
-			return SCHEME + ":" + remoteUri + urlFileSep + configFile + (gitRevision == null ? "" : "#" + gitRevision);
-		}
-
 		@Override
 		public Optional<GitResource> maybeHandle(String path) {
 			if (Util.getScheme(path)

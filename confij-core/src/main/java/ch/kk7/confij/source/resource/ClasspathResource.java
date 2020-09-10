@@ -43,7 +43,7 @@ public class ClasspathResource implements ConfijResource {
 			url = classloaderOf.getResource(name);
 		}
 		if (url == null) {
-			throw unableToFetch(name, "no such file on system classpath");
+			throw unableToFetch(name, "no such file on classpath");
 		}
 		return url;
 	}

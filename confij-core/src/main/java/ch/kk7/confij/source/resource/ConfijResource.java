@@ -11,6 +11,10 @@ import java.util.stream.Stream;
 
 @FunctionalInterface
 public interface ConfijResource {
+	default Stream<ResourceContent> read() {
+		return read(x -> x);
+	}
+
 	Stream<ResourceContent> read(StringResolver resolver);
 
 	@UtilityClass
