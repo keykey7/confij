@@ -166,7 +166,7 @@ subprojects {
 		return // excluding test-only subprojects
 	}
 	apply plugin: 'maven-publish'
-	apply plugin: 'signing'
+	def isRemotePublish = System.getenv('CI') != null && System.getenv('SONATYPE_USERNAME') != null
 	publishing {
 		publications {
 			java(MavenPublication) {
@@ -197,20 +197,23 @@ subprojects {
 				}
 			}
 		}
-	}
-	if (System.getenv('CI') != null && System.getenv('SONATYPE_USERNAME') != null) {
-		repositories {
-			maven {
-				def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-				def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-				def isReleaseBuild = project.version.toString().matches("[0-9.]+") // no "rc" or "snapshot"
-				url = isReleaseBuild ? snapshotsRepoUrl : releasesRepoUrl
-				credentials {
-					username = System.getenv('SONATYPE_USERNAME')
-					password = System.getenv('SONATYPE_PASSWORD')
+		if (isRemotePublish) {
+			repositories {
+				maven {
+					def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+					def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+					def isReleaseBuild = project.version.toString().matches("[0-9.]+") // no "rc" or "snapshot"
+					url = isReleaseBuild ? snapshotsRepoUrl : releasesRepoUrl
+					credentials {
+						username = System.getenv('SONATYPE_USERNAME')
+						password = System.getenv('SONATYPE_PASSWORD')
+					}
 				}
 			}
 		}
+	}
+	if (isRemotePublish) {
+		apply plugin: 'signing'
 		signing {
 			def signingKey = System.getenv('SONATYPE_SIGNKEY')
 			def signingPassword = System.getenv('SONATYPE_SIGNPASS')
