@@ -5,7 +5,7 @@ import ch.kk7.confij.source.resource.ConfijResource;
 import java.util.Optional;
 
 /**
- * A resource provider basically reads a string from anywhere given an URI.<br/>
+ * A resource provider basically reads a string from anywhere given an URI.
  * <p>
  * If it should work as an {@code AnySource} it should be stateless (and receive all variable input from the input URI). Additionally it
  * should be registered as a {@code ConfijResourceProvider} {@code ServiceLoader}.

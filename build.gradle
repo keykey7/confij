@@ -1,7 +1,7 @@
 buildscript {
 	repositories {
 		mavenLocal()
-		jcenter()
+		mavenCentral()
 	}
 }
 
@@ -10,7 +10,6 @@ plugins {
 	id 'com.github.ben-manes.versions' version '0.31.0' // task: dependencyUpdates
 	id 'org.sonarqube' version '3.0'
 	id 'org.asciidoctor.jvm.convert' version '3.2.0' apply false
-	id 'com.jfrog.bintray' version '1.8.5' apply false
 	id 'com.github.johnrengelman.shadow' version '6.0.0' apply false
 }
 
@@ -36,9 +35,8 @@ reckonTagCreate.dependsOn "build"
 
 allprojects {
 	repositories {
-		jcenter()
+		mavenCentral()
 	}
-	apply plugin: 'idea'
 	group 'ch.kk7'
 	version rootProject.version
 }
@@ -62,6 +60,7 @@ subprojects {
 		sourceCompatibility = JavaVersion.VERSION_1_8
 		targetCompatibility = JavaVersion.VERSION_1_8
 		withSourcesJar()
+		withJavadocJar()
 	}
 
 	tasks.withType(JavaCompile) {
@@ -87,7 +86,7 @@ subprojects {
 		testCompileOnly "com.google.auto.service:auto-service:${autoServiceVersion}"
 		testAnnotationProcessor "com.google.auto.service:auto-service:${autoServiceVersion}"
 
-		def lombokVersion = "1.18.12"
+		def lombokVersion = "1.18.16"
 		compileOnly "org.projectlombok:lombok:${lombokVersion}"
 		annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 		testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
@@ -166,67 +165,58 @@ subprojects {
 	if (sourceSets.main.allSource.isEmpty()) {
 		return // excluding test-only subprojects
 	}
-
 	apply plugin: 'maven-publish'
-	ext {
-		confijDescription = "A type-safe, strongly defined Java configuration library"
-		confijGithub = "keykey7/confij"
-		confijUrl = "https://github.com/${confijGithub}"
-	}
-
+	apply plugin: 'signing'
 	publishing {
 		publications {
 			java(MavenPublication) {
 				from components.java
 				pom {
+					def githubUrl = "https://github.com/keykey7/confij"
 					name = project.name
-					description = project.confijDescription
-					url = "" + project.confijUrl
+					description = "A type-safe, strongly defined Java configuration library"
+					url = githubUrl
 					licenses {
 						license {
 							name = 'The Apache License, Version 2.0'
 							url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
 						}
 					}
+					scm {
+						connection = "scm:git:${githubUrl}.git"
+						developerConnection = "scm:git:${githubUrl}.git"
+						url = githubUrl
+					}
+					developers {
+						developer {
+							id = 'keykey7'
+							name = 'keykey7'
+							email = 'noreply@kk7.ch'
+						}
+					}
 				}
 			}
 		}
 	}
-
-	// bintray
-	apply plugin: 'com.jfrog.bintray'
-	def isReleaseBuild = project.version.toString().matches("[0-9.]+") // no "rc" or "snapshot"
-	bintray {
-		user = 'kk7'
-		key = System.getenv('BINTRAY_TOKEN')
-		publications = project.publishing.publications.collect { it.name }
-		publish = isReleaseBuild
-
-		pkg {
-			repo = isReleaseBuild ? 'mvn-release' : 'mvn-snapshot'
-			name = project.name
-			desc = project.confijDescription
-
-			websiteUrl = project.confijUrl
-			vcsUrl = project.confijUrl
-			githubRepo = project.confijGithub
-			licenses = ['Apache-2.0']
-			labels = ['configuration']
-			version {
-				name = project.version
-				released = new Date()
-				mavenCentralSync {
-					sync = false
+	if (System.getenv('SONATYPE_USERNAME') != null) {
+		logger.lifecycle("signing enabled...")
+		repositories {
+			maven {
+				def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+				def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+				def isReleaseBuild = project.version.toString().matches("[0-9.]+") // no "rc" or "snapshot"
+				url = isReleaseBuild ? snapshotsRepoUrl : releasesRepoUrl
+				credentials {
+					username = System.getenv('SONATYPE_USERNAME')
+					password = System.getenv('SONATYPE_PASSWORD')
 				}
 			}
 		}
-	}
-
-	bintrayUpload {
-		dependsOn publishToMavenLocal
-		doFirst {
-			Objects.requireNonNull(apiKey, 'missing bintray token')
+		signing {
+			def signingKey = System.getenv('SONATYPE_SIGNKEY')
+			def signingPassword = System.getenv('SONATYPE_SIGNPASS')
+			useInMemoryPgpKeys(signingKey, signingPassword)
+			sign publishing.publications.java
 		}
 	}
-	publish.dependsOn bintrayUpload
 }

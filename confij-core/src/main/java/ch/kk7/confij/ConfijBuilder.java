@@ -235,7 +235,7 @@ public class ConfijBuilder<T> {
 	 * Globally register an additional {@link ValueMapperFactory}. This allows for custom classes in your configuration definition.
 	 * Same as writing
 	 * <pre>{@code
-	 *   @ValueMapper(CustomMapper.class)
+	 *   \@ValueMapper(CustomMapper.class)
 	 *   interface MyConfigRoot { ... }
 	 * }</pre>
 	 *
