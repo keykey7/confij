@@ -6,7 +6,7 @@ buildscript {
 }
 
 plugins {
-	id 'org.ajoberstar.reckon' version '0.12.0'
+	id 'org.ajoberstar.reckon' version '0.13.0'
 	id 'com.github.ben-manes.versions' version '0.31.0' // task: dependencyUpdates
 	id 'org.sonarqube' version '3.0'
 	id 'org.asciidoctor.jvm.convert' version '3.2.0' apply false
@@ -15,19 +15,19 @@ plugins {
 
 reckon {
 	scopeFromProp()
-	stageFromProp('rc', 'final')
+	snapshotFromProp()
 }
 if (System.getenv('CI') == null) {
-	project.version = "0.0.0-SNAPSHOT"
+	version = "0.0.0-SNAPSHOT"
 }
 task version {
 	doLast {
 		if (project.findProperty('reckon.stage')) {
-			println "to tag and release a new version use:"
-			println "git tag -a '${project.version}' -m '${project.version}' && git push origin '${project.version}'"
+			println "to tag and release a new version '${version}' use:"
+			println "git tag -a '${version}' -m '${version}' && git push origin '${version}'"
 		} else {
-			println "to figure out the next version run:"
-			println "CI=true ./gradlew version -Preckon.scope=[major,minor,patch] -Preckon.stage=[rc,final]"
+			println "current version is '${version}', to figure out the next version run:"
+			println "CI=true ./gradlew version -Preckon.stage=final -Preckon.scope=[major,minor,patch]"
 		}
 	}
 }
