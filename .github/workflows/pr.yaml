@@ -33,10 +33,10 @@ jobs:
           key: gradle-${{ runner.os }}-${{ matrix.java }}-pr
 
       - name: build 🔧
-        run: ./gradlew --no-daemon -s build
+        run: ./gradlew -s build
 
       - name: QA ⛅️
-        run: ./gradlew --no-daemon -s publishToMavenLocal sonarqube
+        run: ./gradlew -s publish sonarqube
         if: ${{ matrix.sonar }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

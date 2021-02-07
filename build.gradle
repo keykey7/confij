@@ -202,8 +202,8 @@ subprojects {
 				maven {
 					def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
 					def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-					def isReleaseBuild = project.version.toString().matches("[0-9.]+") // no "rc" or "snapshot"
-					url = isReleaseBuild ? snapshotsRepoUrl : releasesRepoUrl
+					def isReleaseBuild = project.version.toString().matches("[0-9.]+") // no "rc" nor "snapshot"
+					url = isReleaseBuild ? releasesRepoUrl : snapshotsRepoUrl
 					credentials {
 						username = System.getenv('SONATYPE_USERNAME')
 						password = System.getenv('SONATYPE_PASSWORD')

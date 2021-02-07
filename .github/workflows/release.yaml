@@ -29,16 +29,16 @@ jobs:
           key: gradle-${{ runner.os }}-${{ matrix.java }}-master
 
       - name: build 🔧
-        run: ./gradlew --no-daemon -s build
+        run: ./gradlew -s build
 
       - name: QA ⛅️
-        run: ./gradlew --no-daemon -s publishToMavenLocal sonarqube
+        run: ./gradlew -s publishToMavenLocal sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # sonar bug: shouldn't be needed
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: publish 📤
-        run: ./gradlew --no-daemon -s publish
+        run: ./gradlew -s publish
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
