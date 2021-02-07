@@ -198,8 +198,7 @@ subprojects {
 			}
 		}
 	}
-	if (System.getenv('SONATYPE_USERNAME') != null) {
-		logger.lifecycle("signing enabled...")
+	if (System.getenv('CI') != null && System.getenv('SONATYPE_USERNAME') != null) {
 		repositories {
 			maven {
 				def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"

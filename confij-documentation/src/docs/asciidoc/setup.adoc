@@ -7,7 +7,7 @@ It is modularly organized in order to reduce the amount of dependencies.
 `confij-core` itself has no external dependencies.
 
 == Repository
-ConfiJ maven artifacts are available on Bintray/JCenter.
+ConfiJ maven artifacts are available on https://search.maven.org/[Maven Central].
 
 .Sample Gradle setup
 ====
@@ -15,7 +15,7 @@ ConfiJ maven artifacts are available on Bintray/JCenter.
 [subs="verbatim,attributes"]
 ----
 repositories {
-   jcenter()
+   mavenCentral()
 }
 dependencies {
     implementation '{group}:confij-core:{revnumberstable}'
