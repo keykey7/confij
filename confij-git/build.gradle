@@ -1,6 +1,6 @@
 dependencies {
 	api project(':confij-core')
-	def gitVersion = "5.8.1.202007141445-r"
+	def gitVersion = "5.10.0.202012080955-r"
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${gitVersion}"
 	implementation "org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:${gitVersion}"
 
