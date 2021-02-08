@@ -4,9 +4,9 @@ import ch.kk7.confij.ConfijBuilder;
 import ch.kk7.confij.annotation.Default;
 import ch.kk7.confij.source.env.EnvvarSource;
 import ch.kk7.confij.validation.NonNullValidator.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.junit.jupiter.api.Test;
 
-import javax.validation.constraints.Positive;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.LocalDate;

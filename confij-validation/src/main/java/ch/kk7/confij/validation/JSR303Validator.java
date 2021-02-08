@@ -2,14 +2,14 @@ package ch.kk7.confij.validation;
 
 import ch.kk7.confij.binding.BindingResult;
 import com.google.auto.service.AutoService;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import lombok.Value;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.Validator;
 import java.util.Set;
 
 @Value
