@@ -11,6 +11,7 @@ jobs:
         include:
           - java: 11 # usually latest LTS
             sonar: true
+      fail-fast: false
     steps:
       - name: checkout 📥
         uses: actions/checkout@v2
