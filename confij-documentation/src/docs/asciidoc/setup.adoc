@@ -18,15 +18,32 @@ repositories {
    mavenCentral()
 }
 dependencies {
-    implementation '{group}:confij-core:{revnumberstable}'
+    implementation '{group}:confij-core:{revnumberstable}:nodeps'
 }
 ----
 ====
 
-In case of dependency issues (like if an incompatible version of `com.fasterxml:classmate` is already on the classpath), an alternative shadowed artifact is available as `{group}:confij-core:{revnumberstable}:nodeps`.
+Artifacts with two different classifiers are published. The `nodeps` ones do not depend on any non-shadowed 3rd party libs and are generally prefered. The default `{group}:confij-core:{revnumberstable}` might introduce dependency issues only if an incompatible lib is already on the classpath (for example an old `com.fasterxml:classmate`).
 
 ifeval::[{revnumberstable}!={revnumber}]
-The latest snapshot version `{revnumber}` will be removed after 30 days.
+The latest snapshot version `{revnumber}` is available in the sonatype snapshot repos but will be removed after 30 days.
+
+.Snapshot Repository
+====
+[source, groovy]
+[subs="verbatim,attributes"]
+----
+repositories {
+   maven {
+      url 'https://oss.sonatype.org/content/repositories/snapshots/'
+   }
+}
+dependencies {
+    implementation '{group}:confij-core:{revnumber}'
+}
+----
+====
+
 endif::[]
 
 == Quick Start
