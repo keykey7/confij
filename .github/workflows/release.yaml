@@ -29,18 +29,18 @@ jobs:
           key: gradle-${{ runner.os }}-${{ matrix.java }}-master
 
       - name: build 🔧
-        run: ./gradlew --no-daemon -s build
-
-      - name: QA ⛅️
-        run: ./gradlew --no-daemon -s publishToMavenLocal sonarqube
+        run: ./gradlew -s build sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # sonar bug: shouldn't be needed
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: publish 📤
-        run: ./gradlew --no-daemon -s publish
+        run: ./gradlew -s publish
         env:
-          BINTRAY_TOKEN: ${{ secrets.BINTRAY_TOKEN }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_SIGNKEY: ${{ secrets.SONATYPE_SIGNKEY }}
+          SONATYPE_SIGNPASS: ${{ secrets.SONATYPE_SIGNPASS }}
 
       - name: docs 📜
         uses: peaceiris/actions-gh-pages@v3

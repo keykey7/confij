@@ -1,34 +1,33 @@
 buildscript {
 	repositories {
 		mavenLocal()
-		jcenter()
+		mavenCentral()
 	}
 }
 
 plugins {
-	id 'org.ajoberstar.reckon' version '0.12.0'
+	id 'org.ajoberstar.reckon' version '0.13.0'
 	id 'com.github.ben-manes.versions' version '0.31.0' // task: dependencyUpdates
 	id 'org.sonarqube' version '3.0'
 	id 'org.asciidoctor.jvm.convert' version '3.2.0' apply false
-	id 'com.jfrog.bintray' version '1.8.5' apply false
 	id 'com.github.johnrengelman.shadow' version '6.0.0' apply false
 }
 
 reckon {
 	scopeFromProp()
-	stageFromProp('rc', 'final')
+	snapshotFromProp()
 }
 if (System.getenv('CI') == null) {
-	project.version = "0.0.0-SNAPSHOT"
+	version = "0.0.0-SNAPSHOT"
 }
 task version {
 	doLast {
 		if (project.findProperty('reckon.stage')) {
-			println "to tag and release a new version use:"
-			println "git tag -a '${project.version}' -m '${project.version}' && git push origin '${project.version}'"
+			println "to tag and release a new version '${version}' use:"
+			println "git tag -a '${version}' -m '${version}' && git push origin '${version}'"
 		} else {
-			println "to figure out the next version run:"
-			println "CI=true ./gradlew version -Preckon.scope=[major,minor,patch] -Preckon.stage=[rc,final]"
+			println "current version is '${version}', to figure out the next version run:"
+			println "CI=true ./gradlew version -Preckon.stage=final -Preckon.scope=[major,minor,patch]"
 		}
 	}
 }
@@ -36,9 +35,8 @@ reckonTagCreate.dependsOn "build"
 
 allprojects {
 	repositories {
-		jcenter()
+		mavenCentral()
 	}
-	apply plugin: 'idea'
 	group 'ch.kk7'
 	version rootProject.version
 }
@@ -62,6 +60,7 @@ subprojects {
 		sourceCompatibility = JavaVersion.VERSION_1_8
 		targetCompatibility = JavaVersion.VERSION_1_8
 		withSourcesJar()
+		withJavadocJar()
 	}
 
 	tasks.withType(JavaCompile) {
@@ -80,6 +79,8 @@ subprojects {
 		}
 	}
 
+	javadoc.options.addStringOption('Xdoclint:none', '-quiet')
+
 	dependencies {
 		def autoServiceVersion = "1.0-rc7"
 		compileOnly "com.google.auto.service:auto-service:${autoServiceVersion}"
@@ -87,7 +88,7 @@ subprojects {
 		testCompileOnly "com.google.auto.service:auto-service:${autoServiceVersion}"
 		testAnnotationProcessor "com.google.auto.service:auto-service:${autoServiceVersion}"
 
-		def lombokVersion = "1.18.12"
+		def lombokVersion = "1.18.16"
 		compileOnly "org.projectlombok:lombok:${lombokVersion}"
 		annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 		testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
@@ -162,71 +163,67 @@ project.tasks['sonarqube'].enabled System.getenv('SONAR_TOKEN') != null
 project.tasks['sonarqube'].dependsOn jacocoRootReport
 
 // releases
+def isRemotePublish = System.getenv('CI') != null && System.getenv('SONATYPE_USERNAME') != null
+if (isRemotePublish) {
+	logger.lifecycle("remote publishing is enabled");
+}
 subprojects {
 	if (sourceSets.main.allSource.isEmpty()) {
 		return // excluding test-only subprojects
 	}
-
 	apply plugin: 'maven-publish'
-	ext {
-		confijDescription = "A type-safe, strongly defined Java configuration library"
-		confijGithub = "keykey7/confij"
-		confijUrl = "https://github.com/${confijGithub}"
-	}
-
 	publishing {
 		publications {
 			java(MavenPublication) {
 				from components.java
 				pom {
+					def githubUrl = "https://github.com/keykey7/confij"
 					name = project.name
-					description = project.confijDescription
-					url = "" + project.confijUrl
+					description = "A type-safe, strongly defined Java configuration library"
+					url = githubUrl
 					licenses {
 						license {
 							name = 'The Apache License, Version 2.0'
 							url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
 						}
 					}
+					scm {
+						connection = "scm:git:${githubUrl}.git"
+						developerConnection = "scm:git:${githubUrl}.git"
+						url = githubUrl
+					}
+					developers {
+						developer {
+							id = 'keykey7'
+							name = 'keykey7'
+							email = 'noreply@kk7.ch'
+						}
+					}
+				}
+			}
+		}
+		if (isRemotePublish) {
+			repositories {
+				maven {
+					def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+					def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+					def isReleaseBuild = project.version.toString().matches("[0-9.]+") // no "rc" nor "snapshot"
+					url = isReleaseBuild ? releasesRepoUrl : snapshotsRepoUrl
+					credentials {
+						username = System.getenv('SONATYPE_USERNAME')
+						password = System.getenv('SONATYPE_PASSWORD')
+					}
 				}
 			}
 		}
 	}
-
-	// bintray
-	apply plugin: 'com.jfrog.bintray'
-	def isReleaseBuild = project.version.toString().matches("[0-9.]+") // no "rc" or "snapshot"
-	bintray {
-		user = 'kk7'
-		key = System.getenv('BINTRAY_TOKEN')
-		publications = project.publishing.publications.collect { it.name }
-		publish = isReleaseBuild
-
-		pkg {
-			repo = isReleaseBuild ? 'mvn-release' : 'mvn-snapshot'
-			name = project.name
-			desc = project.confijDescription
-
-			websiteUrl = project.confijUrl
-			vcsUrl = project.confijUrl
-			githubRepo = project.confijGithub
-			licenses = ['Apache-2.0']
-			labels = ['configuration']
-			version {
-				name = project.version
-				released = new Date()
-				mavenCentralSync {
-					sync = false
-				}
-			}
+	if (isRemotePublish) {
+		apply plugin: 'signing'
+		signing {
+			def signingKey = System.getenv('SONATYPE_SIGNKEY')
+			def signingPassword = System.getenv('SONATYPE_SIGNPASS')
+			useInMemoryPgpKeys(signingKey, signingPassword)
+			sign publishing.publications.java
 		}
 	}
-
-	bintrayUpload {
-		dependsOn publishToMavenLocal
-		doFirst {
-			Objects.requireNonNull(apiKey, 'missing bintray token')
-		}
-	}
-	publish.dependsOn bintrayUpload
 }

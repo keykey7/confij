@@ -1,3 +1,5 @@
+apply plugin: 'com.github.johnrengelman.shadow'
+
 dependencies {
 	implementation 'com.fasterxml:classmate:1.5.1'
 }
@@ -6,10 +8,6 @@ configurations {
 	resolvableImplementation.extendsFrom implementation
 }
 
-apply plugin: 'java-library'
-jar.archiveClassifier = "slim"
-
-apply plugin: 'com.github.johnrengelman.shadow'
 task relocateShadowJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation) {
 	target = tasks.shadowJar
 	prefix = 'ch.kk7.confij.shadow'
@@ -18,23 +16,7 @@ task relocateShadowJar(type: com.github.jengelman.gradle.plugins.shadow.tasks.Co
 shadowJar {
 	configurations = [project.configurations.resolvableImplementation]
 	dependsOn relocateShadowJar
-	classifier ''
+	classifier 'nodeps'
 	exclude 'META-INF/maven/**'
 	exclude 'module-info.class'
-}
-
-// we have to drop the original one from shadow first
-configurations.default.artifacts.clear()
-artifacts {
-	"default" shadowJar
-}
-
-project.afterEvaluate {
-	publishing {
-		publications {
-			shadow(MavenPublication) {
-				artifact shadowJar
-			}
-		}
-	}
 }

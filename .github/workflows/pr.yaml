@@ -6,11 +6,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [8, 9, 13] # other supported JDK versions
+        java: [8, 9, 13, 14, 15] # other supported JDK versions
         sonar: [false]
         include:
           - java: 11 # usually latest LTS
             sonar: true
+      fail-fast: false
     steps:
       - name: checkout 📥
         uses: actions/checkout@v2
@@ -33,10 +34,19 @@ jobs:
           key: gradle-${{ runner.os }}-${{ matrix.java }}-pr
 
       - name: build 🔧
-        run: ./gradlew --no-daemon -s build
+        run: ./gradlew -s build
 
-      - name: QA ⛅️
-        run: ./gradlew --no-daemon -s publishToMavenLocal sonarqube
+      - name: sonar ⛅️
+        run: ./gradlew -s sonarqube
         if: ${{ matrix.sonar }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: publish snapshot 📤
+        run: ./gradlew -s publish
+        if: ${{ matrix.sonar }}
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_SIGNKEY: ${{ secrets.SONATYPE_SIGNKEY }}
+          SONATYPE_SIGNPASS: ${{ secrets.SONATYPE_SIGNPASS }}
