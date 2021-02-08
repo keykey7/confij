@@ -168,6 +168,13 @@ project.tasks['sonarqube'].dependsOn jacocoRootReport
 def isRemotePublish = System.getenv('CI') != null && System.getenv('SONATYPE_USERNAME') != null
 if (isRemotePublish) {
 	logger.lifecycle("remote publishing is enabled");
+	closeAndReleaseRepository.enabled !version.toString().endsWith("-SNAPSHOT")
+	nexusStaging {
+		username = System.getenv('SONATYPE_USERNAME')
+		password = System.getenv('SONATYPE_PASSWORD')
+		numberOfRetries = 60
+		delayBetweenRetriesInMillis = 5000
+	}
 }
 subprojects {
 	if (sourceSets.main.allSource.isEmpty()) {
@@ -206,8 +213,6 @@ subprojects {
 		}
 	}
 	if (isRemotePublish) {
-		closeAndReleaseRepository.enabled !version.toString().endsWith("-SNAPSHOT")
-
 		apply plugin: 'de.marcphilipp.nexus-publish'
 		nexusPublishing {
 			repositories {
