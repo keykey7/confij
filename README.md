@@ -3,7 +3,7 @@
 [![Build Status](https://github.com/keykey7/confij/workflows/release/badge.svg)](https://github.com/keykey7/confij/actions)
 [![License](https://img.shields.io/badge/License-Apache%202.0-yellowgreen.svg)](LICENSE)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=ch.kk7%3Aconfij&metric=coverage)](https://sonarcloud.io/dashboard?id=ch.kk7%3Aconfij)
-[![release](https://api.bintray.com/packages/kk7/mvn-release/confij-core/images/download.svg) ](https://bintray.com/kk7/mvn-release/confij-core/_latestVersion)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/ch.kk7/confij-core/badge.svg)](https://search.maven.org/artifact/ch.kk7/confij-core)
 
 See the full documentation at <https://keykey7.github.io/confij/>
 

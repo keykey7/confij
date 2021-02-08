@@ -12,7 +12,7 @@ plugins {
 	id 'org.asciidoctor.jvm.convert' version '3.2.0' apply false
 	id 'com.github.johnrengelman.shadow' version '6.0.0' apply false
 	id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
-	id 'io.codearte.nexus-staging' version '0.22.0'
+	id 'io.codearte.nexus-staging' version '0.22.0' apply false
 }
 
 reckon {
@@ -168,12 +168,16 @@ project.tasks['sonarqube'].dependsOn jacocoRootReport
 def isRemotePublish = System.getenv('CI') != null && System.getenv('SONATYPE_USERNAME') != null
 if (isRemotePublish) {
 	logger.lifecycle("remote publishing is enabled");
-	closeAndReleaseRepository.enabled !version.toString().endsWith("-SNAPSHOT")
-	nexusStaging {
-		username = System.getenv('SONATYPE_USERNAME')
-		password = System.getenv('SONATYPE_PASSWORD')
-		numberOfRetries = 60
-		delayBetweenRetriesInMillis = 5000
+	if (version.toString().endsWith("-SNAPSHOT")) {
+		task closeAndReleaseRepository {} // noop for snapshots
+	} else {
+		apply plugin: 'io.codearte.nexus-staging'
+		nexusStaging {
+			username = System.getenv('SONATYPE_USERNAME')
+			password = System.getenv('SONATYPE_PASSWORD')
+			numberOfRetries = 60
+			delayBetweenRetriesInMillis = 5000
+		}
 	}
 }
 subprojects {
