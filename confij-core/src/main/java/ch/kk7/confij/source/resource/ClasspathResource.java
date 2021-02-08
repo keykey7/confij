@@ -4,6 +4,7 @@ import ch.kk7.confij.common.Util;
 import ch.kk7.confij.source.any.ConfijAnyResource;
 import ch.kk7.confij.template.ValueResolver.StringResolver;
 import com.google.auto.service.AutoService;
+import lombok.AccessLevel;
 import lombok.NonNull;
 import lombok.ToString;
 import lombok.Value;
@@ -23,27 +24,49 @@ public class ClasspathResource implements ConfijResource {
 	@NonNull String nameTemplate;
 	@With
 	@NonNull String charsetTemplate;
-	@With
-	Class<?> classloaderOf;
+	@With(AccessLevel.PROTECTED)
+	Class<?> relativeClass;
+	@With(AccessLevel.PROTECTED)
+	ClassLoader relativeClassLoader;
+
+	public ClasspathResource relativeTo(ClassLoader relativeClassLoader) {
+		return withRelativeClassLoader(relativeClassLoader);
+	}
+
+	public ClasspathResource relativeTo(Class<?> relativeClass) {
+		return withRelativeClass(relativeClass);
+	}
+
+	/**
+	 * @deprecated use {@link #relativeTo(Class)} instead
+	 */
+	@Deprecated
+	public ClasspathResource withClassloaderOf(Class<?> relativeClass) {
+		return relativeTo(relativeClass);
+	}
 
 	public ClasspathResource withCharset(Charset charset) {
 		return withCharsetTemplate(charset.name());
 	}
 
 	public static ClasspathResource ofName(String nameTemplate) {
-		return new ClasspathResource(nameTemplate, Defaults.CHARSET_NAME, null);
+		return new ClasspathResource(nameTemplate, Defaults.CHARSET_NAME, null, Thread.currentThread()
+				.getContextClassLoader());
 	}
 
 	@NonNull
 	protected URL asUrl(String name) {
 		final URL url;
-		if (classloaderOf == null) {
-			url = ClassLoader.getSystemResource(name);
-		} else {
-			url = classloaderOf.getResource(name);
+		if (relativeClass != null) {
+			url = relativeClass.getResource(name);
+			if (url == null) {
+				throw unableToFetch(name, "no such file on classpath relative to class " + relativeClass.getName());
+			}
+			return url;
 		}
+		url = relativeClassLoader.getResource(name);
 		if (url == null) {
-			throw unableToFetch(name, "no such file on classpath");
+			throw unableToFetch(name, "no such file on classpath of classloader"  + relativeClassLoader);
 		}
 		return url;
 	}
