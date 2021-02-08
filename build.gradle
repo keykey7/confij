@@ -161,12 +161,15 @@ project.tasks['sonarqube'].enabled System.getenv('SONAR_TOKEN') != null
 project.tasks['sonarqube'].dependsOn jacocoRootReport
 
 // releases
+def isRemotePublish = System.getenv('CI') != null && System.getenv('SONATYPE_USERNAME') != null
+if (isRemotePublish) {
+	logger.lifecycle("remote publishing is enabled");
+}
 subprojects {
 	if (sourceSets.main.allSource.isEmpty()) {
 		return // excluding test-only subprojects
 	}
 	apply plugin: 'maven-publish'
-	def isRemotePublish = System.getenv('CI') != null && System.getenv('SONATYPE_USERNAME') != null
 	publishing {
 		publications {
 			java(MavenPublication) {

@@ -29,10 +29,7 @@ jobs:
           key: gradle-${{ runner.os }}-${{ matrix.java }}-master
 
       - name: build 🔧
-        run: ./gradlew -s build
-
-      - name: QA ⛅️
-        run: ./gradlew -s publishToMavenLocal sonarqube
+        run: ./gradlew -s build sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # sonar bug: shouldn't be needed
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

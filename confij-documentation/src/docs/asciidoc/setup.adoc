@@ -23,6 +23,8 @@ dependencies {
 ----
 ====
 
+In case of dependency issues (like if an incompatible version of `com.fasterxml:classmate` is already on the classpath), an alternative shadowed artifact is available as `{group}:confij-core:{revnumberstable}:nodeps`.
+
 ifeval::[{revnumberstable}!={revnumber}]
 The latest snapshot version `{revnumber}` will be removed after 30 days.
 endif::[]
