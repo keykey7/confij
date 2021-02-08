@@ -441,7 +441,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="header">
 <h1>ConfiJ Reference Guide</h1>
 <div class="details">
-<span id="revnumber">version 0.6.0</span>
+<span id="revnumber">version 0.6.1-SNAPSHOT</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -535,7 +535,7 @@ It is modularly organized in order to reduce the amount of dependencies.
 <h2 id="_repository"><a class="anchor" href="#_repository"></a>1. Repository</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>ConfiJ maven artifacts are available on Bintray/JCenter.</p>
+<p>ConfiJ maven artifacts are available on <a href="https://search.maven.org/">Maven Central</a>.</p>
 </div>
 <div class="exampleblock">
 <div class="title">Example 1. Sample Gradle setup</div>
@@ -543,7 +543,7 @@ It is modularly organized in order to reduce the amount of dependencies.
 <div class="listingblock">
 <div class="content">
 <pre class="prettyprint highlight"><code data-lang="groovy">repositories {
-   jcenter()
+   mavenCentral()
 }
 dependencies {
     implementation 'ch.kk7:confij-core:0.6.0'
@@ -551,6 +551,9 @@ dependencies {
 </div>
 </div>
 </div>
+</div>
+<div class="paragraph">
+<p>In case of dependency issues (like if an incompatible version of <code>com.fasterxml:classmate</code> is already on the classpath), an alternative shadowed artifact is available as <code>ch.kk7:confij-core:0.6.0:nodeps</code>.</p>
 </div>
 </div>
 </div>
