@@ -14,6 +14,12 @@ class ClasspathResourceTest implements WithAssertions {
 				.element(0)
 				.extracting(ResourceContent::getContent)
 				.isEqualTo("111\n");
+		assertThat(ClasspathResource.ofName("file1.txt")
+				.relativeTo(ClassLoader.getSystemClassLoader())
+				.read()).hasSize(1)
+				.element(0)
+				.extracting(ResourceContent::getContent)
+				.isEqualTo("111\n");
 		assertThat(ClasspathResource.ofName("ch/kk7/confij/source/resource/file2.txt")
 				.read()).hasSize(1)
 				.element(0)
@@ -24,13 +30,13 @@ class ClasspathResourceTest implements WithAssertions {
 	@Test
 	public void relativeToClass() {
 		assertThat(ClasspathResource.ofName("/file1.txt")
-				.withClassloaderOf(ClasspathResource.class)
+				.relativeTo(ClasspathResource.class)
 				.read()).hasSize(1)
 				.element(0)
 				.extracting(ResourceContent::getContent)
 				.isEqualTo("111\n");
 		assertThat(ClasspathResource.ofName("file2.txt")
-				.withClassloaderOf(ClasspathResource.class)
+				.relativeTo(ClasspathResource.class)
 				.read()).hasSize(1)
 				.element(0)
 				.extracting(ResourceContent::getContent)
