@@ -34,19 +34,10 @@ jobs:
           key: gradle-${{ runner.os }}-${{ matrix.java }}-pr
 
       - name: build 🔧
-        run: ./gradlew -s build
+        run: ./gradlew -s build publishToMavenLocal
 
       - name: sonar ⛅️
         run: ./gradlew -s sonarqube
         if: ${{ matrix.sonar }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: publish snapshot 📤
-        run: ./gradlew -s publish
-        if: ${{ matrix.sonar }}
-        env:
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          SONATYPE_SIGNKEY: ${{ secrets.SONATYPE_SIGNKEY }}
-          SONATYPE_SIGNPASS: ${{ secrets.SONATYPE_SIGNPASS }}

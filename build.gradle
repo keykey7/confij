@@ -11,6 +11,8 @@ plugins {
 	id 'org.sonarqube' version '3.0'
 	id 'org.asciidoctor.jvm.convert' version '3.2.0' apply false
 	id 'com.github.johnrengelman.shadow' version '6.0.0' apply false
+	id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
+	id 'io.codearte.nexus-staging' version '0.22.0'
 }
 
 reckon {
@@ -202,22 +204,20 @@ subprojects {
 				}
 			}
 		}
-		if (isRemotePublish) {
+	}
+	if (isRemotePublish) {
+		closeAndReleaseRepository.enabled !version.toString().endsWith("-SNAPSHOT")
+
+		apply plugin: 'de.marcphilipp.nexus-publish'
+		nexusPublishing {
 			repositories {
-				maven {
-					def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
-					def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
-					def isReleaseBuild = project.version.toString().matches("[0-9.]+") // no "rc" nor "snapshot"
-					url = isReleaseBuild ? releasesRepoUrl : snapshotsRepoUrl
-					credentials {
-						username = System.getenv('SONATYPE_USERNAME')
-						password = System.getenv('SONATYPE_PASSWORD')
-					}
+				sonatype {
+					username = System.getenv('SONATYPE_USERNAME')
+					password = System.getenv('SONATYPE_PASSWORD')
 				}
 			}
 		}
-	}
-	if (isRemotePublish) {
+
 		apply plugin: 'signing'
 		signing {
 			def signingKey = System.getenv('SONATYPE_SIGNKEY')
