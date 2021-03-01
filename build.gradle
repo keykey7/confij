@@ -59,15 +59,33 @@ subprojects {
 	apply plugin: 'java-library'
 
 	java {
-		sourceCompatibility = JavaVersion.VERSION_1_8
-		targetCompatibility = JavaVersion.VERSION_1_8
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(11)
+		}
 		withSourcesJar()
 		withJavadocJar()
 	}
 
-	tasks.withType(JavaCompile) {
-		options.incremental = true
+	sourceSets {
+		moduleInfo {
+			compileClasspath += sourceSets.main.compileClasspath // + sourceSets.main.output
+			java {
+				destinationDirectory.set sourceSets.main.java.classesDirectory
+			}
+		}
 	}
+
+	tasks.withType(JavaCompile) {
+		options.incremental true
+		options.release = 8
+	}
+
+	compileModuleInfoJava {
+		options.release = 9
+		options.javaModuleVersion = provider { project.version }
+		modularity.inferModulePath = true
+	}
+	classes.dependsOn compileModuleInfoJava
 
 	tasks.withType(AbstractArchiveTask) {
 		preserveFileTimestamps = false
