@@ -1,5 +1,6 @@
 package ch.kk7.confij.binding.values;
 
+import ch.kk7.confij.binding.values.ValueMapperInstance.NullableValueMapperInstance;
 import lombok.experimental.UtilityClass;
 
 import java.io.File;
@@ -13,10 +14,10 @@ public class ExplicitMapper {
 	}
 
 	public static ValueMapperFactory forPath() {
-		return ValueMapperFactory.forClass(Paths::get, Path.class);
+		return ValueMapperFactory.forClass((NullableValueMapperInstance<Path>) Paths::get, Path.class);
 	}
 
 	public static ValueMapperFactory forFile() {
-		return ValueMapperFactory.forClass(File::new, File.class);
+		return ValueMapperFactory.forClass((NullableValueMapperInstance<File>) File::new, File.class);
 	}
 }
