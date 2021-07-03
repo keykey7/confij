@@ -8,7 +8,7 @@ buildscript {
 plugins {
 	id 'org.ajoberstar.reckon' version '0.13.0'
 	id 'com.github.ben-manes.versions' version '0.36.0' // task: dependencyUpdates
-	id 'org.sonarqube' version '3.1.1'
+	id 'org.sonarqube' version '3.3'
 	id 'org.asciidoctor.jvm.convert' version '3.3.0' apply false
 	id 'com.github.johnrengelman.shadow' version '6.1.0' apply false
 	id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
@@ -59,8 +59,9 @@ subprojects {
 	apply plugin: 'java-library'
 
 	java {
-		sourceCompatibility = JavaVersion.VERSION_1_8
-		targetCompatibility = JavaVersion.VERSION_1_8
+		toolchain {
+			languageVersion = JavaLanguageVersion.of(8)
+		}
 		withSourcesJar()
 		withJavadocJar()
 	}
@@ -74,7 +75,7 @@ subprojects {
 		reproducibleFileOrder = true
 	}
 
-	configurations.runtime {
+	configurations.runtimeClasspath {
 		resolutionStrategy {
 			failOnVersionConflict()
 			failOnNonReproducibleResolution()
@@ -84,24 +85,24 @@ subprojects {
 	javadoc.options.addStringOption('Xdoclint:none', '-quiet')
 
 	dependencies {
-		def autoServiceVersion = "1.0-rc7"
+		def autoServiceVersion = "1.0"
 		compileOnly "com.google.auto.service:auto-service:${autoServiceVersion}"
 		annotationProcessor "com.google.auto.service:auto-service:${autoServiceVersion}"
 		testCompileOnly "com.google.auto.service:auto-service:${autoServiceVersion}"
 		testAnnotationProcessor "com.google.auto.service:auto-service:${autoServiceVersion}"
 
-		def lombokVersion = "1.18.18"
+		def lombokVersion = "1.18.20"
 		compileOnly "org.projectlombok:lombok:${lombokVersion}"
 		annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 		testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
 		testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-		def junitVersion = '5.7.1'
+		def junitVersion = '5.7.2'
 		testImplementation "org.junit.jupiter:junit-jupiter-params:${junitVersion}"
 		testImplementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
-		testImplementation "org.assertj:assertj-core:3.19.0"
+		testImplementation "org.assertj:assertj-core:3.20.2"
 		testImplementation "com.github.stefanbirkner:system-lambda:1.2.0"
-		testImplementation "org.awaitility:awaitility:4.0.3"
+		testImplementation "org.awaitility:awaitility:4.1.0"
 
 		testRuntimeOnly 'ch.qos.logback:logback-classic:1.2.3'
 	}
@@ -144,7 +145,7 @@ task jacocoRootReport(type: JacocoReport, group: 'verification') {
 	sourceDirectories.from(subprojects.sourceSets.main.allSource.srcDirs)
 	classDirectories.from(subprojects.sourceSets.main.output)
 	executionData jacocoMerge.destinationFile
-	reports.xml.enabled true
+	reports.xml.required = true
 	doLast {
 		logger.lifecycle("report at: " + reports.html.entryPoint.toURI())
 	}
@@ -156,7 +157,7 @@ allprojects {
 			property 'sonar.host.url', 'https://sonarcloud.io'
 			property 'sonar.organization', 'keykey7-github'
 			property 'sonar.login', System.getenv('SONAR_TOKEN')
-			property 'sonar.coverage.jacoco.xmlReportPaths', jacocoRootReport.reports.xml.destination
+			property 'sonar.coverage.jacoco.xmlReportPaths', jacocoRootReport.reports.xml.outputLocation
 		}
 	}
 }

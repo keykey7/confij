@@ -1,9 +1,15 @@
 dependencies {
 	api project(':confij-core')
-	def gitVersion = "5.10.0.202012080955-r"
+	def gitVersion = "5.12.0.202106070339-r"
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${gitVersion}"
 	implementation "org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:${gitVersion}"
 
 	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.http:${gitVersion}"
 	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.ssh:${gitVersion}"
+}
+
+test {
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(15) // newer JDK required for jetty keystore
+	}
 }
