@@ -1,9 +1,10 @@
 name: release
 on:
   push:
-    branches: master
-    tags: '[0-9]+.[0-9]+.[0-9]+*'
-
+    branches:
+      - master
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+*'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,39 +13,30 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0 # all commits, required for propper versioning
-
-      - name: setup ☕
-        uses: actions/setup-java@v1
+      - name: JDK11 ☕
+        uses: actions/setup-java@v2
         with:
           java-version: 11
-
-      - name: cache 🗂️
-        uses: actions/cache@v2
+      - name: build 🔧️
+        uses: burrunan/gradle-cache-action@v1
         with:
-          path: |
-            ~/.gradle/caches
-            !~/.gradle/caches/modules-2/modules-2.lock
-            !~/.gradle/caches/*/plugin-resolution/
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ matrix.java }}-master
-
-      - name: build 🔧
-        run: ./gradlew -s build sonarqube
+          job-id: jdk11
+          arguments: -s --console=plain build sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # sonar bug: shouldn't be needed
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
       - name: publish 📤
-        run: ./gradlew -s publishToSonatype closeAndReleaseRepository
+        uses: burrunan/gradle-cache-action@v1
+        with:
+          job-id: jdk11
+          arguments: -s --console=plain publishToSonatype closeAndReleaseRepository
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_SIGNKEY: ${{ secrets.SONATYPE_SIGNKEY }}
           SONATYPE_SIGNPASS: ${{ secrets.SONATYPE_SIGNPASS }}
-
       - name: docs 📜
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./confij-documentation/build/docs/asciidoc
-          keep_files: true

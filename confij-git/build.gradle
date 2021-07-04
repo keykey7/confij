@@ -8,8 +8,8 @@ dependencies {
 	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.ssh:${gitVersion}"
 }
 
-test {
-	javaLauncher = javaToolchains.launcherFor {
-		languageVersion = JavaLanguageVersion.of(15) // newer JDK required for jetty keystore
-	}
+// test-git-jetty requires a reasonably new JDK for key management
+tasks.withType(Test) {
+	enabled = false
 }
+testJava15.enabled = true
