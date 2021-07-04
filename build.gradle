@@ -121,7 +121,7 @@ subprojects {
 		useJUnitPlatform() // junit5 support
 		if (System.getenv().containsKey("CI")) {
 			testLogging {
-				events "passed", "skipped", "failed"
+				events "failed"
 				exceptionFormat "full"
 			}
 		}
