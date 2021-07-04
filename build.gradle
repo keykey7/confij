@@ -7,12 +7,12 @@ buildscript {
 
 plugins {
 	id 'org.ajoberstar.reckon' version '0.13.0'
-	id 'com.github.ben-manes.versions' version '0.36.0' // task: dependencyUpdates
+	id 'com.github.ben-manes.versions' version '0.39.0' // task: dependencyUpdates
 	id 'org.sonarqube' version '3.3'
-	id 'org.asciidoctor.jvm.convert' version '3.3.0' apply false
+	id 'org.asciidoctor.jvm.convert' version '3.3.2' apply false
 	id 'com.github.johnrengelman.shadow' version '6.1.0' apply false
 	id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
-	id 'io.codearte.nexus-staging' version '0.22.0' apply false
+	id 'io.codearte.nexus-staging' version '0.30.0' apply false
 }
 
 reckon {
@@ -121,7 +121,7 @@ subprojects {
 		useJUnitPlatform() // junit5 support
 		if (System.getenv().containsKey("CI")) {
 			testLogging {
-				events "passed", "skipped", "failed"
+				events "failed"
 				exceptionFormat "full"
 			}
 		}
@@ -168,7 +168,7 @@ allprojects {
 			property 'sonar.host.url', 'https://sonarcloud.io'
 			property 'sonar.organization', 'keykey7-github'
 			property 'sonar.login', System.getenv('SONAR_TOKEN')
-			property 'sonar.coverage.jacoco.xmlReportPaths', jacocoRootReport.reports.xml.outputLocation
+			property 'sonar.coverage.jacoco.xmlReportPaths', jacocoRootReport.reports.xml.outputLocation.get()
 		}
 	}
 }
