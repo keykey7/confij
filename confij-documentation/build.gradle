@@ -30,6 +30,6 @@ asciidoctor {
 
 tasks.assemble.dependsOn 'asciidoctor'
 
-test {
+tasks.withType(Test) {
 	workingDir file('src/test/home')
 }

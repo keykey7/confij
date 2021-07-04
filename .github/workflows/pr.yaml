@@ -1,43 +1,22 @@
 name: pr
 on: pull_request
-
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [8, 9, 13, 14, 15] # other supported JDK versions
-        sonar: [false]
-        include:
-          - java: 11 # usually latest LTS
-            sonar: true
-      fail-fast: false
     steps:
       - name: checkout 📥
         uses: actions/checkout@v2
         with:
           fetch-depth: 0 # all commits, required for propper versioning
-
-      - name: JDK${{ matrix.java }} ☕
-        uses: actions/setup-java@v1
+      - name: JDK11 ☕
+        uses: actions/setup-java@v2
         with:
-          java-version: ${{ matrix.java }}
-
-      - name: cache 🗂️
-        uses: actions/cache@v2
+          distribution: 'zulu'
+          java-version: 11
+      - name: build 🔧️
+        uses: burrunan/gradle-cache-action@v1
         with:
-          path: |
-            ~/.gradle/caches
-            !~/.gradle/caches/modules-2/modules-2.lock
-            !~/.gradle/caches/*/plugin-resolution/
-            ~/.gradle/wrapper
-          key: gradle-${{ runner.os }}-${{ matrix.java }}-pr
-
-      - name: build 🔧
-        run: ./gradlew -s build publishToMavenLocal
-
-      - name: sonar ⛅️
-        run: ./gradlew -s sonarqube
-        if: ${{ matrix.sonar }}
+          job-id: jdk11
+          arguments: -s --console=plain build publishToMavenLocal sonarqube
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

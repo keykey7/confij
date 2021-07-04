@@ -66,6 +66,16 @@ subprojects {
 		withJavadocJar()
 	}
 
+	[9, 11, 15].forEach(jv -> {
+		def testJava = tasks.register("testJava${jv}", Test) {
+			javaLauncher = javaToolchains.launcherFor {
+				languageVersion = JavaLanguageVersion.of(jv)
+			}
+			shouldRunAfter 'test'
+		}
+		check.dependsOn testJava
+	})
+
 	tasks.withType(JavaCompile) {
 		options.incremental = true
 	}
@@ -107,15 +117,16 @@ subprojects {
 		testRuntimeOnly 'ch.qos.logback:logback-classic:1.2.3'
 	}
 
-	test {
+	tasks.withType(Test) {
 		useJUnitPlatform() // junit5 support
-		if (System.getenv('CI') != null) {
+		if (System.getenv().containsKey("CI")) {
 			testLogging {
 				events "passed", "skipped", "failed"
 				exceptionFormat "full"
 			}
 		}
 	}
+
 	configurations { // allow test reuse
 		testOutput.extendsFrom(testImplementation)
 	}
