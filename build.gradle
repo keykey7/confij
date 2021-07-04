@@ -168,7 +168,7 @@ allprojects {
 			property 'sonar.host.url', 'https://sonarcloud.io'
 			property 'sonar.organization', 'keykey7-github'
 			property 'sonar.login', System.getenv('SONAR_TOKEN')
-			property 'sonar.coverage.jacoco.xmlReportPaths', jacocoRootReport.reports.xml.outputLocation
+			property 'sonar.coverage.jacoco.xmlReportPaths', jacocoRootReport.reports.xml.outputLocation.get()
 		}
 	}
 }
