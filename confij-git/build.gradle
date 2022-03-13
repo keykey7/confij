@@ -1,15 +1,9 @@
 dependencies {
 	api project(':confij-core')
-	def gitVersion = "5.12.0.202106070339-r"
+	def gitVersion = "5.13.0.202109080827-r"
 	implementation "org.eclipse.jgit:org.eclipse.jgit:${gitVersion}"
 	implementation "org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:${gitVersion}"
 
 	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.http:${gitVersion}"
 	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.ssh:${gitVersion}"
 }
-
-// test-git-jetty requires a reasonably new JDK for key management
-tasks.withType(Test) {
-	enabled = false
-}
-testJava15.enabled = true

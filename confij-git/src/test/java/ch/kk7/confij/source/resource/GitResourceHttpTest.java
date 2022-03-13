@@ -13,10 +13,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
+import org.junit.jupiter.api.condition.EnabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 
+@EnabledForJreRange(min = JRE.JAVA_15) // older JDKs have issues with jettys key format
 class GitResourceHttpTest extends GitTestBase {
 	private SimpleHttpServer server;
 

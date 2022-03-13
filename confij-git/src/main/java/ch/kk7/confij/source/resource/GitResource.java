@@ -110,7 +110,10 @@ public class GitResource implements ConfijResource {
 	protected Git gitClone(GitSettings settings) throws GitAPIException, IOException {
 		// we do not directly git clone in order to customize git config before remote operations
 		Git git = gitInit(settings);
-		return gitFetch(git, settings);
+		git = gitFetch(git, settings);
+		git.log()
+				.call();
+		return git;
 	}
 
 	protected Git gitInit(GitSettings settings) throws GitAPIException, IOException {
