@@ -13,8 +13,10 @@ jobs:
         with:
           distribution: adopt
           java-version: 11
-      - name: gradle setup 🐘
+      - name: Gradle 🐘
         uses: gradle/gradle-build-action@v2
+        with:
+          cache-disabled: true
       - name: build 🔧️
         run: ./gradlew -s --console=plain build publishToMavenLocal sonarqube
         env:

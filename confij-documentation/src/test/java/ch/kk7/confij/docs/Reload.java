@@ -49,7 +49,6 @@ class Reload extends DocTestBase {
 
 		assertThat(dbIsActive).isFalse();
 		source.set("database.active", "true");
-		//noinspection ConstantConditions
 		await().atMost(Duration.ofSeconds(5))
 				.untilAsserted(() -> assertThat(dbIsActive).isTrue());
 		assertThat(wrapper.get()
