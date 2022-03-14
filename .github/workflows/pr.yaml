@@ -15,8 +15,6 @@ jobs:
           java-version: 11
       - name: Gradle 🐘
         uses: gradle/gradle-build-action@v2
-        with:
-          cache-disabled: true
       - name: build 🔧️
         run: ./gradlew -s --console=plain build publishToMavenLocal sonarqube
         env:

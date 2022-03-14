@@ -8,7 +8,11 @@ dependencies {
 	constraints {
 		api 'com.fasterxml:classmate:1.5.1'
 		api 'com.typesafe:config:1.4.2'
-		api 'org.slf4j:slf4j-api:1.7.36'
+		api('org.slf4j:slf4j-api') {
+			version {
+				strictly '1.7.36'
+			}
+		}
 		api 'com.github.valfirst:slf4j-test:2.5.0'
 		api 'org.tomlj:tomlj:1.0.0'
 		api 'org.yaml:snakeyaml:1.30'
@@ -28,7 +32,11 @@ dependencies {
 		api "org.assertj:assertj-core:3.22.0"
 		api "com.github.stefanbirkner:system-lambda:1.2.1"
 		api "org.awaitility:awaitility:4.2.0"
-		api 'com.google.guava:guava:31.0.1-jre'
+		api('com.google.guava:guava') {
+			version {
+				strictly '31.0.1-jre'
+			}
+		}
 		runtime 'ch.qos.logback:logback-classic:1.2.11'
 	}
 }

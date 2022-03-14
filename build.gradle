@@ -92,7 +92,7 @@ subprojects {
 		}
 	}
 	dependencies {
-		bom enforcedPlatform(project(':confij-bom'))
+		bom platform(project(':confij-bom'))
 
 		compileOnly "com.google.auto.service:auto-service"
 		annotationProcessor "com.google.auto.service:auto-service"
