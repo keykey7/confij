@@ -22,7 +22,6 @@ abstract class GitTestBase implements WithAssertions {
 		config.setInt("gc", null, "auto", 0);
 		config.setInt("gc", null, "autoPackLimit", 0);
 		config.setBoolean("receive", null, "autogc", false);
-
 		gitSettings = defaultSettings();
 	}
 

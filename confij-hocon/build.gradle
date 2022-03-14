@@ -1,4 +1,4 @@
 dependencies {
 	api project(':confij-core')
-	implementation 'com.typesafe:config:1.4.1'
+	implementation 'com.typesafe:config'
 }
