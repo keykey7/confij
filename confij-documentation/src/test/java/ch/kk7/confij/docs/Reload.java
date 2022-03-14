@@ -26,8 +26,8 @@ class Reload extends DocTestBase {
 
 	@Test
 	void reloadHandlers() {
-		ExplicitPropertiesSource source = ExplicitPropertiesSource.of("database.url", "http://example.com/db")
-				.set("backend.url", "http://example.com/be");
+		ExplicitPropertiesSource source = ExplicitPropertiesSource.of("database.url", "https://example.com/db")
+				.set("backend.url", "https://example.com/be");
 
 		// tag::reload-builder[]
 		ConfijWrapper<ClientConfig> wrapper = ConfijBuilder.of(ClientConfig.class)
@@ -36,6 +36,9 @@ class Reload extends DocTestBase {
 			.buildWrapper();
 		ClientConfig currentConfig = wrapper.get(); // always the most up-to-date value
 		// end::reload-builder[]
+		assertThat(wrapper.get()
+				.database()
+				.active()).isFalse();
 
 		// tag::reload-handler[]
 		wrapper.getReloadNotifier().registerReloadHandler(
@@ -51,9 +54,11 @@ class Reload extends DocTestBase {
 		source.set("database.active", "true");
 		await().atMost(Duration.ofSeconds(5))
 				.untilAsserted(() -> assertThat(dbIsActive).isTrue());
-		assertThat(wrapper.get()
-				.database()
-				.active()).isTrue();
+		await().atMost(Duration.ofSeconds(5))
+				.untilAsserted(() -> assertThat(wrapper.get()
+						.database()
+						.active()).as("wrapper " + wrapper + " not matching dbIsActive=" + dbIsActive)
+						.isTrue());
 	}
 
 	private static void resetHttpClient(Endpoint endpoint) {
