@@ -1,5 +1,6 @@
 rootProject.name = 'confij'
 
+include 'confij-bom'
 include 'confij-core'
 include 'confij-yaml'
 include 'confij-validation'

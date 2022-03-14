@@ -1,9 +1,12 @@
 dependencies {
 	api project(':confij-core')
-	def gitVersion = "5.13.0.202109080827-r"
-	implementation "org.eclipse.jgit:org.eclipse.jgit:${gitVersion}"
-	implementation "org.eclipse.jgit:org.eclipse.jgit.ssh.jsch:${gitVersion}"
+	implementation "org.eclipse.jgit:org.eclipse.jgit"
+	implementation "org.eclipse.jgit:org.eclipse.jgit.ssh.jsch"
 
-	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.http:${gitVersion}"
-	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.ssh:${gitVersion}"
+	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.http"
+	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.ssh"
+}
+
+tasks.withType(Test) {
+	environment "GIT_CONFIG_NOSYSTEM", "true"
 }

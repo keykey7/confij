@@ -10,23 +10,14 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.HttpConfig;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledIfEnvironmentVariable;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
-import org.junit.jupiter.api.io.TempDir;
-
-import java.io.File;
 
 @EnabledForJreRange(min = JRE.JAVA_15) // older JDKs have issues with jettys key format
 class GitResourceHttpTest extends GitTestBase {
 	private SimpleHttpServer server;
-
-	@BeforeEach
-	public void initServer(@TempDir File tempDir) throws Exception {
-		testGit = new GitTestrepo(tempDir);
-	}
 
 	@SneakyThrows
 	@Override
@@ -76,8 +67,10 @@ class GitResourceHttpTest extends GitTestBase {
 	@Test
 	void basicAuthOverHttps() throws Exception {
 		GitSettings ignoreSsl = gitSettings.withGitInitHook(git -> git.getRepository()
-				.getConfig()
-				.setBoolean(HttpConfig.HTTP, null, HttpConfig.SSL_VERIFY_KEY, false));
+						.getConfig()
+						.setBoolean(HttpConfig.HTTP, null, HttpConfig.SSL_VERIFY_KEY, false))
+				.withRemoteUrl(server.getSecureUri()
+						.toString());
 		testGit.addAndCommit();
 		RevCommit commit2 = testGit.addAndCommit();
 		assertThatGitRead(ignoreSsl).isEqualTo(commit2.getShortMessage());

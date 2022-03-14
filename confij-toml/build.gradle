@@ -1,4 +1,4 @@
 dependencies {
 	api project(':confij-core')
-	implementation 'org.tomlj:tomlj:1.0.0'
+	implementation 'org.tomlj:tomlj'
 }
