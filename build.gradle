@@ -55,16 +55,14 @@ subprojects {
 	java {
 		toolchain {
 			languageVersion = JavaLanguageVersion.of(8)
-			vendor = JvmVendorSpec.ADOPTOPENJDK
 		}
 		withSourcesJar()
 		withJavadocJar()
 	}
-	[9, 11, 15].forEach(jv -> {
+	[11, 16].forEach(jv -> {
 		def testJava = tasks.register("testJava${jv}", Test) {
 			javaLauncher = javaToolchains.launcherFor {
 				languageVersion = JavaLanguageVersion.of(jv)
-				vendor = JvmVendorSpec.ADOPTOPENJDK
 			}
 			shouldRunAfter 'test'
 		}
