@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # sonar bug: shouldn't be needed
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: publish 📤
-        run: ./gradlew -s --console=plain publishToSonatype closeAndReleaseRepository
+        run: ./gradlew -s --console=plain publishToSonatype closeAndReleaseSonatypeStagingRepository
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
