@@ -4,18 +4,20 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-      - name: checkout 📥
+      - name: 📥 checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # all commits, required for propper versioning
-      - name: JDK ☕
+      - name: ☕ JDK
         uses: actions/setup-java@v2
         with:
           distribution: adopt
           java-version: 11
-      - name: Gradle 🐘
+      - name: 🐘 wrapper validate
+        uses: gradle/wrapper-validation-action@v1
+      - name: 🐘 Gradle
         uses: gradle/gradle-build-action@v2
-      - name: build 🔧️
+      - name: 🔧️ build
         run: ./gradlew -s --console=plain build publishToMavenLocal sonarqube
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
