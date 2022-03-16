@@ -9,30 +9,32 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
-      - name: checkout 📥
+      - name: 📥 checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # all commits, required for propper versioning
-      - name: JDK ☕
+      - name: ☕ JDK
         uses: actions/setup-java@v2
         with:
           distribution: adopt
           java-version: 11
-      - name: Gradle 🐘
+      - name: 🐘 wrapper validate
+        uses: gradle/wrapper-validation-action@v1
+      - name: 🐘 Gradle
         uses: gradle/gradle-build-action@v2
-      - name: build 🔧️
+      - name: 🔧️ build
         run: ./gradlew -s --console=plain build sonarqube
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # sonar bug: shouldn't be needed
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      - name: publish 📤
-        run: ./gradlew -s --console=plain publishToSonatype closeAndReleaseRepository
+      - name: 📤 publish
+        run: ./gradlew -s --console=plain publishToSonatype closeAndReleaseSonatypeStagingRepository
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_SIGNKEY: ${{ secrets.SONATYPE_SIGNKEY }}
           SONATYPE_SIGNPASS: ${{ secrets.SONATYPE_SIGNPASS }}
-      - name: docs 📜
+      - name: 📜 docs
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
