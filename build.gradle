@@ -95,14 +95,11 @@ subprojects {
 		testCompileOnly.extendsFrom compileOnly
 		testAnnotationProcessor.extendsFrom annotationProcessor
 	}
-	gradle.taskGraph.whenReady { taskGraph -> // workaround for https://github.com/ben-manes/gradle-versions-plugin/issues/592
-		if(!taskGraph.hasTask(":dependencyUpdates")) {
-			configurations.all {
-				resolutionStrategy {
-					failOnVersionConflict()
-					failOnNonReproducibleResolution()
-				}
-			}
+	// must be disabled for `dependencyUpdates`: https://github.com/ben-manes/gradle-versions-plugin/issues/592
+	configurations.all {
+		resolutionStrategy {
+			failOnVersionConflict()
+			failOnNonReproducibleResolution()
 		}
 	}
 	dependencies {
