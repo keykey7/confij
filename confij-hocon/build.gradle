@@ -1,4 +1,4 @@
 dependencies {
 	api project(':confij-core')
-	implementation 'com.typesafe:config'
+	implementation libs.hcon
 }

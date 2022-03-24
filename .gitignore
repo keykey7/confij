@@ -2,10 +2,7 @@
 build
 
 .idea
+.vscode
 bin
 out
 .attach*
-
-!.idea
-.idea/*
-!.idea/codeStyles

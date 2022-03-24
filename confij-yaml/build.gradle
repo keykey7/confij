@@ -1,4 +1,4 @@
 dependencies {
 	api project(':confij-core')
-	implementation 'org.yaml:snakeyaml'
+	implementation libs.snakeyaml
 }

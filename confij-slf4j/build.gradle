@@ -1,6 +1,6 @@
 dependencies {
 	api project(':confij-core')
-	api 'org.slf4j:slf4j-api'
+	api libs.slf4j.api
 
-	testImplementation 'com.github.valfirst:slf4j-test'
+	testImplementation libs.slf4j.test
 }
