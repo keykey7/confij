@@ -1,5 +1,5 @@
 dependencies {
 	api project(':confij-core')
-	api 'org.hibernate.validator:hibernate-validator'
-	testAnnotationProcessor 'org.hibernate.validator:hibernate-validator-annotation-processor'
+	api libs.hibernate.validator
+	testAnnotationProcessor libs.hibernate.validator.ap
 }

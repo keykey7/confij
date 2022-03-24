@@ -1,7 +1,7 @@
 apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
-	implementation 'com.fasterxml:classmate'
+	implementation libs.classmate
 }
 
 configurations {

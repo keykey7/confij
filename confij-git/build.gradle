@@ -1,10 +1,10 @@
 dependencies {
 	api project(':confij-core')
-	implementation "org.eclipse.jgit:org.eclipse.jgit"
-	implementation "org.eclipse.jgit:org.eclipse.jgit.ssh.jsch"
+	implementation libs.jgit
+	implementation libs.jgit.ssh
 
-	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.http"
-	testImplementation "org.eclipse.jgit:org.eclipse.jgit.junit.ssh"
+	testImplementation libs.jgit.junit.http
+	testImplementation libs.jgit.junit.ssh
 }
 
 tasks.withType(Test) {
