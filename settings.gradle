@@ -18,11 +18,11 @@ dependencyResolutionManagement {
 			library('slf4j.api', 'org.slf4j', 'slf4j-api').version {
 				strictly '1.7.36'
 			}
-			library('slf4j.test', 'com.github.valfirst:slf4j-test:2.5.0')
+			library('slf4j.test', 'com.github.valfirst:slf4j-test:2.6.1')
 			library('tomlj', 'org.tomlj:tomlj:1.0.0')
 			library('snakeyaml', 'org.yaml:snakeyaml:1.30')
 			library('autoservice', "com.google.auto.service:auto-service:1.0.1")
-			library('lombok', "org.projectlombok:lombok:1.18.22")
+			library('lombok', "org.projectlombok:lombok:1.18.24")
 
 			version('jgit', '5.13.0.202109080827-r')
 			library("jgit", "org.eclipse.jgit", "org.eclipse.jgit").versionRef('jgit')
@@ -30,15 +30,15 @@ dependencyResolutionManagement {
 			library("jgit.junit.http", "org.eclipse.jgit", "org.eclipse.jgit.junit.http").versionRef('jgit')
 			library("jgit.junit.ssh", "org.eclipse.jgit", "org.eclipse.jgit.junit.ssh").versionRef('jgit')
 
-			version('hibernate', "7.0.4.Final")
+			version('hibernate', "7.0.5.Final")
 			library('hibernate.validator', "org.hibernate.validator", "hibernate-validator").versionRef('hibernate')
 			library('hibernate.validator.ap', "org.hibernate.validator", "hibernate-validator-annotation-processor").versionRef('hibernate')
 
-			version('junit', '5.8.2')
+			version('junit', '5.9.0')
 			library('junit.params', "org.junit.jupiter", "junit-jupiter-params").versionRef('junit')
 			library('junit.engine', "org.junit.jupiter", "junit-jupiter-engine").versionRef('junit')
 
-			library('assertj', "org.assertj:assertj-core:3.22.0")
+			library('assertj', "org.assertj:assertj-core:3.23.1")
 			library('systemlambda', "com.github.stefanbirkner:system-lambda:1.2.1")
 			library('awaitility', "org.awaitility:awaitility:4.2.0")
 			library('logback.classic', 'ch.qos.logback:logback-classic:1.2.11')
